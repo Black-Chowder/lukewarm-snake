@@ -14,6 +14,9 @@ class Vector2 {
     //Creates a new Vector2 instance with the same values as the given vector
     static cpy = (a) => new Vector2(a.x, a.y);
     cpy = () => Vector2.cpy(this);
+    //Get the angle of a vector
+    static angle = (a) => Math.atan2(a.y, a.x);
+    angle = () => Vector2.angle(this);
     //Gets the magnitude of a vector
     static mag = (a) => Math.sqrt(a.x * a.x + a.y * a.y);
     mag = () => Vector2.mag(this);
@@ -49,5 +52,6 @@ class Vector2 {
         t = Math.max(0, Math.min(1, t));
         return new Vector2((1 - t) * start.x + t * end.x, (1 - t) * start.y + t * end.y);
     };
+    static fromAngle = (angle) => new Vector2(Math.cos(angle), Math.sin(angle));
 }
 exports.Vector2 = Vector2;

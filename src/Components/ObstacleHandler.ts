@@ -21,11 +21,23 @@ export class ObstacleHandler implements IUpdate, IDraw {
 
     draw(): void {
         
+        //Draw tail
+        ctx.fillStyle = 'blue';
+        ctx.beginPath();
+        let startPos: Vector2 = this.parent.pos.add(Vector2.fromAngle(this.heading.angle() + Math.PI / 2).mul(this.radius));
+        let middlePos: Vector2 = this.parent.pos.add(Vector2.fromAngle(this.heading.angle() + Math.PI).mul(this.radius * 3));
+        let endPos: Vector2 = this.parent.pos.add(Vector2.fromAngle(this.heading.angle() - Math.PI / 2).mul(this.radius));
+        ctx.moveTo(startPos.x, startPos.y);
+        ctx.lineTo(middlePos.x, middlePos.y);
+        ctx.lineTo(endPos.x, endPos.y);
+        ctx.closePath();
+        ctx.fill();
+
         //Draw main body
         ctx.beginPath();
         ctx.fillStyle = 'black';
         ctx.arc(this.parent.pos.x, this.parent.pos.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.closePath();
+        ctx.closePath();        
     }
 }

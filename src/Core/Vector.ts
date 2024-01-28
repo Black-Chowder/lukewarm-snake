@@ -15,6 +15,10 @@ export class Vector2 {
     static cpy = (a: Vector2): Vector2 => new Vector2(a.x, a.y);
     cpy = (): Vector2 => Vector2.cpy(this);
 
+    //Get the angle of a vector
+    static angle = (a: Vector2): number => Math.atan2(a.y, a.x);
+    angle = (): number => Vector2.angle(this);
+
     //Gets the magnitude of a vector
     static mag = (a: Vector2): number => Math.sqrt(a.x * a.x + a.y * a.y);
     mag = (): number => Vector2.mag(this);
@@ -37,7 +41,7 @@ export class Vector2 {
         }
         return new Vector2(a.x + (b as number), a.y + (b as number));
     }
-    add = (other: Vector2): Vector2 => Vector2.add(this, other);
+    add = (other: Vector2 | number): Vector2 => Vector2.add(this, other);
 
     //Multiply functionality
     //Second parameter can be vector or magnitude
@@ -59,4 +63,6 @@ export class Vector2 {
             (1 - t) * start.y + t * end.y
         );
     }
+
+    static fromAngle = (angle: number): Vector2 => new Vector2(Math.cos(angle), Math.sin(angle));
 }

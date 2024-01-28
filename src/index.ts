@@ -16,7 +16,7 @@ function main() {
     entities.push(player);
     entities.push(new Obstacle(
         new Vector2(canvas.width / 4, canvas.height / 4), 
-        new Vector2(1, 1).norm().mul(0.2),
+        new Vector2(1, 0.5).norm().mul(0.2),
         25
     ));
 

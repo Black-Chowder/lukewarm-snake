@@ -11,7 +11,7 @@ function main() {
     //Init stuff
     exports.player = new Snake_1.Snake();
     exports.entities.push(exports.player);
-    exports.entities.push(new Obstacle_1.Obstacle(new Vector_1.Vector2(exports.canvas.width / 4, exports.canvas.height / 4), new Vector_1.Vector2(1, 1).norm().mul(0.2), 25));
+    exports.entities.push(new Obstacle_1.Obstacle(new Vector_1.Vector2(exports.canvas.width / 4, exports.canvas.height / 4), new Vector_1.Vector2(1, 0.5).norm().mul(0.2), 25));
     //Main loop
     function loop() {
         //Logic Loop
