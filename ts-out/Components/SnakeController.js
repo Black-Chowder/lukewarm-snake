@@ -10,6 +10,7 @@ class SnakeController {
     prevPosPoints = [];
     curDistTraveled = 0;
     curDistProgress = 0;
+    timeMod = 0;
     length = 5;
     constructor(parent) {
         this.parent = parent;
@@ -22,7 +23,8 @@ class SnakeController {
         this.prevPos = this.parent.pos.cpy();
         this.parent.pos = index_1.mousePos;
         //Calculate distance traveled
-        this.curDistTraveled += this.prevPos.add(this.parent.pos.mul(-1)).mag();
+        this.timeMod = this.prevPos.add(this.parent.pos.mul(-1)).mag();
+        this.curDistTraveled += this.timeMod;
         this.curDistProgress = this.curDistTraveled / stepPlaceDist;
         //Add new point when traveled enough distance
         while (this.curDistTraveled > stepPlaceDist) {

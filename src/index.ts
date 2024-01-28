@@ -1,17 +1,24 @@
 import { Vector2 } from "./Core/Vector";
 import { Entity } from "./Entities/Entity";
-import { Player } from "./Entities/Player";
 import { Snake } from './Entities/Snake';
+import { Obstacle } from './Entities/Obstacle';
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 export const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
 export const entities: Entity[] = [];
 
+export let player: Snake;
+
 function main() {
     //Init stuff
-    entities.push(new Player());
-    entities.push(new Snake());
+    player = new Snake();
+    entities.push(player);
+    entities.push(new Obstacle(
+        new Vector2(canvas.width / 4, canvas.height / 4), 
+        new Vector2(1, 1).norm().mul(0.2),
+        25
+    ));
 
     //Main loop
     function loop(){

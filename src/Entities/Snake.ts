@@ -5,13 +5,14 @@ import { Vector2 } from '../Core/Vector';
 import { canvas } from '../index';
 
 export class Snake extends Entity {
+    snakeController: SnakeController;
 
     constructor() {
         super();
         this.pos = new Vector2(canvas.width / 2, canvas.height / 2);
 
-        const sc = new SnakeController(this);
-        super.addComponent(sc);
+        this.snakeController = new SnakeController(this);
+        super.addComponent(this.snakeController);
 
         const sr = new SnakeRenderer(this);
         super.addComponent(sr);

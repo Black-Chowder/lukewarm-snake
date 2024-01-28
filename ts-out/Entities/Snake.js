@@ -7,11 +7,12 @@ const SnakeRenderer_1 = require("../Components/SnakeRenderer");
 const Vector_1 = require("../Core/Vector");
 const index_1 = require("../index");
 class Snake extends Entity_1.Entity {
+    snakeController;
     constructor() {
         super();
         this.pos = new Vector_1.Vector2(index_1.canvas.width / 2, index_1.canvas.height / 2);
-        const sc = new SnakeController_1.SnakeController(this);
-        super.addComponent(sc);
+        this.snakeController = new SnakeController_1.SnakeController(this);
+        super.addComponent(this.snakeController);
         const sr = new SnakeRenderer_1.SnakeRenderer(this);
         super.addComponent(sr);
     }

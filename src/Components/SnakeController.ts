@@ -13,6 +13,8 @@ export class SnakeController implements IUpdate, IDraw {
     curDistTraveled: number = 0;
     curDistProgress: number = 0;
 
+    timeMod: number = 0;
+
     length: number = 5;
 
     constructor(parent: Entity) {
@@ -29,7 +31,8 @@ export class SnakeController implements IUpdate, IDraw {
         this.parent.pos = mousePos;
         
         //Calculate distance traveled
-        this.curDistTraveled += this.prevPos.add(this.parent.pos.mul(-1)).mag();
+        this.timeMod = this.prevPos.add(this.parent.pos.mul(-1)).mag();
+        this.curDistTraveled += this.timeMod;
         this.curDistProgress = this.curDistTraveled / stepPlaceDist;
 
         //Add new point when traveled enough distance
