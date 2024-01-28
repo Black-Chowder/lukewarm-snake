@@ -46,4 +46,12 @@ document.addEventListener('mousemove', e => {
     exports.mousePos.x = e.x;
     exports.mousePos.y = e.y;
 });
-main();
+//TEMPORARY: Only begin program on mouse click
+//TODO: Delete this and create proper start screen
+let gameBegun = false;
+document.addEventListener('click', e => {
+    if (!gameBegun) {
+        main();
+        gameBegun = true;
+    }
+});

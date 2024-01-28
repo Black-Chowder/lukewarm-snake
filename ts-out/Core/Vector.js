@@ -11,6 +11,20 @@ class Vector2 {
     //Quick vector shortcuts
     static zero = () => new Vector2(0, 0);
     static one = () => new Vector2(1, 1);
+    //Creates a new Vector2 instance with the same values as the given vector
+    static cpy = (a) => new Vector2(a.x, a.y);
+    cpy = () => Vector2.cpy(this);
+    //Gets the magnitude of a vector
+    static mag = (a) => Math.sqrt(a.x * a.x + a.y * a.y);
+    mag = () => Vector2.mag(this);
+    //Return a normalized vector
+    static norm = (a) => {
+        let length = Math.sqrt(a.x * a.x + a.y * a.y);
+        if (length !== 0)
+            return new Vector2(a.x / length, a.y / length);
+        return a.cpy();
+    };
+    norm = () => Vector2.norm(this);
     //Add functionality
     //Second parameter can be another vector or a constant
     static add = (a, b) => {
