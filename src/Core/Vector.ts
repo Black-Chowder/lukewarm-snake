@@ -48,4 +48,15 @@ export class Vector2 {
         return new Vector2(a.x * (b as number), a.y * (b as number));
     }
     mul = (other: Vector2 | number): Vector2 => Vector2.mul(this, other);
+
+    //Lerp between two vectors
+    static lerp = (start: Vector2, end: Vector2, t: number): Vector2 => {
+        //Ensure t is between 1 and 0
+        t = Math.max(0, Math.min(1, t));
+
+        return new Vector2(
+            (1 - t) * start.x + t * end.x, 
+            (1 - t) * start.y + t * end.y
+        );
+    }
 }

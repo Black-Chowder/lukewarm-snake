@@ -43,5 +43,11 @@ class Vector2 {
         return new Vector2(a.x * b, a.y * b);
     };
     mul = (other) => Vector2.mul(this, other);
+    //Lerp between two vectors
+    static lerp = (start, end, t) => {
+        //Ensure t is between 1 and 0
+        t = Math.max(0, Math.min(1, t));
+        return new Vector2((1 - t) * start.x + t * end.x, (1 - t) * start.y + t * end.y);
+    };
 }
 exports.Vector2 = Vector2;
