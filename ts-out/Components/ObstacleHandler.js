@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ObstacleHandler = void 0;
 const Vector_1 = require("../Core/Vector");
 const index_1 = require("../index");
+const SnakeController_1 = require("./SnakeController");
+const CollisionUtils_1 = require("../Core/CollisionUtils");
 class ObstacleHandler {
     parent;
     heading;
@@ -15,6 +17,10 @@ class ObstacleHandler {
     update() {
         //Move obstacle
         this.parent.deltaPos = this.heading.mul(index_1.player.snakeController.timeMod);
+        if ((0, CollisionUtils_1.CircleCollision)(this.parent.pos, this.radius, index_1.player.pos, SnakeController_1.SNAKE_BODY_RADIUS)) {
+            console.log("Hurt!");
+            this.parent.exists = false;
+        }
     }
     draw() {
         //Draw tail

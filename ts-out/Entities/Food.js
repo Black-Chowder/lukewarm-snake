@@ -21,11 +21,10 @@ class FoodHandler {
         this.parent = parent;
     }
     update() {
-        const playerBody = index_1.player.snakeController.prevPosPoints;
+        //If colliding with snake head, have snake eat it
         if ((0, CollisionUtils_1.CircleCollision)(this.parent.pos, FOOD_RADIUS, index_1.player.pos, SnakeController_1.SNAKE_BODY_RADIUS)) {
             index_1.player.snakeController.eat();
             this.parent.exists = false;
-            console.log("Eaten");
         }
     }
     draw() {

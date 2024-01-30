@@ -2,6 +2,8 @@ import { IUpdate, IDraw } from './Component';
 import { Vector2 } from '../Core/Vector';
 import { Entity } from '../Entities/Entity';
 import { player, ctx } from '../index';
+import { SNAKE_BODY_RADIUS } from './SnakeController';
+import { CircleCollision } from '../Core/CollisionUtils';
 
 export class ObstacleHandler implements IUpdate, IDraw {
     parent: Entity;
@@ -17,6 +19,11 @@ export class ObstacleHandler implements IUpdate, IDraw {
     update(): void {
         //Move obstacle
         this.parent.deltaPos = this.heading.mul(player.snakeController.timeMod);
+
+        if (CircleCollision(this.parent.pos, this.radius, player.pos, SNAKE_BODY_RADIUS)) {
+            console.log("Hurt!");
+            this.parent.exists = false;
+        }
     }
 
     draw(): void {
@@ -38,6 +45,6 @@ export class ObstacleHandler implements IUpdate, IDraw {
         ctx.fillStyle = 'black';
         ctx.arc(this.parent.pos.x, this.parent.pos.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.closePath();        
+        ctx.closePath();
     }
 }

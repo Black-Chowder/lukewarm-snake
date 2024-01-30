@@ -27,11 +27,10 @@ class FoodHandler implements IUpdate, IDraw {
     }
 
     update(): void {
-        const playerBody = player.snakeController.prevPosPoints;
+        //If colliding with snake head, have snake eat it
         if (CircleCollision(this.parent.pos, FOOD_RADIUS, player.pos, SNAKE_BODY_RADIUS)) {
             player.snakeController.eat();
             this.parent.exists = false;
-            console.log("Eaten");
         }
     }
 
