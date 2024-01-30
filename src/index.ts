@@ -2,6 +2,7 @@ import { Vector2 } from "./Core/Vector";
 import { Entity } from "./Entities/Entity";
 import { Snake } from './Entities/Snake';
 import { Obstacle } from './Entities/Obstacle';
+import { Food } from './Entities/Food';
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 export const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -18,6 +19,10 @@ function main() {
         new Vector2(canvas.width / 4, canvas.height / 4), 
         new Vector2(1, 0.5).norm().mul(0.2),
         25
+    ));
+
+    entities.push(new Food(
+        new Vector2(canvas.width * 3 / 4, canvas.height / 4)
     ));
 
     //Main loop

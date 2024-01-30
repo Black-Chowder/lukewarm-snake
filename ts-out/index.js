@@ -4,6 +4,7 @@ exports.mousePos = exports.keysDown = exports.player = exports.entities = export
 const Vector_1 = require("./Core/Vector");
 const Snake_1 = require("./Entities/Snake");
 const Obstacle_1 = require("./Entities/Obstacle");
+const Food_1 = require("./Entities/Food");
 exports.canvas = document.getElementById('canvas');
 exports.ctx = exports.canvas.getContext('2d');
 exports.entities = [];
@@ -12,6 +13,7 @@ function main() {
     exports.player = new Snake_1.Snake();
     exports.entities.push(exports.player);
     exports.entities.push(new Obstacle_1.Obstacle(new Vector_1.Vector2(exports.canvas.width / 4, exports.canvas.height / 4), new Vector_1.Vector2(1, 0.5).norm().mul(0.2), 25));
+    exports.entities.push(new Food_1.Food(new Vector_1.Vector2(exports.canvas.width * 3 / 4, exports.canvas.height / 4)));
     //Main loop
     function loop() {
         //Logic Loop

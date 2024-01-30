@@ -3,7 +3,9 @@ import { Entity } from '../Entities/Entity';
 import { mousePos, ctx } from '../index';
 import { Vector2 } from '../Core/Vector';
 
-const stepPlaceDist: number = 100;
+const stepPlaceDist: number = 10;
+export const SNAKE_BODY_RADIUS = 30;
+const GROWTH_SEGMENTS = 10;
 
 export class SnakeController implements IUpdate, IDraw {
     parent: Entity;
@@ -15,7 +17,7 @@ export class SnakeController implements IUpdate, IDraw {
 
     timeMod: number = 0;
 
-    length: number = 5;
+    length: number = 10;
 
     constructor(parent: Entity) {
         this.parent = parent;
@@ -47,31 +49,25 @@ export class SnakeController implements IUpdate, IDraw {
                 .add(this.prevPosPoints[this.prevPosPoints.length - 1]);
 
             this.prevPosPoints.push(deltaPos);
-        }
 
-        //Maintain length of snake
-        if (this.prevPosPoints.length > this.length) {
-            this.prevPosPoints.shift();
+            //Maintain length of snake
+            while (this.prevPosPoints.length > this.length) {
+                this.prevPosPoints.shift();
+            }
         }
     }
 
-    draw(): void {
-        //Draw previous poisition points
-        ctx.fillStyle = 'red';
-        for (let i = 0; i < this.prevPosPoints.length; i++) {
-            ctx.beginPath();
-            ctx.fillStyle = 'red';
-            ctx.arc(this.prevPosPoints[i].x, this.prevPosPoints[i].y, 5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.closePath();
-        }
+    eat(): void {
+        this.length += GROWTH_SEGMENTS;
+    }
 
+    draw(): void {
         //Draw snake body
         for (let i = 0; i < this.prevPosPoints.length - 1; i++) {
             ctx.beginPath();
             ctx.fillStyle = 'green';
             let ballPos: Vector2 = Vector2.lerp(this.prevPosPoints[i], this.prevPosPoints[i + 1], this.curDistProgress);
-            ctx.arc(ballPos.x, ballPos.y, 30, 0, Math.PI * 2);
+            ctx.arc(ballPos.x, ballPos.y, SNAKE_BODY_RADIUS, 0, Math.PI * 2);
             ctx.fill();
             ctx.closePath();
         }
