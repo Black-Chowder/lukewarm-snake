@@ -52,6 +52,14 @@
             "MonoGame.Framework.WindowsDX": {
               "target": "Package",
               "version": "[3.8.1.303, )"
+            },
+            "OptimizedPriorityQueue": {
+              "target": "Package",
+              "version": "[5.1.0, )"
+            },
+            "SimplexNoise": {
+              "target": "Package",
+              "version": "[2.0.0, )"
             }
           },
           "imports": [

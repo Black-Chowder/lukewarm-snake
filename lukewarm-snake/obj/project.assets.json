@@ -411,6 +411,19 @@
           "System.Xml.XDocument": "4.0.11"
         }
       },
+      "OptimizedPriorityQueue/5.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard1.0/PriorityQueue.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard1.0/PriorityQueue.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "runtime.native.System/4.0.0": {
         "type": "package",
         "dependencies": {
@@ -631,6 +644,15 @@
           "lib/netcoreapp1.0/SharpDX.XInput.dll": {
             "related": ".xml"
           }
+        }
+      },
+      "SimplexNoise/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netcoreapp2.2/SimplexNoise.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.2/SimplexNoise.dll": {}
         }
       },
       "System.AppContext/4.1.0": {
@@ -2922,6 +2944,35 @@
         "netstandard.library.nuspec"
       ]
     },
+    "OptimizedPriorityQueue/5.1.0": {
+      "sha512": "0AnX6kAs0GiLrSqrHKe5mpQhJSHTmXeqLNucV2CxGATP/I9UzLMc1N4MtS/z8qB6mcgX61OjHdY3YbOmETGs+A==",
+      "type": "package",
+      "path": "optimizedpriorityqueue/5.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net20/PriorityQueue.dll",
+        "lib/net20/PriorityQueue.pdb",
+        "lib/net20/PriorityQueue.xml",
+        "lib/net35-unity full v3.5/PriorityQueue.dll",
+        "lib/net35-unity full v3.5/PriorityQueue.pdb",
+        "lib/net35-unity full v3.5/PriorityQueue.xml",
+        "lib/net35-unity subset v3.5/PriorityQueue.dll",
+        "lib/net35-unity subset v3.5/PriorityQueue.pdb",
+        "lib/net35-unity subset v3.5/PriorityQueue.xml",
+        "lib/net45/PriorityQueue.dll",
+        "lib/net45/PriorityQueue.pdb",
+        "lib/net45/PriorityQueue.xml",
+        "lib/netstandard1.0/PriorityQueue.dll",
+        "lib/netstandard1.0/PriorityQueue.pdb",
+        "lib/netstandard1.0/PriorityQueue.xml",
+        "lib/portable-net40+sl5+win8+wpa81+wp8/PriorityQueue.dll",
+        "lib/portable-net40+sl5+win8+wpa81+wp8/PriorityQueue.pdb",
+        "lib/portable-net40+sl5+win8+wpa81+wp8/PriorityQueue.xml",
+        "optimizedpriorityqueue.5.1.0.nupkg.sha512",
+        "optimizedpriorityqueue.nuspec"
+      ]
+    },
     "runtime.native.System/4.0.0": {
       "sha512": "QfS/nQI7k/BLgmLrw7qm7YBoULEvgWnPI+cYsbfCVFTW8Aj+i8JhccxcFMu1RWms0YZzF+UHguNBK4Qn89e2Sg==",
       "type": "package",
@@ -3183,6 +3234,25 @@
         "lib/uap10.0/SharpDX.XInput.xml",
         "sharpdx.xinput.4.0.1.nupkg.sha512",
         "sharpdx.xinput.nuspec"
+      ]
+    },
+    "SimplexNoise/2.0.0": {
+      "sha512": "v9q0D/5PSUx3T8ZIixjDEGlLYIDhkTbeQOgz/SddoKw16aoz4LFlg7FTu9DD0304p2m9VsHfTmygCgZ2FzIDVw==",
+      "type": "package",
+      "path": "simplexnoise/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.md",
+        "lib/net40/SimplexNoise.dll",
+        "lib/net45/SimplexNoise.dll",
+        "lib/net472/SimplexNoise.dll",
+        "lib/netcoreapp2.2/SimplexNoise.dll",
+        "lib/netstandard1.0/SimplexNoise.dll",
+        "lib/netstandard2.0/SimplexNoise.dll",
+        "simplexnoise.2.0.0.nupkg.sha512",
+        "simplexnoise.nuspec"
       ]
     },
     "System.AppContext/4.1.0": {
@@ -7520,7 +7590,9 @@
   "projectFileDependencyGroups": {
     "net6.0-windows7.0": [
       "MonoGame.Content.Builder.Task >= 3.8.1.303",
-      "MonoGame.Framework.WindowsDX >= 3.8.1.303"
+      "MonoGame.Framework.WindowsDX >= 3.8.1.303",
+      "OptimizedPriorityQueue >= 5.1.0",
+      "SimplexNoise >= 2.0.0"
     ]
   },
   "packageFolders": {
@@ -7575,6 +7647,14 @@
           "MonoGame.Framework.WindowsDX": {
             "target": "Package",
             "version": "[3.8.1.303, )"
+          },
+          "OptimizedPriorityQueue": {
+            "target": "Package",
+            "version": "[5.1.0, )"
+          },
+          "SimplexNoise": {
+            "target": "Package",
+            "version": "[2.0.0, )"
           }
         },
         "imports": [
