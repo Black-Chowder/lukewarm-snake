@@ -3,6 +3,7 @@ import { Entity } from "./Entities/Entity";
 import { Snake } from './Entities/Snake';
 import { Obstacle } from './Entities/Obstacle';
 import { Food } from './Entities/Food';
+import { GameManager } from './Entities/GameManager';
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 export const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -10,6 +11,8 @@ export const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 export const entities: Entity[] = [];
 
 export let player: Snake;
+
+export let gameManager: GameManager;
 
 function main() {
     //Init stuff

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SnakeController = exports.SNAKE_BODY_RADIUS = void 0;
 const index_1 = require("../index");
 const Vector_1 = require("../Core/Vector");
-const stepPlaceDist = 10;
+const stepPlaceDist = 100;
 exports.SNAKE_BODY_RADIUS = 30;
 const GROWTH_SEGMENTS = 10;
 class SnakeController {

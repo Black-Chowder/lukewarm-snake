@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mousePos = exports.keysDown = exports.player = exports.entities = exports.ctx = exports.canvas = void 0;
+exports.mousePos = exports.keysDown = exports.gameManager = exports.player = exports.entities = exports.ctx = exports.canvas = void 0;
 const Vector_1 = require("./Core/Vector");
 const Snake_1 = require("./Entities/Snake");
 const Obstacle_1 = require("./Entities/Obstacle");

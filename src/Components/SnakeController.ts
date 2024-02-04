@@ -3,7 +3,7 @@ import { Entity } from '../Entities/Entity';
 import { mousePos, ctx } from '../index';
 import { Vector2 } from '../Core/Vector';
 
-const stepPlaceDist: number = 10;
+const stepPlaceDist: number = 100;
 export const SNAKE_BODY_RADIUS = 30;
 const GROWTH_SEGMENTS = 10;
 
