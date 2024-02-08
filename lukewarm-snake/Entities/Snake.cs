@@ -10,11 +10,19 @@ namespace lukewarm_snake
 {
     public class Snake : Entity
     {
+        SnakeController snakeController;
         TailHandler tailHandler;
+        TailRenderer tailRenderer;
         public Snake() : base(Vector2.Zero)
         {
+            snakeController = new(this);
+            AddTrait(snakeController);
+
             tailHandler = new(this);
             AddTrait(tailHandler);
+
+            tailRenderer = new(this, tailHandler);
+            AddTrait(tailRenderer);
         }
     }
 }

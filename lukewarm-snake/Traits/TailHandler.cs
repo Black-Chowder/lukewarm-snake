@@ -10,15 +10,15 @@ using Microsoft.Xna.Framework.Input;
 
 namespace lukewarm_snake
 {
-    public class TailHandler : TUpdates, TDraws
+    public class TailHandler : TUpdates
     {
         private readonly Entity parent;
         public Entity Parent { get => parent; }
 
         //Tail Length Variables
-        public const float DefaultAnchorDist = 50f;
+        public const float DefaultAnchorDist = 25f;
         public readonly float AnchorDist; //Distance traveled before placing an anchor
-        public int MaxAnchors = 5; //Number of anchors in tail
+        public int MaxAnchors = 10; //Number of anchors in tail
 
         //Public travel data
         public float FormingAnchorProgress { get; private set; } //Value from 0->1 to when next anchor will be placed
@@ -32,11 +32,6 @@ namespace lukewarm_snake
         private Vector2 prevPos;
         private float formingAnchorDist = 0; //Distance traveled since last anchor placement
 
-
-        //Draw variables
-        private Texture2D bodyTexture;
-        private float bodyRadius = 25;
-
         //TUpdates priority setting
         public int Priority { get => Trait.defaultPriority; }
 
@@ -47,18 +42,10 @@ namespace lukewarm_snake
             Anchors.AddFirst(prevPos);
 
             AnchorDist = anchorDist;
-
-            bodyTexture ??= DrawUtils.createCircleTexture(Globals.spriteBatch.GraphicsDevice, (int)(bodyRadius * 2f));
         }
 
         public void Update()
         {
-            prevPos = parent.Pos;
-
-            //TODO: Have this not hard coded to follow mouse position
-            MouseState mouse = Mouse.GetState();
-            parent.Pos = mouse.Position.ToVector2();
-
             //Skip anchor processing if player didn't move
             if (parent.Pos == prevPos)
                 return;
@@ -82,28 +69,18 @@ namespace lukewarm_snake
             //Remove excess anchors
             while (Anchors.Count > MaxAnchors)
                 Anchors.RemoveLast();
+
+            prevPos = parent.Pos;
         }
 
-        public void Draw()
+        public const int AnchorSize = 10;
+        private const int halfAnchorSize = AnchorSize / 2;
+        public void DrawAnchors()
         {
-            //Draw body segments
-            for (LinkedListNode<Vector2> cur = Anchors.First, next = cur.Next; next != null; cur = cur.Next, next = cur.Next)
-            {
-                Globals.spriteBatch.Draw(bodyTexture,
-                    Vector2.Lerp(next.Value, cur.Value, FormingAnchorProgress) - Vector2.One * bodyRadius,
-                    Color.White);
-            }
-
-            //Draw head
-            Globals.spriteBatch.Draw(bodyTexture,
-                parent.Pos - Vector2.One * bodyRadius,
-                Color.White);
-
-            //Draw anchors
             for (var i = Anchors.First; i != null; i = i.Next)
             {
                 Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice),
-                    new Rectangle((int)i.Value.X, (int)i.Value.Y, 10, 10),
+                    new Rectangle((int)i.Value.X - halfAnchorSize, (int)i.Value.Y - halfAnchorSize, AnchorSize, AnchorSize),
                     Color.Red);
             }
         }
