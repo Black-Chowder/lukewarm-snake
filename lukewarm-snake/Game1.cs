@@ -95,6 +95,8 @@ namespace lukewarm_snake
                 case Globals.GameStates.StartGame:
                     Globals.MainEntityBatch?.Dispose();
                     Globals.MainEntityBatch = new();
+                    Globals.MainEntityBatch.Add(new Snake());
+                    Globals.GameState = Globals.GameStates.GameLoop;
                     goto case Globals.GameStates.GameLoop;
 
                 case Globals.GameStates.GameLoop:
