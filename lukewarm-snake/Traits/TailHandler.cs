@@ -64,27 +64,18 @@ namespace lukewarm_snake
             FormingAnchorProgress = formingAnchorDist / AnchorDist;
 
             //Place new anchors
-            bool nextAnchorHeadingCalculated = false;
-            Vector2 nextAnchorHeading = Vector2.Zero;
             while (formingAnchorDist > AnchorDist)
             {
                 formingAnchorDist -= AnchorDist;
 
-                //Calculate anchor heading (only once)
-                if (!nextAnchorHeadingCalculated)
-                {
-                    nextAnchorHeadingCalculated = true;
-                    nextAnchorHeading = TravelDiff;
-                    nextAnchorHeading.Normalize();
-                    nextAnchorHeading *= AnchorDist;
-                }
-
-                nextAnchorHeading = parent.Pos - Anchors.First();
+                //Calculate anchor heading
+                Vector2 nextAnchorHeading = parent.Pos - Anchors.First();
                 nextAnchorHeading.Normalize();
                 nextAnchorHeading *= AnchorDist;
+                nextAnchorHeading += Anchors.First();
 
                 //Place new anchor
-                Vector2 nextAnchor = nextAnchorHeading + Anchors.First();
+                Vector2 nextAnchor = nextAnchorHeading;
                 Anchors.AddFirst(nextAnchor);
             }
 
