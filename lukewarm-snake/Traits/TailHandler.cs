@@ -63,13 +63,9 @@ namespace lukewarm_snake
             if (parent.Pos == prevPos)
                 return;
 
-            //Calculate anchor progress data
-            formingAnchorDist += TravelDiffDist;
-            FormingAnchorProgress = formingAnchorDist / AnchorDist;
-            MathHelper.Clamp(FormingAnchorProgress, 0.0f, 1.0f);
-
             //Place new anchors
-            while (formingAnchorDist >= AnchorDist)
+            formingAnchorDist += TravelDiffDist;
+            while (formingAnchorDist > AnchorDist)
             {
                 formingAnchorDist -= AnchorDist;
 
@@ -81,6 +77,7 @@ namespace lukewarm_snake
 
                 Anchors.AddFirst(nextAnchor);
             }
+            FormingAnchorProgress = formingAnchorDist / AnchorDist;
 
             //Remove excess anchors
             while (Anchors.Count > MaxAnchors)
@@ -96,6 +93,11 @@ namespace lukewarm_snake
                     Vector2.Lerp(next.Value, cur.Value, FormingAnchorProgress) - Vector2.One * bodyRadius,
                     Color.White);
             }
+
+            //Draw head
+            Globals.spriteBatch.Draw(bodyTexture,
+                parent.Pos - Vector2.One * bodyRadius,
+                Color.White);
 
             //Draw anchors
             for (var i = Anchors.First; i != null; i = i.Next)
