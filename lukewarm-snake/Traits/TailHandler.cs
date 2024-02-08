@@ -59,12 +59,17 @@ namespace lukewarm_snake
             MouseState mouse = Mouse.GetState();
             parent.Pos = mouse.Position.ToVector2();
 
+            //Skip anchor processing if player didn't move
+            if (parent.Pos == prevPos)
+                return;
+
             //Calculate anchor progress data
             formingAnchorDist += TravelDiffDist;
             FormingAnchorProgress = formingAnchorDist / AnchorDist;
+            MathHelper.Clamp(FormingAnchorProgress, 0.0f, 1.0f);
 
             //Place new anchors
-            while (formingAnchorDist > AnchorDist)
+            while (formingAnchorDist >= AnchorDist)
             {
                 formingAnchorDist -= AnchorDist;
 
@@ -84,18 +89,15 @@ namespace lukewarm_snake
 
         public void Draw()
         {
-            LinkedListNode<Vector2> cur = Anchors.First;
-            LinkedListNode<Vector2> next = cur.Next;
-            while (next != null)
+            //Draw body segments
+            for (LinkedListNode<Vector2> cur = Anchors.First, next = cur.Next; next != null; cur = cur.Next, next = cur.Next)
             {
                 Globals.spriteBatch.Draw(bodyTexture,
-                    Vector2.Lerp(cur.Value, next.Value, 1-FormingAnchorProgress) - Vector2.One * bodyRadius,
+                    Vector2.Lerp(next.Value, cur.Value, FormingAnchorProgress) - Vector2.One * bodyRadius,
                     Color.White);
-
-                cur = next;
-                next = next.Next;
             }
 
+            //Draw anchors
             for (var i = Anchors.First; i != null; i = i.Next)
             {
                 Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice),
