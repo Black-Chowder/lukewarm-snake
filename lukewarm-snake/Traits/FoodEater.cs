@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 
 namespace lukewarm_snake
 {
-    public class SnakeCollider : TUpdates
+    public class FoodEater : TUpdates
     {
         private Entity parent;
 
@@ -17,7 +17,7 @@ namespace lukewarm_snake
 
         public int Priority => Trait.defaultPriority;
 
-        public SnakeCollider(Entity parent)
+        public FoodEater(Entity parent)
         {
             this.parent = parent;
         }

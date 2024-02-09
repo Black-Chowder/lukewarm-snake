@@ -13,7 +13,7 @@ namespace lukewarm_snake
         SnakeController snakeController;
         TailHandler tailHandler;
         TailRenderer tailRenderer;
-        SnakeCollider snakeCollider;
+        FoodEater snakeCollider;
         public Snake() : base(Vector2.Zero)
         {
 
