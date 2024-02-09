@@ -54,9 +54,9 @@ namespace lukewarm_snake
         public void Update()
         {
             //Skip anchor processing if player didn't move
+            Globals.TimeMod = (prevPos - parent.Pos).Length();
             if (parent.Pos == prevPos)
                 return;
-            Globals.TimeMod = (prevPos - parent.Pos).Length();
 
             //Place new anchors
             formingAnchorDist += TravelDiffDist;

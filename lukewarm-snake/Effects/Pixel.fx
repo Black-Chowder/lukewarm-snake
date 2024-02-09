@@ -7,6 +7,8 @@
 	#define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
+float iTime;
+
 Texture2D SpriteTexture;
 
 sampler2D SpriteTextureSampler = sampler_state
@@ -39,7 +41,7 @@ void DrawVignette(inout float3 color, float2 uv)
 
 void DrawScanline(inout float3 color, float2 uv)
 {
-	float scanline = clamp(0.95 + 0.05 * cos(3.14 * (uv.y + 0.008 * 1.0/*iTime*/) * 240.0 * 1.0), 0.0, 1.0);
+	float scanline = clamp(0.95 + 0.05 * cos(3.14 * (uv.y + 0.008 * iTime) * 240.0 * 1.0), 0.0, 1.0);
 	float grille = 0.85 + 0.15 * clamp(1.5 * cos(3.14 * uv.x * 640.0 * 1.0), 0.0, 1.0);
 	color *= scanline * grille * 1.2;
 }
@@ -48,7 +50,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 {
 	float2 uv = CRTCurveUV(input.TextureCoordinates.xy);
 	float4 pixel = tex2D(SpriteTextureSampler, uv) * input.Color;
-
+	
 	DrawScanline(pixel.rgb, uv);
 	DrawVignette(pixel.rgb, input.TextureCoordinates.xy);
 

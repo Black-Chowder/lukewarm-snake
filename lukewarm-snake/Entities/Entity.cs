@@ -23,7 +23,8 @@ namespace BlackMagic
         public delegate void DisposeDelegate();
         public event DisposeDelegate disposeEvent;
 
-        private Effect effect;
+        private Effect CRTShader;
+        private float CRTTimer = 0f;
         public RenderTarget2D rt { get; private set; }
         public const float PixelateMultiplier = 1f / 8f;
 
@@ -33,7 +34,7 @@ namespace BlackMagic
             traitBuckets = new Dictionary<Type, List<Entity>>();
             entityBuckets = new Dictionary<Type, List<Entity>>();
 
-            effect ??= Globals.content.Load<Effect>(@"Effects/Pixel");
+            CRTShader ??= Globals.content.Load<Effect>(@"Effects/Pixel");
             rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(1600 * PixelateMultiplier), (int)(900 * PixelateMultiplier));
         }
 
@@ -125,6 +126,10 @@ namespace BlackMagic
 
         public void Draw()
         {
+            CRTTimer += 0.017f;
+            CRTShader.Parameters["iTime"].SetValue(CRTTimer);
+            CRTShader.CurrentTechnique.Passes[0].Apply();
+
             Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);
             Globals.spriteBatch.GraphicsDevice.Clear(new Color(118, 59, 54));
             Globals.spriteBatch.Begin(SpriteSortMode.BackToFront, samplerState: SamplerState.PointClamp);
@@ -133,7 +138,7 @@ namespace BlackMagic
             Globals.spriteBatch.End();
 
             Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
-            Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: effect);
+            Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: CRTShader);
             Globals.spriteBatch.Draw(rt, new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height), Color.White);
             Globals.spriteBatch.End();
         }
