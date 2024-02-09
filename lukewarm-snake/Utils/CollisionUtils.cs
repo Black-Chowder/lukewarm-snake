@@ -54,5 +54,12 @@ namespace BlackMagic
             }
             return result;
         }
+
+        public static bool IsCirclesColliding(Vector2 circPos1, float radius1, Vector2 circPos2, float radius2)
+        {
+            float dist = Vector2.Distance(circPos1, circPos2);
+            float sumOfRadii = radius1 + radius2;
+            return dist <= sumOfRadii;
+        }
     }
 }

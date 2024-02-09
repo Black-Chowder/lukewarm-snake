@@ -13,6 +13,7 @@ namespace lukewarm_snake
         SnakeController snakeController;
         TailHandler tailHandler;
         TailRenderer tailRenderer;
+        SnakeCollider snakeCollider;
         public Snake() : base(Vector2.Zero)
         {
             snakeController = new(this);
@@ -23,6 +24,9 @@ namespace lukewarm_snake
 
             tailRenderer = new(this, tailHandler);
             AddTrait(tailRenderer);
+
+            snakeCollider = new(this);
+            AddTrait(snakeCollider);
         }
     }
 }

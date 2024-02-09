@@ -15,7 +15,7 @@ namespace lukewarm_snake
         private Entity parent;
 
         private RenderTarget2D bodyTexture;
-        private float bodyRadius = 50f;
+        public const float BodyRadius = 50f;
         private RenderTarget2D rtBody;
         private RenderTarget2D rt;
 
@@ -34,7 +34,7 @@ namespace lukewarm_snake
             circleShader ??= Globals.content.Load<Effect>(@"Effects/CircleMask");
             if (bodyTexture is null)
             {
-                bodyTexture = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(bodyRadius * 2f), (int)(bodyRadius * 2f));
+                bodyTexture = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(BodyRadius * 2f), (int)(BodyRadius * 2f));
                 Globals.spriteBatch.GraphicsDevice.SetRenderTarget(bodyTexture);
                 Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
                 Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: circleShader);
@@ -77,7 +77,7 @@ namespace lukewarm_snake
             //Draw body segments
             for (LinkedListNode<Vector2> cur = tail.Anchors.First, next = cur.Next; next != null; cur = cur.Next, next = cur.Next)
             {
-                drawPos = (Vector2.Lerp(next.Value, cur.Value, tail.FormingAnchorProgress) - Vector2.One * bodyRadius) * EntityBatch.PixelateMultiplier;
+                drawPos = (Vector2.Lerp(next.Value, cur.Value, tail.FormingAnchorProgress) - Vector2.One * BodyRadius) * EntityBatch.PixelateMultiplier;
                 Globals.spriteBatch.Draw(bodyTexture,
                     drawPos,
                     new Rectangle(0, 0, bodyTexture.Width, bodyTexture.Height),
@@ -90,7 +90,7 @@ namespace lukewarm_snake
             }
 
             //Draw head
-            drawPos = (parent.Pos - Vector2.One * bodyRadius) * EntityBatch.PixelateMultiplier;
+            drawPos = (parent.Pos - Vector2.One * BodyRadius) * EntityBatch.PixelateMultiplier;
             Globals.spriteBatch.Draw(bodyTexture,
                 drawPos,
                 new Rectangle(0, 0, bodyTexture.Width, bodyTexture.Height),
