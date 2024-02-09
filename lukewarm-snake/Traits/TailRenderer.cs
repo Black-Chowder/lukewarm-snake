@@ -57,15 +57,16 @@ namespace lukewarm_snake
 
             //Load border effect
             border ??= Globals.content.Load<Effect>(@"Effects/Border");
-            border.Parameters["OutlineColor"].SetValue(new Vector4(0, 0, 0, 1));
-            border.Parameters["texelSize"].SetValue(new Vector2(1f / (rt.Width - 1f), 1f / (rt.Height - 1f)));
-            border.CurrentTechnique.Passes[0].Apply();
         }
 
         public void Update() => Prerender();
 
         public void Prerender()
         {
+            border.Parameters["OutlineColor"].SetValue(new Vector4(0, 0, 0, 1));
+            border.Parameters["texelSize"].SetValue(new Vector2(1f / (rt.Width - 1f), 1f / (rt.Height - 1f)));
+            border.CurrentTechnique.Passes[0].Apply();
+
             //Draw plain body
             Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rtBody);
             Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
