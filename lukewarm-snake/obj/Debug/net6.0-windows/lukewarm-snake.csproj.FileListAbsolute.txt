@@ -80,3 +80,6 @@ C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\obj\Debug\net6.0-w
 C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\obj\Debug\net6.0-windows\lukewarm-snake.genruntimeconfig.cache
 C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\obj\Debug\net6.0-windows\ref\lukewarm-snake.dll
 C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\Pixel.xnb
+D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\Pixel.xnb
+D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\CircleMask.xnb
+D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\Border.xnb
