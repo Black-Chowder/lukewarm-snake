@@ -10,9 +10,13 @@ namespace lukewarm_snake
 {
     public class Obstacle : Entity
     {
+        ObstacleMovement movement;
         ObstacleRenderer renderer;
-        public Obstacle(Vector2 pos, float angle) : base(pos)
+        public Obstacle(Vector2 pos, Vector2 heading) : base(pos)
         {
+            movement = new(this, heading);
+            AddTrait(movement);
+
             renderer = new(this);
             AddTrait(renderer);
         }

@@ -37,5 +37,7 @@ namespace BlackMagic
         public static EntityBatch MainEntityBatch;
 
         public static Random rnd = new Random();
+
+        public static float TimeMod = 1f;
     }
 }

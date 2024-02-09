@@ -15,9 +15,11 @@ namespace lukewarm_snake
 
         public int Priority => Trait.defaultPriority;
 
-        public SnakeController(Entity parent)
+        public SnakeController(Entity parent, TailHandler tailHandler)
         {
             this.parent = parent;
+
+            Mouse.SetPosition(0, 0);
         }
 
         public void Update()

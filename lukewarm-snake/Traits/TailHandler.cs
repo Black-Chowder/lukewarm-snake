@@ -42,6 +42,13 @@ namespace lukewarm_snake
             Anchors.AddFirst(prevPos);
 
             AnchorDist = anchorDist;
+            Globals.TimeMod = 0f;
+        }
+
+        public void Teleport(Vector2 pos)
+        {
+            parent.Pos = pos;
+            prevPos = pos;
         }
 
         public void Update()
@@ -49,6 +56,7 @@ namespace lukewarm_snake
             //Skip anchor processing if player didn't move
             if (parent.Pos == prevPos)
                 return;
+            Globals.TimeMod = (prevPos - parent.Pos).Length();
 
             //Place new anchors
             formingAnchorDist += TravelDiffDist;
