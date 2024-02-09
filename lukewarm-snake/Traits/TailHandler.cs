@@ -18,7 +18,7 @@ namespace lukewarm_snake
         //Tail Length Variables
         public const float DefaultAnchorDist = 50f;
         public readonly float AnchorDist; //Distance traveled before placing an anchor
-        public int MaxAnchors = 10; //Number of anchors in tail
+        public int MaxAnchors = 1; //Number of anchors in tail
 
         //Public travel data
         public float FormingAnchorProgress { get; private set; } //Value from 0->1 to when next anchor will be placed

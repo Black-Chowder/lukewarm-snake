@@ -75,7 +75,7 @@ namespace lukewarm_snake
             Vector2 drawPos;
 
             //Draw body segments
-            for (LinkedListNode<Vector2> cur = tail.Anchors.First, next = cur.Next; next != null; cur = cur.Next, next = cur.Next)
+            if (tail.Anchors.Count > 0) for (LinkedListNode<Vector2> cur = tail.Anchors.First, next = cur.Next; next != null; cur = cur.Next, next = cur.Next)
             {
                 drawPos = (Vector2.Lerp(next.Value, cur.Value, tail.FormingAnchorProgress) - Vector2.One * BodyRadius) * EntityBatch.PixelateMultiplier;
                 Globals.spriteBatch.Draw(bodyTexture,

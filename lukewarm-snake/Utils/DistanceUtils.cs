@@ -160,5 +160,12 @@ namespace BlackMagic
 
             return new Rectangle((int)minX, (int)minY, (int)(maxX - minX), (int)(maxY - minY));
         }
+
+        public static float GetCircleRadiusForRectangle(Rectangle rectangle)
+        {
+            float widthHalf = rectangle.Width / 2f;
+            float heightHalf = rectangle.Height / 2f;
+            return (float)Math.Sqrt(widthHalf * widthHalf + heightHalf * heightHalf);
+        }
     }
 }
