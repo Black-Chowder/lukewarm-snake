@@ -13,6 +13,8 @@ namespace lukewarm_snake
         private Entity parent;
         public Vector2 Heading;
 
+        public const float MinTimeMod = 0.5f;
+
         public int Priority => Trait.defaultPriority;
 
         public ObstacleMovement(Entity parent, Vector2 heading)
@@ -23,7 +25,7 @@ namespace lukewarm_snake
 
         public void Update()
         {
-            parent.DeltaPos = Heading * Globals.TimeMod;
+            parent.DeltaPos = Heading * (Globals.TimeMod < MinTimeMod ? MinTimeMod : Globals.TimeMod);
         }
     }
 }
