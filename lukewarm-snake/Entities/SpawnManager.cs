@@ -18,6 +18,8 @@ namespace lukewarm_snake
 
         private static float obstacleSpawnDist = 0f;
 
+        Food food = null;
+
         public SpawnManager() : base(Vector2.Zero)
         {
             if (obstacleSpawnDist == 0f) 
@@ -44,6 +46,20 @@ namespace lukewarm_snake
                 Obstacle obstacle = new(spawnPos, heading);
                 batch.Add(obstacle);
             }
+
+            //Spawn food
+            if (food is null || food.exists == false)
+            {
+                food = new Food(generateRandomPosInRect(new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height)));
+                batch.Add(food);
+            }
+        }
+
+        private Vector2 generateRandomPosInRect(Rectangle rectangle)
+        {
+            int x = Globals.rnd.Next(rectangle.Left, rectangle.Right);
+            int y = Globals.rnd.Next(rectangle.Top, rectangle.Bottom);
+            return new Vector2(x, y);
         }
     }
 }
