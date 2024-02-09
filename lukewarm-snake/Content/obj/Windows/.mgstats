@@ -1,2 +1,3 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/DefaultFont.spritefont","D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/bin/Windows/DefaultFont.xnb","FontDescriptionProcessor","SpriteFontContent",2068,21535,0.2960725
+"C:/Users/iabla/Documents/GitHub/lukewarm-snake/lukewarm-snake/Content/../Effects/Pixel.fx","C:/Users/iabla/Documents/GitHub/lukewarm-snake/lukewarm-snake/Content/bin/Windows/Effects/Pixel.xnb","EffectProcessor","CompiledEffectContent",1529,2378,0.621096
+"C:/Users/iabla/Documents/GitHub/lukewarm-snake/lukewarm-snake/Content/DefaultFont.spritefont","C:/Users/iabla/Documents/GitHub/lukewarm-snake/lukewarm-snake/Content/bin/Windows/DefaultFont.xnb","FontDescriptionProcessor","SpriteFontContent",2068,21535,0.312749

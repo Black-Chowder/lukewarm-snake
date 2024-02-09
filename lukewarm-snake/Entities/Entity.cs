@@ -23,11 +23,18 @@ namespace BlackMagic
         public delegate void DisposeDelegate();
         public event DisposeDelegate disposeEvent;
 
+        private Effect effect;
+        public RenderTarget2D rt { get; private set; }
+        public const float PixelateMultiplier = 1f / 8f;
+
         public EntityBatch()
         {
             entities = new List<Entity>();
             traitBuckets = new Dictionary<Type, List<Entity>>();
             entityBuckets = new Dictionary<Type, List<Entity>>();
+
+            effect ??= Globals.content.Load<Effect>(@"Effects/Pixel");
+            rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(1600 * PixelateMultiplier), (int)(900 * PixelateMultiplier));
         }
 
         public void InitTraitBucket<T>()
@@ -118,9 +125,16 @@ namespace BlackMagic
 
         public void Draw()
         {
+            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);
+            Globals.spriteBatch.GraphicsDevice.Clear(new Color(118, 59, 54));
             Globals.spriteBatch.Begin(SpriteSortMode.BackToFront, samplerState: SamplerState.PointClamp);
             for (int i = 0; i < entities.Count; i++)
                 entities[i].Draw();
+            Globals.spriteBatch.End();
+
+            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
+            Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: effect);
+            Globals.spriteBatch.Draw(rt, new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height), Color.White);
             Globals.spriteBatch.End();
         }
 

@@ -16,7 +16,7 @@ namespace lukewarm_snake
         public Entity Parent { get => parent; }
 
         //Tail Length Variables
-        public const float DefaultAnchorDist = 25f;
+        public const float DefaultAnchorDist = 50f;
         public readonly float AnchorDist; //Distance traveled before placing an anchor
         public int MaxAnchors = 10; //Number of anchors in tail
 

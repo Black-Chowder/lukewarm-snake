@@ -15,7 +15,7 @@ namespace lukewarm_snake
         private Entity parent;
 
         private Texture2D bodyTexture;
-        private float bodyRadius = 25;
+        private float bodyRadius = 50;
 
         public TailRenderer(Entity parent, TailHandler tail)
         {
@@ -31,14 +31,26 @@ namespace lukewarm_snake
             for (LinkedListNode<Vector2> cur = tail.Anchors.First, next = cur.Next; next != null; cur = cur.Next, next = cur.Next)
             {
                 Globals.spriteBatch.Draw(bodyTexture,
-                    Vector2.Lerp(next.Value, cur.Value, tail.FormingAnchorProgress) - Vector2.One * bodyRadius,
-                    Color.White);
+                    (Vector2.Lerp(next.Value, cur.Value, tail.FormingAnchorProgress) - Vector2.One * bodyRadius) * EntityBatch.PixelateMultiplier,
+                    new Rectangle(0, 0, bodyTexture.Width, bodyTexture.Height),
+                    Color.Green,
+                    0f,
+                    Vector2.Zero,
+                    EntityBatch.PixelateMultiplier,
+                    SpriteEffects.None,
+                    0f);
             }
 
             //Draw head
             Globals.spriteBatch.Draw(bodyTexture,
-                parent.Pos - Vector2.One * bodyRadius,
-                Color.White);
+                (parent.Pos - Vector2.One * bodyRadius) * EntityBatch.PixelateMultiplier,
+                new Rectangle(0, 0, bodyTexture.Width, bodyTexture.Height),
+                Color.White,
+                0f,
+                Vector2.Zero,
+                EntityBatch.PixelateMultiplier,
+                SpriteEffects.None,
+                0f);
         }
     }
 }
