@@ -1,12 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using BlackMagic;
+using System;
+using System.Linq;
 
 namespace lukewarm_snake
 {
@@ -98,6 +98,7 @@ namespace lukewarm_snake
                     Globals.MainEntityBatch.InitEntityBucket<Food>();
                     Globals.MainEntityBatch.Add(new Snake());
                     Globals.MainEntityBatch.Add(new Food(new Vector2(100, 100)));
+                    Globals.MainEntityBatch.Add(new Obstacle(new Vector2(500, 200), 0f));
                     Globals.GameState = Globals.GameStates.GameLoop;
                     goto case Globals.GameStates.GameLoop;
 
