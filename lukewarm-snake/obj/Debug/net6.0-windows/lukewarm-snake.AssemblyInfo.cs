@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("lukewarm-snake")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5e6cbdd000c0324172dd6a8f4a94cfa35b750747")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7c07e383944711176fb61be5bb87c28f12ee8553")]
 [assembly: System.Reflection.AssemblyProductAttribute("lukewarm-snake")]
 [assembly: System.Reflection.AssemblyTitleAttribute("lukewarm-snake")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -96,6 +96,7 @@ namespace lukewarm_snake
                     Globals.MainEntityBatch?.Dispose();
                     Globals.MainEntityBatch = new();
                     Globals.MainEntityBatch.InitEntityBucket<Food>();
+                    Globals.MainEntityBatch.InitEntityBucket<Obstacle>();
                     Globals.MainEntityBatch.Add(new Snake());
                     Globals.MainEntityBatch.Add(new SpawnManager());
                     Globals.GameState = Globals.GameStates.GameLoop;

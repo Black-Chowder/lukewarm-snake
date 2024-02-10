@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace lukewarm_snake
                 if (CollisionUtils.IsCirclesColliding(food.Pos, FoodRenderer.FoodRadius, parent.Pos, TailRenderer.BodyRadius))
                 {
                     food.exists = false;
-
+                    Debug.WriteLine($"Score: {parent.GetTrait<TailHandler>().Anchors.Count}");
                     parent.GetTrait<TailHandler>().MaxAnchors += FoodValue;
                 }
             }
