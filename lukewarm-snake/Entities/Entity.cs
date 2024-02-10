@@ -126,8 +126,9 @@ namespace BlackMagic
 
         public void Draw()
         {
-            CRTTimer += 0.017f;
+            CRTTimer -= 0.017f;
             CRTShader.Parameters["iTime"].SetValue(CRTTimer);
+            CRTShader.Parameters["vinVal"].SetValue(0.3f);
             CRTShader.CurrentTechnique.Passes[0].Apply();
 
             Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);

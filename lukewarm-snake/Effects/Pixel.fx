@@ -8,6 +8,7 @@
 #endif
 
 float iTime;
+float vinVal;
 
 Texture2D SpriteTexture;
 
@@ -35,7 +36,7 @@ float2 CRTCurveUV(float2 uv)
 void DrawVignette(inout float3 color, float2 uv)
 {
 	float vignette = uv.x * uv.y * (1.0 - uv.x) * (1.0 - uv.y);
-	vignette = clamp(pow(abs(16.0 * vignette), 0.3), 0.0, 1.0);
+	vignette = clamp(pow(abs(16.0 * vignette), vinVal), 0.0, 1.0);
 	color *= vignette;
 }
 
