@@ -14,7 +14,7 @@ namespace lukewarm_snake
         TailHandler tailHandler;
         TailRenderer tailRenderer;
         FoodEater snakeCollider;
-        public Snake() : base(Vector2.Zero)
+        public Snake() : base(new Vector2(Globals.Camera.Width, Globals.Camera.Height) / 2f)
         {
 
             tailHandler = new(this);

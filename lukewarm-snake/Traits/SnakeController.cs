@@ -19,7 +19,7 @@ namespace lukewarm_snake
         {
             this.parent = parent;
 
-            Mouse.SetPosition(0, 0);
+            Mouse.SetPosition((int)parent.Pos.X, (int)parent.Pos.Y);
         }
 
         public void Update()

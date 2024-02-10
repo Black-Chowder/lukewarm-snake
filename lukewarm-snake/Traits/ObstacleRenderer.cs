@@ -56,7 +56,10 @@ namespace lukewarm_snake
             border ??= Globals.content.Load<Effect>(@"Effects/Border");
         }
 
-        public void Update() => Prerender();
+        public void Update()
+        {
+            if (parent.exists) Prerender();
+        }
 
         public void Prerender()
         {
@@ -89,5 +92,11 @@ namespace lukewarm_snake
         }
 
         public void Draw() => Globals.spriteBatch.Draw(rt, Vector2.Zero, Color.White);
+
+        public void DisposeIndividual() //I'll have to actually handle individual disposing better but this'll work for now
+        {
+            rtBuffer.Dispose();
+            rt.Dispose();
+        }
     }
 }

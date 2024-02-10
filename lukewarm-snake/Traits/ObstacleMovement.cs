@@ -26,6 +26,12 @@ namespace lukewarm_snake
         public void Update()
         {
             parent.DeltaPos = Heading * (Globals.TimeMod < MinTimeMod ? MinTimeMod : Globals.TimeMod);
+
+            if (((new Vector2(Globals.Camera.Width, Globals.Camera.Height) / 2f) - parent.Pos).Length() > SpawnManager.ObstacleSpawnDist)
+            {
+                parent.GetTrait<ObstacleRenderer>().DisposeIndividual();
+                parent.exists = false;
+            }
         }
     }
 }
