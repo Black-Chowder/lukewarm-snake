@@ -14,7 +14,7 @@ namespace lukewarm_snake
         private Entity parent;
 
         //Eat food variables
-        public int FoodValue { get; set; } = 1;
+        public int FoodValue { get; set; } = 3;
 
         public int Priority => Trait.defaultPriority;
 

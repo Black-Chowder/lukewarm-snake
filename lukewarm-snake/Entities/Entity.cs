@@ -25,8 +25,13 @@ namespace BlackMagic
 
         private Effect CRTShader;
         private float CRTTimer = 0f;
-        public RenderTarget2D rt { get; private set; }
         public const float PixelateMultiplier = 1f / 8f;
+
+        private Effect shockwaveShader;
+        private float shockwaveTimer = 0f;
+
+        public RenderTarget2D rt { get; private set; }
+        private RenderTarget2D rtBuffer;
 
         public EntityBatch()
         {
@@ -35,7 +40,9 @@ namespace BlackMagic
             entityBuckets = new Dictionary<Type, List<Entity>>();
 
             CRTShader ??= Globals.content.Load<Effect>(@"Effects/Pixel");
+            shockwaveShader ??= Globals.content.Load<Effect>(@"Effects/ShockWave");
             rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(1600 * PixelateMultiplier), (int)(900 * PixelateMultiplier));
+            rtBuffer = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(1600 * PixelateMultiplier), (int)(900 * PixelateMultiplier));
         }
 
         public void InitTraitBucket<T>()
@@ -131,6 +138,11 @@ namespace BlackMagic
             CRTShader.Parameters["vinVal"].SetValue(0.3f);
             CRTShader.CurrentTechnique.Passes[0].Apply();
 
+            shockwaveTimer += 0.017f;
+            shockwaveShader.Parameters["iTime"].SetValue(shockwaveTimer);
+            shockwaveShader.Parameters["iResolution"].SetValue(new Vector2(rt.Width, rt.Height));
+            shockwaveShader.CurrentTechnique.Passes[0].Apply();
+
             Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);
             Globals.spriteBatch.GraphicsDevice.Clear(new Color(118, 59, 54));
             Globals.spriteBatch.Begin(SpriteSortMode.BackToFront, samplerState: SamplerState.PointClamp);
@@ -138,10 +150,19 @@ namespace BlackMagic
                 entities[i].Draw();
             Globals.spriteBatch.End();
 
+            /*
+            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rtBuffer);
+            Globals.spriteBatch.GraphicsDevice.Clear(new Color(118, 59, 54));
+            Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: shockwaveShader);
+            Globals.spriteBatch.Draw(rt, new Rectangle(0, 0, rt.Width, rt.Height), Color.White);
+            Globals.spriteBatch.End();
+            */
+
             Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
             Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: CRTShader);
             Globals.spriteBatch.Draw(rt, new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height), Color.White);
             Globals.spriteBatch.End();
+
         }
 
         public void Dispose()

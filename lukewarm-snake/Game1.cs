@@ -33,6 +33,7 @@ namespace lukewarm_snake
             //graphics.PreferredBackBufferWidth = 1920;
             //graphics.PreferredBackBufferHeight = 1080;
             graphics.ApplyChanges();
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
 
             Globals.Camera = new Camera();
             Globals.Camera.SetDimensions(graphics, 1600, 900, false);
