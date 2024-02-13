@@ -1,5 +1,5 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/BodyShadow.fx","D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/bin/Windows/Content/Effects/BodyShadow.xnb","EffectProcessor","CompiledEffectContent",1294,1358,0.3293561
+"D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/BodyShadow.fx","D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/bin/Windows/Content/Effects/BodyShadow.xnb","EffectProcessor","CompiledEffectContent",1269,1572,0.3309229
 "D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/Border.fx","D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/bin/Windows/Content/Effects/Border.xnb","EffectProcessor","CompiledEffectContent",1223,2547,0.3547298
 "D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/CircleMask.fx","D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/bin/Windows/Content/Effects/CircleMask.xnb","EffectProcessor","CompiledEffectContent",810,1074,0.2302987
 "D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/Pixel.fx","D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/bin/Windows/Content/Effects/Pixel.xnb","EffectProcessor","CompiledEffectContent",1557,2557,0.3530648

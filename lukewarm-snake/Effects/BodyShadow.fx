@@ -7,7 +7,7 @@
 	#define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
-#define PI 3.14159265359
+float LightAngle;
 
 Texture2D SpriteTexture;
 
@@ -26,28 +26,24 @@ struct VertexShaderOutput
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float2 uv = input.TextureCoordinates * 2.0 - 1.0;
-    float4 final = tex2D(SpriteTextureSampler, input.TextureCoordinates);
-	
-    float lightAngle = 5.0 * PI / 3.0;
+    float4 fragColor = tex2D(SpriteTextureSampler, input.TextureCoordinates);
+		
+	//Calculate shadow value according to light angle
+    float2 lightVector = float2(cos(LightAngle), sin(LightAngle));
+    float shadowVal = dot(lightVector, normalize(uv));
+    shadowVal = 1.0 - shadowVal;
 	
     float dist = length(uv);
+    shadowVal *= dist;
 	
-	//Outside circle
-    if (dist > 1.0)
-        final = float4(0.0, 0.0, 0.0, 0.0);
+    shadowVal = pow(shadowVal, 1.0);
+    shadowVal -= 0.5;
+
+	//Only apply effect to non-transparent pixels
+    if (fragColor.a > 0)
+        fragColor = lerp(fragColor, input.Color, shadowVal);
 	
-	//Inside circle
-    else
-    {
-        float2 lightVector = float2(cos(lightAngle), sin(lightAngle));
-        float shadowVal = dot(lightVector, normalize(uv));
-        shadowVal = 1.0 - shadowVal;
-        shadowVal *= dist;
-        shadowVal = 1.0 - shadowVal;
-        final = lerp(final, input.Color, shadowVal);
-    }
-	
-    return final;
+    return fragColor;
 }
 
 technique SpriteDrawing

@@ -71,19 +71,23 @@ namespace lukewarm_snake
             border.Parameters["texelSize"].SetValue(new Vector2(1f / (rt.Width - 1f), 1f / (rt.Height - 1f)));
             border.CurrentTechnique.Passes[0].Apply();
 
+            shadowShader.Parameters["LightAngle"].SetValue(Globals.ShadowAngle);
+            shadowShader.CurrentTechnique.Passes[0].Apply();
+
             //Draw plain body
             Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rtBody);
             Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
             Globals.spriteBatch.Begin(sortMode: SpriteSortMode.BackToFront, samplerState: SamplerState.PointClamp, effect: shadowShader);
 
             Vector2 drawPos;
+            Color shadowBodyColor = new Color(0f, 0.2f, 0f, 1f);
 
             //Draw head
             drawPos = (parent.Pos - Vector2.One * BodyRadius) * EntityBatch.PixelateMultiplier;
             Globals.spriteBatch.Draw(bodyTexture,
                 drawPos,
                 new Rectangle(0, 0, bodyTexture.Width, bodyTexture.Height),
-                Color.DarkGreen * 3f,
+                shadowBodyColor,
                 0f,
                 Vector2.Zero,
                 EntityBatch.PixelateMultiplier,
@@ -98,7 +102,7 @@ namespace lukewarm_snake
                 Globals.spriteBatch.Draw(bodyTexture,
                     drawPos,
                     new Rectangle(0, 0, bodyTexture.Width, bodyTexture.Height),
-                    Color.DarkGreen * 3f,
+                    shadowBodyColor,
                     0f,
                     Vector2.Zero,
                     EntityBatch.PixelateMultiplier,

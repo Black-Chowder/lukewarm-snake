@@ -14,6 +14,8 @@ namespace lukewarm_snake
     {
         public static GraphicsDeviceManager graphics;
 
+        private Effect testShader;
+
         //fixed update variables
         private float previousT = 0f;
         private float accumulator = 0f;
@@ -47,6 +49,7 @@ namespace lukewarm_snake
 
         protected override void Initialize()
         {
+            //Globals.GameState = Globals.GameStates.StartGame;
             Globals.GameState = Globals.GameStates.StartGame;
             IsMouseVisible = false;
             base.Initialize();
@@ -57,6 +60,8 @@ namespace lukewarm_snake
             Globals.spriteBatch = new SpriteBatch(GraphicsDevice);
             Globals.content = Content;
             Globals.defaultFont = Content.Load<SpriteFont>(@"DefaultFont");
+
+            testShader = Content.Load<Effect>(@"Effects/BodyShadow");
 
             // TODO: use this.Content to load your game content here
         }
@@ -93,6 +98,9 @@ namespace lukewarm_snake
             //Normal update loop
             switch (Globals.GameState)
             {
+                case Globals.GameStates.Test:
+                    break;
+
                 case Globals.GameStates.StartGame:
                     Globals.MainEntityBatch?.Dispose();
                     Globals.MainEntityBatch = new();
@@ -129,6 +137,23 @@ namespace lukewarm_snake
 
             switch (Globals.GameState)
             {
+                case Globals.GameStates.Test:
+                    float testBodySize = 200f;
+                    RenderTarget2D rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(testBodySize * EntityBatch.PixelateMultiplier), (int)(testBodySize * EntityBatch.PixelateMultiplier));
+                    Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);
+                    Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: testShader);
+                    Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice, Color.Green),
+                        new Rectangle(0, 0, (int)(testBodySize * EntityBatch.PixelateMultiplier), (int)(testBodySize * EntityBatch.PixelateMultiplier)),
+                        new Color(0f, 0.2f, 0f, 1f));
+                    Globals.spriteBatch.End();
+                    Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
+                    Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+                    Globals.spriteBatch.Draw(rt,
+                        new Rectangle(0, 0, Globals.Camera.Height, Globals.Camera.Height),
+                        Color.White);
+                    Globals.spriteBatch.End();
+                    break;
+
                 case Globals.GameStates.GameLoop:
                     Globals.MainEntityBatch.Draw();
                     break;

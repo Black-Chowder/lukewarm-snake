@@ -182,11 +182,12 @@ namespace BlackMagic
         }
 
         private static Texture2D texture = null;
-        public static Texture2D createTexture(GraphicsDevice graphicsDevice)
+        public static Texture2D createTexture(GraphicsDevice graphicsDevice, Color? color = null)
         {
+            color ??= Color.White;
             if (texture != null) return texture;
             texture = new Texture2D(graphicsDevice, 1, 1, false, SurfaceFormat.Color);
-            texture.SetData<Color>(new Color[] { Color.White });
+            texture.SetData<Color>(new Color[] { color.Value });
             return texture;
         }
 
