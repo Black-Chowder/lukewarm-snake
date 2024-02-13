@@ -40,8 +40,8 @@ namespace lukewarm_snake
                     if (CollisionUtils.IsCirclesColliding(curAnchor.Value, HitboxRadius, obstacle.Pos, ObstacleRenderer.ObstacleRadius))
                     {
                         parent.GetTrait<TailHandler>().MaxAnchors = (int)MathF.Max(1, anchorIndex);
-                        wantToBreak = true;
                         obstacle.exists = false;
+                        wantToBreak = true;
                         break;
                     }
                 }

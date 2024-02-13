@@ -18,7 +18,16 @@ namespace lukewarm_snake
         //Tail Length Variables
         public const float DefaultAnchorDist = 10f;
         public readonly float AnchorDist; //Distance traveled before placing an anchor
-        public int MaxAnchors = 1; //Number of anchors in tail
+        public int MaxAnchors //Number of anchors in tail
+        { 
+            get => maxAnchors; 
+            set
+            {
+                maxAnchors = value;
+                RemoveExcessAnchors();
+            } 
+        } 
+        private int maxAnchors = 1;
 
         //Public travel data
         public float FormingAnchorProgress { get; private set; } //Value from 0->1 to when next anchor will be placed
@@ -74,11 +83,15 @@ namespace lukewarm_snake
             }
             FormingAnchorProgress = formingAnchorDist / AnchorDist;
 
-            //Remove excess anchors
-            while (Anchors.Count > MaxAnchors)
-                Anchors.RemoveLast();
+            RemoveExcessAnchors();
 
             prevPos = parent.Pos;
+        }
+
+        public void RemoveExcessAnchors()
+        {
+            while (Anchors.Count > MaxAnchors)
+                Anchors.RemoveLast();
         }
 
         public const int AnchorSize = 10;
