@@ -4,6 +4,7 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
+    <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/BodyShadow.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/Border.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/CircleMask.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/Pixel.fx</File>
@@ -11,6 +12,7 @@
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/DefaultFont.spritefont</File>
   </SourceFiles>
   <DestFiles>
+    <File>Effects/BodyShadow.fx</File>
     <File>Effects/Border.fx</File>
     <File>Effects/CircleMask.fx</File>
     <File>Effects/Pixel.fx</File>

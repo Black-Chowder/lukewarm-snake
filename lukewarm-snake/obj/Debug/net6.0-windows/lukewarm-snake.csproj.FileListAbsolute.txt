@@ -84,3 +84,4 @@ D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\CircleMask.xnb
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\Border.xnb
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\ShockWave.xnb
+D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\BodyShadow.xnb

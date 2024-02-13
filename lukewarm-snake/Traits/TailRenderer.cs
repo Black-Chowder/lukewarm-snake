@@ -21,6 +21,7 @@ namespace lukewarm_snake
 
         private static Effect circleShader;
         private static Effect border;
+        private static Effect shadowShader;
 
         public int Priority => Trait.defaultPriority;
 
@@ -41,7 +42,7 @@ namespace lukewarm_snake
                 Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice),
                     Vector2.Zero,
                     new Rectangle(0, 0, 1, 1),
-                    Color.White,
+                    Color.Green,
                     0f,
                     Vector2.Zero,
                     new Vector2(bodyTexture.Width, bodyTexture.Height),
@@ -57,6 +58,9 @@ namespace lukewarm_snake
 
             //Load border effect
             border ??= Globals.content.Load<Effect>(@"Effects/Border");
+
+            //Load shadow effect
+            shadowShader ??= Globals.content.Load<Effect>(@"Effects/BodyShadow");
         }
 
         public void Update() => Prerender();
@@ -70,36 +74,37 @@ namespace lukewarm_snake
             //Draw plain body
             Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rtBody);
             Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-            Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            Globals.spriteBatch.Begin(sortMode: SpriteSortMode.BackToFront, samplerState: SamplerState.PointClamp, effect: shadowShader);
 
             Vector2 drawPos;
-
-            //Draw body segments
-            if (tail.Anchors.Count > 0) for (LinkedListNode<Vector2> cur = tail.Anchors.First, next = cur.Next; next != null; cur = cur.Next, next = cur.Next)
-            {
-                drawPos = (Vector2.Lerp(next.Value, cur.Value, tail.FormingAnchorProgress) - Vector2.One * BodyRadius) * EntityBatch.PixelateMultiplier;
-                Globals.spriteBatch.Draw(bodyTexture,
-                    drawPos,
-                    new Rectangle(0, 0, bodyTexture.Width, bodyTexture.Height),
-                    Color.Green,
-                    0f,
-                    Vector2.Zero,
-                    EntityBatch.PixelateMultiplier,
-                    SpriteEffects.None,
-                    0f);
-            }
 
             //Draw head
             drawPos = (parent.Pos - Vector2.One * BodyRadius) * EntityBatch.PixelateMultiplier;
             Globals.spriteBatch.Draw(bodyTexture,
                 drawPos,
                 new Rectangle(0, 0, bodyTexture.Width, bodyTexture.Height),
-                Color.White,
+                Color.DarkGreen * 3f,
                 0f,
                 Vector2.Zero,
                 EntityBatch.PixelateMultiplier,
                 SpriteEffects.None,
                 0f);
+
+            //Draw body segments
+            float tailIndex = 1f;
+            if (tail.Anchors.Count > 0) for (LinkedListNode<Vector2> cur = tail.Anchors.First, next = cur.Next; next != null; cur = cur.Next, next = cur.Next, tailIndex++)
+            {
+                drawPos = (Vector2.Lerp(next.Value, cur.Value, tail.FormingAnchorProgress) - Vector2.One * BodyRadius) * EntityBatch.PixelateMultiplier;
+                Globals.spriteBatch.Draw(bodyTexture,
+                    drawPos,
+                    new Rectangle(0, 0, bodyTexture.Width, bodyTexture.Height),
+                    Color.DarkGreen * 3f,
+                    0f,
+                    Vector2.Zero,
+                    EntityBatch.PixelateMultiplier,
+                    SpriteEffects.None,
+                    (tailIndex + 1f) / (tail.Anchors.Count + 1f));
+            }
 
             Globals.spriteBatch.End();
             
