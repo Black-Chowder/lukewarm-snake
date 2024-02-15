@@ -15,10 +15,18 @@ namespace lukewarm_snake
         private TailHandler tail;
         private Entity parent;
 
+        //Describe head
+        private static RenderTarget2D headTexture;
+        private const int headRtBuffer = 4;
         private float headAngle = 0f;
 
-        private static RenderTarget2D headTexture;
+        //Describe eyes
+        private static RenderTarget2D eyeTexture;
+        private const int eyeRadius = 25;
+        private const int eyeRtBuffer = 4;
+        private Vector2 eyeOffset => new Vector2(-20, 40);
 
+        //Describe body
         private RenderTarget2D bodyTexture;
         public const float BodyRadius = 50f;
 
@@ -26,10 +34,12 @@ namespace lukewarm_snake
         public const int ShrinkBeginIndex = 15;
         public const float TailEndRadius = 5f;
 
-        private RenderTarget2D rtBody;
-        private RenderTarget2D rtHead;
-        private const int headRtBuffer = 4;
-        private RenderTarget2D rt;
+        //Render targets (in order of use)
+        private RenderTarget2D rtHead; //Adjust head angle
+        private RenderTarget2D rtBody; //Apply shadow shader to head + body parts
+        private RenderTarget2D rtBorder; //Add border to body
+        private RenderTarget2D rt; //Border effect
+        private Point rtSize => new Point(Globals.MainEntityBatch.rt.Width, Globals.MainEntityBatch.rt.Height);
 
         private static Effect circleShader;
         private static Effect border;
@@ -41,6 +51,14 @@ namespace lukewarm_snake
         {
             this.parent = parent;
             this.tail = tail;
+
+            
+            //Load border effect
+            border ??= Globals.content.Load<Effect>(@"Effects/Border");
+
+            //Load shadow effect
+            shadowShader ??= Globals.content.Load<Effect>(@"Effects/BodyShadow");
+
 
             //Load head texture
             if (headTexture is null)
@@ -79,16 +97,33 @@ namespace lukewarm_snake
                 Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
             }
 
+
+            //Create eye texture
+            if (eyeTexture is null)
+            {
+                //Create circle
+                eyeTexture = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, eyeRadius * 2, eyeRadius * 2);
+                Globals.spriteBatch.GraphicsDevice.SetRenderTarget(eyeTexture);
+                Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+                Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: circleShader);
+                Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice),
+                    Vector2.Zero,
+                    new Rectangle(0, 0, 1, 1),
+                    Color.White,
+                    0f,
+                    Vector2.Zero,
+                    new Vector2(eyeTexture.Width, eyeTexture.Height),
+                    SpriteEffects.None,
+                    0f);
+                Globals.spriteBatch.End();
+            }
+
+
             //Initialize render targets
-            rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, Globals.MainEntityBatch.rt.Width, Globals.MainEntityBatch.rt.Height);
-            rtBody = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, Globals.MainEntityBatch.rt.Width, Globals.MainEntityBatch.rt.Height);
-            rtHead = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, headTexture.Width + headRtBuffer, headTexture.Height + headRtBuffer);
-
-            //Load border effect
-            border ??= Globals.content.Load<Effect>(@"Effects/Border");
-
-            //Load shadow effect
-            shadowShader ??= Globals.content.Load<Effect>(@"Effects/BodyShadow");
+            rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, rtSize.X, rtSize.Y);
+            rtHead = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, headTexture.Width + headRtBuffer, headTexture.Height + headRtBuffer); 
+            rtBody = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, rtSize.X, rtSize.Y);
+            rtBorder = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, rtSize.X, rtSize.Y);
         }
 
         public void Update() => Prerender();
@@ -171,14 +206,44 @@ namespace lukewarm_snake
             }
 
             Globals.spriteBatch.End();
-            
-            //Apply border effect to body
-            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);
+
+
+            //Add border to body
+            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rtBorder);
             Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
             Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: border);
             Globals.spriteBatch.Draw(rtBody, Vector2.Zero, Color.White);
             Globals.spriteBatch.End();
 
+
+            //Add eyes
+            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);
+            Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+
+            //Draw bordered body
+            Globals.spriteBatch.Draw(rtBorder, Vector2.Zero, Color.White);
+
+            //Draw Eyes
+            float eyeOffsetMagnitude = eyeOffset.Length();
+            for (int i = 0; i < 2; i++)
+            {
+                Vector2 curEyeOffset = i == 0 ? eyeOffset : new Vector2(eyeOffset.X, -eyeOffset.Y);
+                float eyeOffsetAngle = curEyeOffset.Atan2();
+                Vector2 angleAdjustedOffset = (eyeOffsetAngle + headAngle).ToVector2() * eyeOffsetMagnitude;
+
+                Globals.spriteBatch.Draw(eyeTexture,
+                    (parent.Pos + angleAdjustedOffset) * EntityBatch.PixelateMultiplier,
+                    new Rectangle(0, 0, eyeTexture.Width, eyeTexture.Height),
+                    Color.White,
+                    0f,
+                    new Vector2(eyeTexture.Width, eyeTexture.Height) / 2f,
+                    EntityBatch.PixelateMultiplier,
+                    SpriteEffects.None,
+                    0f);
+            }
+
+            Globals.spriteBatch.End();
             Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
         }
 
