@@ -23,11 +23,12 @@ namespace lukewarm_snake
             get => maxAnchors; 
             set
             {
-                maxAnchors = value;
+                maxAnchors = (int)MathF.Max(value, minAnchors);
                 RemoveExcessAnchors();
-            } 
-        } 
-        private int maxAnchors = 1;
+            }
+        }
+        public const int minAnchors = 2;
+        private int maxAnchors = minAnchors;
 
         //Public travel data
         public float FormingAnchorProgress { get; private set; } //Value from 0->1 to when next anchor will be placed
@@ -48,7 +49,9 @@ namespace lukewarm_snake
         {
             this.parent = parent;
             prevPos = parent.Pos;
-            Anchors.AddFirst(prevPos);
+
+            while (Anchors.Count < minAnchors)
+                Anchors.AddFirst(prevPos);
 
             AnchorDist = anchorDist;
             Globals.TimeMod = 0f;
