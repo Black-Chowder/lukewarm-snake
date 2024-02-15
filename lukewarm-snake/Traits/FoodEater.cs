@@ -31,7 +31,7 @@ namespace lukewarm_snake
             {
                 Food food = (Food)foodEntityList[i];
 
-                if (CollisionUtils.IsCirclesColliding(food.Pos, FoodRenderer.FoodRadius, parent.Pos, TailRenderer.BodyRadius))
+                if (CollisionUtils.IsCirclesColliding(food.Pos, FoodRenderer.FoodRadius, parent.Pos, SnakeRenderer.BodyRadius))
                 {
                     food.exists = false;
                     Debug.WriteLine($"Score: {parent.GetTrait<TailHandler>().Anchors.Count}");

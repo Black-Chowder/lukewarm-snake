@@ -16,7 +16,7 @@ namespace lukewarm_snake
         public Entity parent;
 
         public const float HitboxBuffer = 10;
-        public const float HitboxRadius = TailRenderer.BodyRadius - HitboxBuffer;
+        public const float HitboxRadius = SnakeRenderer.BodyRadius - HitboxBuffer;
 
         public int Priority => Trait.defaultPriority;
 
@@ -27,7 +27,7 @@ namespace lukewarm_snake
 
         public void Update()
         {
-            TailRenderer tailRenderer = parent.GetTrait<TailRenderer>();
+            SnakeRenderer tailRenderer = parent.GetTrait<SnakeRenderer>();
             LinkedList<Vector2> anchors = parent.GetTrait<TailHandler>().Anchors;
             List<Entity> obstacleEntities = parent.batch.GetEntityBucket<Obstacle>();
 
@@ -37,9 +37,9 @@ namespace lukewarm_snake
             {
                 //Calculate particular anchor hitbox radius
                 int tailEndProgressIndex = anchors.Count - anchorIndex;
-                float anchorHitboxRadius = TailRenderer.BodyRadius;
-                if (tailEndProgressIndex <= TailRenderer.ShrinkBeginIndex)
-                    anchorHitboxRadius = MathHelper.Lerp(TailRenderer.TailEndRadius, TailRenderer.BodyRadius, (float)tailEndProgressIndex / (float)TailRenderer.ShrinkBeginIndex);
+                float anchorHitboxRadius = SnakeRenderer.BodyRadius;
+                if (tailEndProgressIndex <= SnakeRenderer.ShrinkBeginIndex)
+                    anchorHitboxRadius = MathHelper.Lerp(SnakeRenderer.TailEndRadius, SnakeRenderer.BodyRadius, (float)tailEndProgressIndex / (float)SnakeRenderer.ShrinkBeginIndex);
                 anchorHitboxRadius -= HitboxBuffer;
 
                 //Determine anchor collision with obstacles

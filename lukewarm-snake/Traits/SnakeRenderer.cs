@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace lukewarm_snake
 {
-    public class TailRenderer : TUpdates, TDraws
+    public class SnakeRenderer : TUpdates, TDraws
     {
         private TailHandler tail;
         private Entity parent;
@@ -37,7 +37,7 @@ namespace lukewarm_snake
 
         public int Priority => Trait.defaultPriority;
 
-        public TailRenderer(Entity parent, TailHandler tail)
+        public SnakeRenderer(Entity parent, TailHandler tail)
         {
             this.parent = parent;
             this.tail = tail;

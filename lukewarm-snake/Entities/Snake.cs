@@ -12,7 +12,7 @@ namespace lukewarm_snake
     {
         SnakeController snakeController;
         TailHandler tailHandler;
-        TailRenderer tailRenderer;
+        SnakeRenderer tailRenderer;
         FoodEater snakeCollider;
         SnakeHealth health;
         public Snake() : base(new Vector2(Globals.Camera.Width, Globals.Camera.Height) / 2f)
