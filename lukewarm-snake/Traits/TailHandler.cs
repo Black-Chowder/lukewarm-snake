@@ -27,7 +27,7 @@ namespace lukewarm_snake
                 RemoveExcessAnchors();
             }
         }
-        public const int minAnchors = 2;
+        public const int minAnchors = 25;
         private int maxAnchors = minAnchors;
 
         //Public travel data

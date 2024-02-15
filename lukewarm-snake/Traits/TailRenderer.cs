@@ -21,6 +21,11 @@ namespace lukewarm_snake
 
         private RenderTarget2D bodyTexture;
         public const float BodyRadius = 50f;
+
+        //Describe end of tail
+        public const int ShrinkBeginIndex = 15;
+        public const float TailEndRadius = 5f;
+
         private RenderTarget2D rtBody;
         private RenderTarget2D rtHead;
         private const int headRtBuffer = 4;
@@ -140,18 +145,27 @@ namespace lukewarm_snake
                 SpriteEffects.None,
                 0f);
 
+
             //Draw body segments
-            float tailIndex = 1f;
-            if (tail.Anchors.Count > 0) for (LinkedListNode<Vector2> cur = tail.Anchors.First, next = cur.Next; next != null; cur = cur.Next, next = cur.Next, tailIndex++)
+            int tailIndex = 1;
+            for (LinkedListNode<Vector2> cur = tail.Anchors.First, next = cur.Next; next != null; cur = cur.Next, next = cur.Next, tailIndex++)
             {
-                drawPos = (Vector2.Lerp(next.Value, cur.Value, tail.FormingAnchorProgress)) * EntityBatch.PixelateMultiplier;
+                drawPos = Vector2.Lerp(next.Value, cur.Value, tail.FormingAnchorProgress) * EntityBatch.PixelateMultiplier;
+                
+                //Calculate draw scale
+                Vector2 drawScale = Vector2.One * EntityBatch.PixelateMultiplier;
+                int tailEndProgressIndex = tail.Anchors.Count - tailIndex;
+                if (tailEndProgressIndex <= ShrinkBeginIndex)
+                    drawScale = Vector2.One * EntityBatch.PixelateMultiplier * MathHelper.Lerp(TailEndRadius, BodyRadius, (float)tailEndProgressIndex / ShrinkBeginIndex) / BodyRadius;
+
+                //Draw body ball
                 Globals.spriteBatch.Draw(bodyTexture,
                     drawPos,
                     new Rectangle(0, 0, bodyTexture.Width, bodyTexture.Height),
                     shadowBodyColor,
                     0f,
                     new Vector2(bodyTexture.Width, bodyTexture.Height) / 2f,
-                    EntityBatch.PixelateMultiplier,
+                    drawScale,
                     SpriteEffects.None,
                     (tailIndex + 1f) / (tail.Anchors.Count + 1f));
             }
