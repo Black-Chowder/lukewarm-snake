@@ -23,8 +23,12 @@ namespace lukewarm_snake
         //Describe eyes
         private static RenderTarget2D eyeTexture;
         private const int eyeRadius = 25;
+        private Color eyeColor => Color.White;
+        private const int pupilRadius = 2 * eyeRadius / 3;
+        private Color pupilColor => Color.Black;
         private const int eyeRtBuffer = 4;
         private Vector2 eyeOffset => new Vector2(-20, 40);
+        private float eyesAngle = 0f;
 
         //Describe body
         private RenderTarget2D bodyTexture;
@@ -101,20 +105,48 @@ namespace lukewarm_snake
             //Create eye texture
             if (eyeTexture is null)
             {
-                //Create circle
-                eyeTexture = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, eyeRadius * 2, eyeRadius * 2);
-                Globals.spriteBatch.GraphicsDevice.SetRenderTarget(eyeTexture);
+                //Create pupil
+                RenderTarget2D pupilRt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, pupilRadius * 2, pupilRadius);
+                Globals.spriteBatch.GraphicsDevice.SetRenderTarget(pupilRt);
                 Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
                 Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: circleShader);
                 Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice),
                     Vector2.Zero,
                     new Rectangle(0, 0, 1, 1),
-                    Color.White,
+                    pupilColor,
+                    0f,
+                    Vector2.Zero,
+                    new Vector2(pupilRt.Width, pupilRt.Height),
+                    SpriteEffects.None,
+                    0f);
+                Globals.spriteBatch.End();
+
+                //Create circle
+                eyeTexture = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, eyeRadius * 2, eyeRadius * 2);
+                Globals.spriteBatch.GraphicsDevice.SetRenderTarget(eyeTexture);
+                Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+                Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: circleShader);
+
+                Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice),
+                    Vector2.Zero,
+                    new Rectangle(0, 0, 1, 1),
+                    eyeColor,
                     0f,
                     Vector2.Zero,
                     new Vector2(eyeTexture.Width, eyeTexture.Height),
                     SpriteEffects.None,
                     0f);
+
+                Globals.spriteBatch.Draw(pupilRt,
+                    new Vector2(eyeTexture.Width, eyeTexture.Height / 2f),
+                    new Rectangle(0, 0, pupilRt.Width, pupilRt.Height),
+                    Color.White,
+                    0f,
+                    new Vector2(pupilRt.Width, pupilRt.Height / 2f),
+                    1f,
+                    SpriteEffects.None,
+                    0f);
+                
                 Globals.spriteBatch.End();
             }
 
@@ -224,6 +256,29 @@ namespace lukewarm_snake
             //Draw bordered body
             Globals.spriteBatch.Draw(rtBorder, Vector2.Zero, Color.White);
 
+            //Calculate eye angles to look at food
+            float targetEyesAngle = headAngle - MathF.PI;
+            List<Entity> foodEntities = parent.batch.GetEntityBucket<Food>();
+            if (foodEntities.Count > 0)
+            {
+                Food closestFood = (Food)foodEntities[0];
+                float closestFoodDistSquared = (closestFood.Pos - parent.Pos).LengthSquared();
+                for (int i = 1; i < foodEntities.Count; i++)
+                {
+                    Food curFood = (Food)foodEntities[i];
+                    float curFoodDistSquared = (curFood.Pos - parent.Pos).LengthSquared();
+
+                    if (curFoodDistSquared < closestFoodDistSquared)
+                    {
+                        closestFoodDistSquared = curFoodDistSquared;
+                        closestFood = curFood;
+                    }
+                }
+
+                targetEyesAngle = (closestFood.Pos - parent.Pos).Atan2();
+            }
+            eyesAngle = MathHelper.Lerp(eyesAngle, targetEyesAngle, 0.1f);
+
             //Draw Eyes
             float eyeOffsetMagnitude = eyeOffset.Length();
             for (int i = 0; i < 2; i++)
@@ -236,7 +291,7 @@ namespace lukewarm_snake
                     (parent.Pos + angleAdjustedOffset) * EntityBatch.PixelateMultiplier,
                     new Rectangle(0, 0, eyeTexture.Width, eyeTexture.Height),
                     Color.White,
-                    0f,
+                    eyesAngle,
                     new Vector2(eyeTexture.Width, eyeTexture.Height) / 2f,
                     EntityBatch.PixelateMultiplier,
                     SpriteEffects.None,
