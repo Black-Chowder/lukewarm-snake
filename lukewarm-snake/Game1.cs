@@ -7,6 +7,7 @@ using System.IO;
 using BlackMagic;
 using System;
 using System.Linq;
+using static BlackMagic.Globals;
 
 namespace lukewarm_snake
 {
@@ -15,6 +16,9 @@ namespace lukewarm_snake
         public static GraphicsDeviceManager graphics;
 
         private Effect testShader;
+        private Texture2D noiseTexture;
+        private RenderTarget2D rt;
+        private float iTimer = 0f;
 
         //fixed update variables
         private float previousT = 0f;
@@ -50,8 +54,8 @@ namespace lukewarm_snake
         protected override void Initialize()
         {
             //Globals.GameState = Globals.GameStates.StartGame;
-            Globals.GameState = Globals.GameStates.StartGame;
-            IsMouseVisible = false;
+            Globals.GameState = Globals.GameStates.Test;
+            IsMouseVisible = true;
             base.Initialize();
         }
 
@@ -61,7 +65,7 @@ namespace lukewarm_snake
             Globals.content = Content;
             Globals.defaultFont = Content.Load<SpriteFont>(@"DefaultFont");
 
-            testShader = Content.Load<Effect>(@"Effects/BodyShadow");
+            testShader = Content.Load<Effect>(@"Effects/Background");
 
             // TODO: use this.Content to load your game content here
         }
@@ -99,6 +103,12 @@ namespace lukewarm_snake
             switch (Globals.GameState)
             {
                 case Globals.GameStates.Test:
+
+                    Globals.GameState = Globals.GameStates.TestLoop;
+                    goto case Globals.GameStates.TestLoop;
+
+                case Globals.GameStates.TestLoop:
+
                     break;
 
                 case Globals.GameStates.StartGame:
@@ -123,7 +133,7 @@ namespace lukewarm_snake
         {
             switch (Globals.GameState)
             {
-                case Globals.GameStates.TestLoop:
+                case Globals.GameStates.TestLoop: break;
                 case Globals.GameStates.GameLoop:
                     Globals.MainEntityBatch.FixedUpdate();
                     break;
@@ -137,21 +147,28 @@ namespace lukewarm_snake
 
             switch (Globals.GameState)
             {
-                case Globals.GameStates.Test:
+                case Globals.GameStates.TestLoop:
+
+                    iTimer += 0.001f;
+                    testShader.Parameters["iTimer"].SetValue(iTimer);
+                    testShader.CurrentTechnique.Passes[0].Apply();
+
                     float testBodySize = 200f;
                     RenderTarget2D rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(testBodySize * EntityBatch.PixelateMultiplier), (int)(testBodySize * EntityBatch.PixelateMultiplier));
                     Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);
                     Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: testShader);
-                    Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice, Color.Green),
+                    Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice, Color.White),
                         new Rectangle(0, 0, (int)(testBodySize * EntityBatch.PixelateMultiplier), (int)(testBodySize * EntityBatch.PixelateMultiplier)),
                         new Color(0f, 0.2f, 0f, 1f));
                     Globals.spriteBatch.End();
                     Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
-                    Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+                    Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: testShader);
                     Globals.spriteBatch.Draw(rt,
                         new Rectangle(0, 0, Globals.Camera.Height, Globals.Camera.Height),
-                        Color.White);
+                        Color.CornflowerBlue);
                     Globals.spriteBatch.End();
+
+                    rt.Dispose();
                     break;
 
                 case Globals.GameStates.GameLoop:
