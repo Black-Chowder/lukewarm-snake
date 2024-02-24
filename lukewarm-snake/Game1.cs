@@ -154,18 +154,18 @@ namespace lukewarm_snake
                     testShader.CurrentTechnique.Passes[0].Apply();
 
                     float testBodySize = 200f;
-                    RenderTarget2D rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(testBodySize * EntityBatch.PixelateMultiplier), (int)(testBodySize * EntityBatch.PixelateMultiplier));
+                    RenderTarget2D rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier), (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier));
                     Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);
                     Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: testShader);
                     Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice, Color.White),
-                        new Rectangle(0, 0, (int)(testBodySize * EntityBatch.PixelateMultiplier), (int)(testBodySize * EntityBatch.PixelateMultiplier)),
-                        new Color(0f, 0.2f, 0f, 1f));
+                        new Rectangle(0, 0, (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier), (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier)),
+                        Color.CornflowerBlue);
                     Globals.spriteBatch.End();
                     Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
-                    Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: testShader);
+                    Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp);
                     Globals.spriteBatch.Draw(rt,
                         new Rectangle(0, 0, Globals.Camera.Height, Globals.Camera.Height),
-                        Color.CornflowerBlue);
+                        Color.White);
                     Globals.spriteBatch.End();
 
                     rt.Dispose();

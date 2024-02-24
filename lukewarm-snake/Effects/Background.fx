@@ -7,8 +7,20 @@
 	#define PS_SHADERMODEL ps_4_0
 #endif
 
-//Shader constants
+//  <Shader Constants>  //
 #define FOAM_COLOR float4(1.0, 1.0, 1.0, 1.0)
+
+//Thresholds for what should be colored FOAM_COLOR
+#define LOWER_FOAM_THRESHOLD 0.0
+#define UPPER_FOAM_THRESHOLD 1.0
+
+//Scale multiplier of simplex noise input coordinates
+#define SIMPLEX_SCALE 2.0
+
+//Scaler for z-axis variation of noise over time
+#define Z_TIMER_MULTIPLIER 0.8
+
+//  </Shader Constants>  //
 
 //Shader parameters
 float iTimer;
@@ -27,98 +39,60 @@ struct VertexShaderOutput
 	float2 TextureCoordinates : TEXCOORD0;
 };
 
-//  <Simplex Noise 2D>  //
+//  <Simplex Noise> //
 
-// based on https://github.com/keijiro/NoiseShader/blob/master/Assets/GLSL/SimplexNoise2D.glsl
-// which itself is modification of https://github.com/ashima/webgl-noise/blob/master/src/noise3D.glsl
-// 
-// License : Copyright (C) 2011 Ashima Arts. All rights reserved.
-//           Distributed under the MIT License. See LICENSE file.
-//           https://github.com/keijiro/NoiseShader/blob/master/LICENSE
-//           https://github.com/ashima/webgl-noise
-//           https://github.com/stegu/webgl-noise
+//------------------------------------------------------------------------------------------
+// 3D Simplex Noise
+//------------------------------------------------------------------------------------------
 
-float3 mod289(float3 x) {
-    return x - floor(x * (1.0 / 289.0)) * 289.0;
+float3 mod289(float3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+float3 permute(float3 x) { return mod289(((x * 34.0) + 1.0) * x); }
+
+float3 grad3(float3 p) {
+    const float norm = 1.0 / sqrt(3.0);
+    float3 grad = float3(
+        1.0, 1.0, -1.0) * p.x +
+        float3(-1.0, 1.0, -1.0) * p.y +
+        float3(1.0, -1.0, -1.0) * p.z;
+    return normalize(grad) * norm;
 }
 
-float2 mod289(float2 x) {
-    return x - floor(x * (1.0 / 289.0)) * 289.0;
+float simplexNoise3D(float3 p) {
+    const float F3 = 1.0 / 3.0;
+    const float G3 = 1.0 / 6.0;
+
+    float3 s = floor(p + dot(p, float3(F3, F3, F3)));
+    float3 x0 = p - s + dot(s, float3(G3, G3, G3));
+
+    float3 e = step(float3(0.0, 0.0, 0.0), x0 - x0.yzx);
+    float3 i1 = e * (1.0 - e.zxy);
+    float3 i2 = 1.0 - e.zxy * (1.0 - e);
+
+    float3 x1 = x0 - i1 + G3;
+    float3 x2 = x0 - i2 + 2.0 * G3;
+    float3 x3 = x0 - 1.0 + 3.0 * G3;
+
+    float4 w = max(0.5 - float4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0);
+    float4 h = w * w * w * w * float4(dot(x0, grad3(permute(s + 0.0))),
+        dot(x1, grad3(permute(s + i1))),
+        dot(x2, grad3(permute(s + i2))),
+        dot(x3, grad3(permute(s + 1.0))));
+
+        return 32.0 * dot(h, float4(52.0, 52.0, 52.0, 52.0));
 }
 
-float3 permute(float3 x) {
-    return mod289((x * 34.0 + 1.0) * x);
-}
-
-float3 taylorInvSqrt(float3 r) {
-    return 1.79284291400159 - 0.85373472095314 * r;
-}
-
-// output noise is in range [-1, 1]
-float snoise(float2 v) {
-    const float4 C = float4(0.211324865405187,  // (3.0-sqrt(3.0))/6.0
-        0.366025403784439,  // 0.5*(sqrt(3.0)-1.0)
-        -0.577350269189626, // -1.0 + 2.0 * C.x
-        0.024390243902439); // 1.0 / 41.0
-
-    // First corner
-    float2 i = floor(v + dot(v, C.yy));
-    float2 x0 = v - i + dot(i, C.xx);
-
-    // Other corners
-    float2 i1;
-    i1.x = step(x0.y, x0.x);
-    i1.y = 1.0 - i1.x;
-
-    // x1 = x0 - i1  + 1.0 * C.xx;
-    // x2 = x0 - 1.0 + 2.0 * C.xx;
-    float2 x1 = x0 + C.xx - i1;
-    float2 x2 = x0 + C.zz;
-
-    // Permutations
-    i = mod289(i); // Avoid truncation effects in permutation
-    float3 p =
-        permute(permute(i.y + float3(0.0, i1.y, 1.0))
-            + i.x + float3(0.0, i1.x, 1.0));
-
-    float3 m = max(0.5 - float3(dot(x0, x0), dot(x1, x1), dot(x2, x2)), 0.0);
-    m = m * m;
-    m = m * m;
-
-    // Gradients: 41 points uniformly over a line, mapped onto a diamond.
-    // The ring size 17*17 = 289 is close to a multiple of 41 (41*7 = 287)
-    float3 x = 2.0 * frac(p * C.www) - 1.0;
-    float3 h = abs(x) - 0.5;
-    float3 ox = floor(x + 0.5);
-    float3 a0 = x - ox;
-
-    // Normalise gradients implicitly by scaling m
-    m *= taylorInvSqrt(a0 * a0 + h * h);
-
-    // Compute final noise value at P
-    float3 g = float3(
-        a0.x * x0.x + h.x * x0.y,
-        a0.y * x1.x + h.y * x1.y,
-        g.z = a0.z * x2.x + h.z * x2.y
-        );
-    return 130.0 * dot(m, g);
-}
-
-float snoise01(float2 v) {
-    return snoise(v) * 0.5 + 0.5;
-}
-
-//  <Simplex Noise 2D>  //
+//  <Simplex Noise >  //
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float2 offset = float2(1.0, 1.0);
     offset *= iTimer;
 
-    float val = snoise01((input.TextureCoordinates + iTimer) * 8.0);
+    float2 sampleCoords2D = input.TextureCoordinates + iTimer;
+    float val = simplexNoise3D(float3(((input.TextureCoordinates + iTimer) * SIMPLEX_SCALE).xy, iTimer * Z_TIMER_MULTIPLIER));
 
     float4 fragColor = float4(0.0, 0.0, 0.0, 0.0);
-    if (val > 0.7 && val < 0.8)
+    if (val > LOWER_FOAM_THRESHOLD && val < UPPER_FOAM_THRESHOLD)
         fragColor = FOAM_COLOR;
     else
         fragColor = input.Color;
