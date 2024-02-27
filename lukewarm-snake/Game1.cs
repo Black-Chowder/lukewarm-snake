@@ -148,12 +148,20 @@ namespace lukewarm_snake
             switch (Globals.GameState)
             {
                 case Globals.GameStates.TestLoop:
+                    Vector2 mousePos = Mouse.GetState().Position.ToVector2();
+                    mousePos /= new Vector2(Globals.Camera.Height, Globals.Camera.Height);
+                    Vector2 iResolution = new Vector2(Globals.Camera.Height, Globals.Camera.Height);
 
                     iTimer += 0.001f;
-                    testShader.Parameters["iTimer"].SetValue(iTimer);
+                    //testShader.Parameters["iTimer"].SetValue(iTimer);
+                    testShader.Parameters["iWaveCenter"].SetValue(mousePos);
+                    if (ClickHandler.IsClicked(Keys.Space))
+                    {
+                        Debug.WriteLine("Mouse Pos");
+                    }
+                    //testShader.Parameters["iResolution"].SetValue(iResolution);
                     testShader.CurrentTechnique.Passes[0].Apply();
-
-                    float testBodySize = 200f;
+                    
                     RenderTarget2D rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier), (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier));
                     Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);
                     Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: testShader);

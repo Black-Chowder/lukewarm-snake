@@ -20,10 +20,15 @@
 //Scaler for z-axis variation of noise over time
 #define Z_TIMER_MULTIPLIER 0.8
 
+//Starting size of wave
+#define WAVE_RADIUS 0.3
+
 //  </Shader Constants>  //
 
 //Shader parameters
 float iTimer;
+float2 iWaveCenter;
+float2 iResolution;
 
 Texture2D SpriteTexture;
 
@@ -85,19 +90,33 @@ float simplexNoise3D(float3 p) {
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
+    float4 fragColor = float4(1.0, 1.0, 1.0, 1.0);
+    
+    //Circular normal map around iWaveCenter
+    float2 uv = (input.TextureCoordinates - iWaveCenter + 0.5) * 2.0 - 1.0;
+    
+    float z = sqrt(1.0 - (pow(uv.x, 2.0) + pow(uv.y, 2.0)));
+    float3 position = float3(uv, z);
+    
+    float3 normal = normalize(position) * 0.5 + 0.5;
+    fragColor = float4(normal, 1.0);
+    
+    
+    /* Water Foam Shader
     float2 offset = float2(1.0, 1.0);
     offset *= iTimer;
 
     float2 sampleCoords2D = input.TextureCoordinates + iTimer;
     float val = simplexNoise3D(float3(((input.TextureCoordinates + iTimer) * SIMPLEX_SCALE).xy, iTimer * Z_TIMER_MULTIPLIER));
 
-    float4 fragColor = float4(0.0, 0.0, 0.0, 0.0);
+    fragColor = float4(0.0, 0.0, 0.0, 0.0);
     if (val > LOWER_FOAM_THRESHOLD && val < UPPER_FOAM_THRESHOLD)
         fragColor = FOAM_COLOR;
     else
         fragColor = input.Color;
+    */
 
-    return fragColor;
+        return fragColor;
 }
 
 technique SpriteDrawing
