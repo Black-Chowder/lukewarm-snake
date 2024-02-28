@@ -37,6 +37,12 @@
 /processorParam:DebugMode=Auto
 /build:../Effects/CircleMask.fx;Effects/CircleMask.fx
 
+#begin ../Effects/CircleUV.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:../Effects/CircleUV.fx;Effects/CircleUV.fx
+
 #begin ../Effects/Pixel.fx
 /importer:EffectImporter
 /processor:EffectProcessor

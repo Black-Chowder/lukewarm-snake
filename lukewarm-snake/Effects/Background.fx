@@ -8,6 +8,8 @@
 #endif
 
 //  <Shader Constants>  //
+
+//  <Foam Constants>    //
 #define FOAM_COLOR float4(1.0, 1.0, 1.0, 1.0)
 
 //Thresholds for what should be colored FOAM_COLOR
@@ -22,8 +24,9 @@
 
 //Starting size of wave
 #define WAVE_RADIUS 0.3
+//  </Foam Constants>   //
 
-//  </Shader Constants>  //
+//  </Shader Constants> //
 
 //Shader parameters
 float iTimer;
@@ -91,18 +94,38 @@ float simplexNoise3D(float3 p) {
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 fragColor = float4(1.0, 1.0, 1.0, 1.0);
+    fragColor = tex2D(SpriteTextureSampler, input.TextureCoordinates) * input.Color;
     
-    //Circular normal map around iWaveCenter
-    float2 uv = (input.TextureCoordinates - iWaveCenter + 0.5) * 2.0 - 1.0;
+    float Tau = 6.28318530718; // Pi*2
     
-    float z = sqrt(1.0 - (pow(uv.x, 2.0) + pow(uv.y, 2.0)));
-    float3 position = float3(uv, z);
+    // GAUSSIAN BLUR SETTINGS {{{
+    float Directions = 16.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
+    float Quality = 3.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
+    float Size = 8.0; // BLUR SIZE (Radius)
+    // GAUSSIAN BLUR SETTINGS }}}
+   
+    float2 Radius = Size / iResolution.xy;
     
-    float3 normal = normalize(position) * 0.5 + 0.5;
-    fragColor = float4(normal, 1.0);
+    // Normalized pixel coordinates (from 0 to 1)
+    float2 uv = input.TextureCoordinates/ iResolution.xy;
+    // Pixel colour
+    float4 Color = tex2D(SpriteTextureSampler, input.TextureCoordinates);
     
+    // Blur calculations
+    for (float d = 0.0; d < Tau; d += Tau / Directions)
+    {
+        for (float i = 1.0 / Quality; i <= 1.0; i += 1.0 / Quality)
+        {
+            Color += tex2D(SpriteTextureSampler, input.TextureCoordinates + float2(cos(d), sin(d)) * Radius * i);
+        }
+    }
     
-    /* Water Foam Shader
+    // Output to screen
+    Color /= Quality * Directions - 15.0;
+    fragColor.r = Color.r;
+    fragColor.gba = float3(0.0, 0.0, 1.0);
+    
+    /*
     float2 offset = float2(1.0, 1.0);
     offset *= iTimer;
 
@@ -114,9 +137,9 @@ float4 MainPS(VertexShaderOutput input) : COLOR
         fragColor = FOAM_COLOR;
     else
         fragColor = input.Color;
-    */
+*/
 
-        return fragColor;
+    return fragColor;
 }
 
 technique SpriteDrawing
