@@ -8,6 +8,7 @@
 #endif
 
 //  <Shader Constants>  //
+#define PI 3.14159265359
 
 //  <Foam Constants>    //
 #define FOAM_COLOR float4(1.0, 1.0, 1.0, 1.0)
@@ -31,7 +32,7 @@
 //Shader parameters
 float iTimer;
 float2 iWaveCenter;
-float2 iResolution;
+float2 texelSize;
 
 Texture2D SpriteTexture;
 
@@ -95,7 +96,56 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 fragColor = float4(1.0, 1.0, 1.0, 1.0);
     fragColor = tex2D(SpriteTextureSampler, input.TextureCoordinates) * input.Color;
-    
+
+    //Loop through kernel
+    float kernelSize = 16.0;
+    float3 final = float3(0.0, 0.0, 0.0);
+    for (float x = -kernelSize / 2.0; x < kernelSize / 2.0; x++)
+    {
+        for (float y = -kernelSize / 2.0; y < kernelSize / 2.0; y++)
+        {
+            float4 other = tex2D(SpriteTextureSampler, input.TextureCoordinates + texelSize * float2(x, y));
+            other = other * 2.0 - 1.0; //Convert range from [0, 1] to [-1, 1]
+
+            final += other.rga;
+        }
+    }
+
+    final /= kernelSize * kernelSize; //Map values between [-1, 1]
+    final = final * 0.5 + 0.5; //Convert range from [-1, 1] to [0, 1]
+    fragColor = float4(final.xy, 0.0, final.z);
+
+
+    /* Idea behind moving the normal in their direction
+    float2 pixelSize = 1.0 / iResolution;
+
+    float kernelSize = 8.0;
+    float3 final = float3(0.0, 0.0, 0.0);
+    for (float x = -kernelSize / 2.0; x < kernelSize / 2.0; x++)
+    {
+        for (float y = -kernelSize / 2.0; y < kernelSize / 2.0; y++)
+        {
+            float4 other = tex2D(SpriteTextureSampler, input.TextureCoordinates + pixelSize * float2(x, y));
+            other.xy = other.xy * 2.0 - 1.0;
+
+            float otherNormalAngle = atan2(other.y, other.x);
+
+            float angleToSelf = atan2(y, x);
+
+            float otherInfluenceAngle = clamp(dot(otherNormalAngle, angleToSelf), 0.0, 1.0);
+
+            float2 otherInfluence = float2(cos(otherInfluenceAngle), sin(otherInfluenceAngle));
+
+            final += float3(otherInfluence, other.a);
+        }
+    }
+    final /= pow(kernelSize, 2.0);
+    final = final * 0.5 + 0.5;
+    fragColor = float4(final.xy, 0.0, final.z);
+    */
+
+
+    /*
     float Tau = 6.28318530718; // Pi*2
     
     // GAUSSIAN BLUR SETTINGS {{{
@@ -124,6 +174,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     Color /= Quality * Directions - 15.0;
     fragColor.r = Color.r;
     fragColor.gba = float3(0.0, 0.0, 1.0);
+    */
     
     /*
     float2 offset = float2(1.0, 1.0);

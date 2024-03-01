@@ -147,19 +147,20 @@ namespace lukewarm_snake
         protected override void Draw(GameTime gameTime)
         {
             //penumbra.BeginDraw();
-            GraphicsDevice.Clear(new Color(118, 59, 54));
+            GraphicsDevice.Clear(Color.Black/*new Color(118, 59, 54)*/);
 
             switch (Globals.GameState)
             {
                 case Globals.GameStates.TestLoop:
                     Vector2 mousePos = Mouse.GetState().Position.ToVector2();
                     mousePos /= new Vector2(Globals.Camera.Height, Globals.Camera.Height);
-                    Vector2 iResolution = new Vector2(Globals.Camera.Height, Globals.Camera.Height);
+                    Vector2 iResolution = new Vector2((int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier), (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier));
 
                     iTimer += 0.001f;
                     //testShader.Parameters["iTimer"].SetValue(iTimer);
                     //testShader.Parameters["iWaveCenter"].SetValue(mousePos);
-                    testShader.Parameters["iResolution"].SetValue(iResolution);
+                    //testShader.Parameters["OutlineColor"].SetValue(new Vector4(0f, 0f, 0f, 1f));
+                    testShader.Parameters["texelSize"].SetValue(new Vector2(1f / (iResolution.X - 1f), 1f / (iResolution.Y - 1f)));
                     testShader.CurrentTechnique.Passes[0].Apply();
 
 
@@ -182,15 +183,28 @@ namespace lukewarm_snake
                     
                     if (isFirst)
                     {
+                        GraphicsDevice.Clear(new Color(0.5f, 0.5f, 0.0f, 0.0f)); //Initial direction of background is 0.5 for still
                         spriteBatch.Begin(samplerState: SamplerState.PointClamp/*, effect: testShader*/);
 
+                        //Draw initial circle texture
                         spriteBatch.Draw(circleTexture,
                             new Rectangle((rt.Width - circleTexture.Width) / 2, (rt.Height - circleTexture.Height) / 2, circleTexture.Width, circleTexture.Height),
                             Color.White);
                     }
                     else
                     {
-                        spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: testShader);
+                        //Only apply shader when space is clicked
+                        if (ClickHandler.IsClicked(Keys.Space))
+                        {
+                            spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: testShader);
+                        }
+                        else
+                        {
+                            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+                        }
+
+                        
+                        GraphicsDevice.Clear(Color.Transparent);
 
                         spriteBatch.Draw(previousRt,
                             new Rectangle(0, 0, (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier), (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier)),
@@ -199,6 +213,7 @@ namespace lukewarm_snake
 
                     Globals.spriteBatch.End();
                     Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
+                    GraphicsDevice.Clear(Color.Black);
                     Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp);
                     Globals.spriteBatch.Draw(rt,
                         new Rectangle(0, 0, Globals.Camera.Height, Globals.Camera.Height),

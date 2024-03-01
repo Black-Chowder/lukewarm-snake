@@ -94,3 +94,5 @@ D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\lukewar
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\obj\Debug\net6.0-windows\lukewarm.63022224.Up2Date
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\obj\Debug\net6.0-windows\ref\lukewarm-snake.dll
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\CircleUV.xnb
+C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\CircleNormalMap.xnb
+C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\CircleUV.xnb
