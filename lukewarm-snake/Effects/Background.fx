@@ -32,13 +32,20 @@
 //Shader parameters
 float iTimer;
 float2 iWaveCenter;
-float2 texelSize;
+//float2 texelSize;
+float damping;
+float2 iResolution;
 
-Texture2D SpriteTexture;
-
-sampler2D SpriteTextureSampler = sampler_state
+Texture2D Current;
+sampler2D CurrentSampler = sampler_state
 {
-	Texture = <SpriteTexture>;
+    Texture = <Current>;
+};
+
+Texture2D Previous;
+sampler2D PreviousSampler = sampler_state
+{
+    Texture = <Previous>;
 };
 
 struct VertexShaderOutput
@@ -95,26 +102,33 @@ float simplexNoise3D(float3 p) {
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 fragColor = float4(1.0, 1.0, 1.0, 1.0);
-    fragColor = tex2D(SpriteTextureSampler, input.TextureCoordinates) * input.Color;
-
-    //Loop through kernel
-    float kernelSize = 16.0;
-    float3 final = float3(0.0, 0.0, 0.0);
-    for (float x = -kernelSize / 2.0; x < kernelSize / 2.0; x++)
+    fragColor = tex2D(CurrentSampler, input.TextureCoordinates);
+    
+    float2 texelSize = 1.0f / iResolution;
+    
+    fragColor = (
+        tex2D(PreviousSampler, input.TextureCoordinates + float2(texelSize.x, 0)) +
+        tex2D(PreviousSampler, input.TextureCoordinates + float2(-texelSize.x, 0)) +
+        tex2D(PreviousSampler, input.TextureCoordinates + float2(0, texelSize.y)) +
+        tex2D(PreviousSampler, input.TextureCoordinates + float2(0, -texelSize.y))
+    ) / 2 - fragColor;
+    
+    fragColor *= damping;
+    /*
+    if (input.TextureCoordinates.x > 0.5)
     {
-        for (float y = -kernelSize / 2.0; y < kernelSize / 2.0; y++)
-        {
-            float4 other = tex2D(SpriteTextureSampler, input.TextureCoordinates + texelSize * float2(x, y));
-            other = other * 2.0 - 1.0; //Convert range from [0, 1] to [-1, 1]
-
-            final += other.rga;
-        }
+        fragColor = tex2D(PreviousSampler, input.TextureCoordinates);
     }
-
-    final /= kernelSize * kernelSize; //Map values between [-1, 1]
-    final = final * 0.5 + 0.5; //Convert range from [-1, 1] to [0, 1]
-    fragColor = float4(final.xy, 0.0, final.z);
-
+    else
+    {
+        fragColor = tex2D(CurrentSampler, input.TextureCoordinates);
+    }
+    */
+    //else
+    //{
+    //    fragColor = tex2D(CurrentSampler, input.TextureCoordinates);
+    //}
+    
 
     /* Idea behind moving the normal in their direction
     float2 pixelSize = 1.0 / iResolution;

@@ -32,7 +32,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     
     float3 normal = normalize(position) * 0.5 + 0.5;
 
-    fragColor = float4(normal.rg, 0.0, 1.0);
+    fragColor = float4(normal.r, 0.0, 0.0, 1.0);
 
 	if (length(uv) > 1.0)
 		fragColor.a = 0.0;

@@ -15,12 +15,14 @@ namespace lukewarm_snake
     {
         public static GraphicsDeviceManager graphics;
 
-        private Effect testShader;
-        private Effect uvShader;
-        private RenderTarget2D circleTexture;
-        private RenderTarget2D previousRt;
-        private bool isFirst = true;
-        private float iTimer = 0f;
+        //Background effect variables
+        private Effect BackgroundEffect;
+        private RenderTarget2D BackgroundBuffer1;
+        private RenderTarget2D BackgroundBuffer2;
+        private RenderTarget2D BackgroundRt;
+        private Point iResolution;
+        private const float Damping = 0.99f;
+        private const int BrushSize = 1;
 
         //fixed update variables
         private float previousT = 0f;
@@ -58,6 +60,13 @@ namespace lukewarm_snake
             //Globals.GameState = Globals.GameStates.StartGame;
             Globals.GameState = Globals.GameStates.Test;
             IsMouseVisible = true;
+
+            iResolution = new Point((int)(Globals.Camera.Width * EntityBatch.PixelateMultiplier), (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier));
+
+            BackgroundBuffer1 = new RenderTarget2D(GraphicsDevice, iResolution.X, iResolution.Y);
+            BackgroundBuffer2 = new RenderTarget2D(GraphicsDevice, iResolution.X, iResolution.Y);
+            BackgroundRt = BackgroundBuffer2;
+
             base.Initialize();
         }
 
@@ -67,9 +76,7 @@ namespace lukewarm_snake
             content = Content;
             defaultFont = Content.Load<SpriteFont>(@"DefaultFont");
 
-            testShader = Content.Load<Effect>(@"Effects/Background");
-
-            uvShader = Content.Load<Effect>(@"Effects/CircleUV");
+            BackgroundEffect = Content.Load<Effect>(@"Effects/Background");
 
             // TODO: use this.Content to load your game content here
         }
@@ -107,11 +114,60 @@ namespace lukewarm_snake
             switch (Globals.GameState)
             {
                 case Globals.GameStates.Test:
-
                     Globals.GameState = Globals.GameStates.TestLoop;
                     goto case Globals.GameStates.TestLoop;
 
                 case Globals.GameStates.TestLoop:
+
+                    /*  <Handle Input>  */
+                    //Get mouse input
+                    MouseState mouseState = Mouse.GetState();
+                    Point mousePos = mouseState.Position;
+                    bool isMousePressed = mouseState.LeftButton == ButtonState.Pressed;
+
+                    if (isMousePressed)
+                    {
+                        //Handle input for shader-based effect
+                        RenderTarget2D newPrev = new RenderTarget2D(GraphicsDevice, iResolution.X, iResolution.Y);
+                        GraphicsDevice.SetRenderTarget(newPrev);
+                        spriteBatch.Begin();
+                        spriteBatch.Draw(BackgroundBuffer1, Vector2.Zero, Color.White);
+                        spriteBatch.Draw(DrawUtils.createTexture(GraphicsDevice),
+                            new Rectangle((int)(mousePos.X * EntityBatch.PixelateMultiplier), (int)(mousePos.Y * EntityBatch.PixelateMultiplier), BrushSize, BrushSize),
+                            Color.White);
+                        spriteBatch.End();
+                        GraphicsDevice.SetRenderTarget(null);
+
+                        BackgroundBuffer1.Dispose();
+                        BackgroundBuffer1 = newPrev;
+                    }
+
+                    /*  </Handle Input>  */
+
+                    /*  <Itterate Background Effect>  */
+
+                    //Set effect parameters
+                    BackgroundEffect.Parameters["iResolution"].SetValue(iResolution.ToVector2());
+                    BackgroundEffect.Parameters["damping"].SetValue(Damping);
+                    BackgroundEffect.Parameters["Previous"].SetValue(BackgroundBuffer1);
+
+                    //Calculate new frame
+                    BackgroundRt = new RenderTarget2D(GraphicsDevice, iResolution.X, iResolution.Y);
+                    GraphicsDevice.SetRenderTarget(BackgroundRt);
+                    GraphicsDevice.Clear(Color.Black);
+                    spriteBatch.Begin(effect: BackgroundEffect);
+                    spriteBatch.Draw(BackgroundBuffer2, Vector2.Zero, Color.White);
+                    spriteBatch.End();
+                    GraphicsDevice.SetRenderTarget(null);
+
+                    //Set current render target to new frame
+                    BackgroundBuffer2.Dispose();
+                    BackgroundBuffer2 = BackgroundRt;
+
+                    //Swap
+                    (BackgroundBuffer2, BackgroundBuffer1) = (BackgroundBuffer1, BackgroundBuffer2);
+
+                    /*  </Itterate Background Effect>  */
 
                     break;
 
@@ -152,83 +208,15 @@ namespace lukewarm_snake
             switch (Globals.GameState)
             {
                 case Globals.GameStates.TestLoop:
-                    Vector2 mousePos = Mouse.GetState().Position.ToVector2();
-                    mousePos /= new Vector2(Globals.Camera.Height, Globals.Camera.Height);
-                    Vector2 iResolution = new Vector2((int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier), (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier));
-
-                    iTimer += 0.001f;
-                    //testShader.Parameters["iTimer"].SetValue(iTimer);
-                    //testShader.Parameters["iWaveCenter"].SetValue(mousePos);
-                    //testShader.Parameters["OutlineColor"].SetValue(new Vector4(0f, 0f, 0f, 1f));
-                    testShader.Parameters["texelSize"].SetValue(new Vector2(1f / (iResolution.X - 1f), 1f / (iResolution.Y - 1f)));
-                    testShader.CurrentTechnique.Passes[0].Apply();
 
 
-                    //Create circle texture
-                    if (isFirst)
-                    {
-                        circleTexture = new RenderTarget2D(GraphicsDevice, 50, 50);
-                        GraphicsDevice.SetRenderTarget(circleTexture);
-                        GraphicsDevice.Clear(Color.Transparent);
-                        spriteBatch.Begin(effect: uvShader);
-                        spriteBatch.Draw(DrawUtils.createTexture(GraphicsDevice),
-                            new Rectangle(0, 0, circleTexture.Width, circleTexture.Height),
-                            Color.White);
-                        spriteBatch.End();
-                    }
-
-
-                    RenderTarget2D rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier), (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier));
-                    Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);
-                    
-                    if (isFirst)
-                    {
-                        GraphicsDevice.Clear(new Color(0.5f, 0.5f, 0.0f, 0.0f)); //Initial direction of background is 0.5 for still
-                        spriteBatch.Begin(samplerState: SamplerState.PointClamp/*, effect: testShader*/);
-
-                        //Draw initial circle texture
-                        spriteBatch.Draw(circleTexture,
-                            new Rectangle((rt.Width - circleTexture.Width) / 2, (rt.Height - circleTexture.Height) / 2, circleTexture.Width, circleTexture.Height),
-                            Color.White);
-                    }
-                    else
-                    {
-                        //Only apply shader when space is clicked
-                        if (ClickHandler.IsClicked(Keys.Space))
-                        {
-                            spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: testShader);
-                        }
-                        else
-                        {
-                            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-                        }
-
-                        
-                        GraphicsDevice.Clear(Color.Transparent);
-
-                        spriteBatch.Draw(previousRt,
-                            new Rectangle(0, 0, (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier), (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier)),
-                            Color.White);
-                    }
-
-                    Globals.spriteBatch.End();
-                    Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
-                    GraphicsDevice.Clear(Color.Black);
-                    Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-                    Globals.spriteBatch.Draw(rt,
-                        new Rectangle(0, 0, Globals.Camera.Height, Globals.Camera.Height),
+                    GraphicsDevice.SetRenderTarget(null);
+                    spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+                    spriteBatch.Draw(BackgroundRt,
+                        new Rectangle(0, 0, (int)(iResolution.X / EntityBatch.PixelateMultiplier), (int)(iResolution.Y / EntityBatch.PixelateMultiplier)),
                         Color.White);
-                    Globals.spriteBatch.End();
+                    spriteBatch.End();
 
-                    if (!isFirst)
-                    {
-                        previousRt.Dispose();
-                        circleTexture.Dispose();
-                    }
-
-                    previousRt = rt;
-
-                    isFirst = false;
                     break;
 
                 case Globals.GameStates.GameLoop:
@@ -247,7 +235,7 @@ namespace lukewarm_snake
             Globals.spriteBatch.DrawString(Globals.defaultFont,
                 $"FPS:{FPS}",
                 Vector2.Zero,
-                Color.Black);
+                Color.White);
             Globals.spriteBatch.End();
 
             base.Draw(gameTime);

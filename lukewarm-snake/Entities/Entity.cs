@@ -25,7 +25,8 @@ namespace BlackMagic
 
         private Effect CRTShader;
         private float CRTTimer = 0f;
-        public const float PixelateMultiplier = 1f / 8f;
+        public const int PixelateScaler = 8;
+        public const float PixelateMultiplier = 1f / PixelateScaler;
 
         private Effect shockwaveShader;
         private float shockwaveTimer = 0f;
