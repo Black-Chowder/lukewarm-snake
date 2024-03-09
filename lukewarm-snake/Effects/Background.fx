@@ -32,8 +32,7 @@
 //Shader parameters
 float iTimer;
 float2 iWaveCenter;
-//float2 texelSize;
-float damping;
+float Damping;
 float2 iResolution;
 
 Texture2D Current;
@@ -113,83 +112,8 @@ float4 MainPS(VertexShaderOutput input) : COLOR
         tex2D(PreviousSampler, input.TextureCoordinates + float2(0, -texelSize.y))
     ) / 2 - fragColor;
     
-    fragColor *= damping;
-    /*
-    if (input.TextureCoordinates.x > 0.5)
-    {
-        fragColor = tex2D(PreviousSampler, input.TextureCoordinates);
-    }
-    else
-    {
-        fragColor = tex2D(CurrentSampler, input.TextureCoordinates);
-    }
-    */
-    //else
-    //{
-    //    fragColor = tex2D(CurrentSampler, input.TextureCoordinates);
-    //}
-    
+    fragColor *= Damping;
 
-    /* Idea behind moving the normal in their direction
-    float2 pixelSize = 1.0 / iResolution;
-
-    float kernelSize = 8.0;
-    float3 final = float3(0.0, 0.0, 0.0);
-    for (float x = -kernelSize / 2.0; x < kernelSize / 2.0; x++)
-    {
-        for (float y = -kernelSize / 2.0; y < kernelSize / 2.0; y++)
-        {
-            float4 other = tex2D(SpriteTextureSampler, input.TextureCoordinates + pixelSize * float2(x, y));
-            other.xy = other.xy * 2.0 - 1.0;
-
-            float otherNormalAngle = atan2(other.y, other.x);
-
-            float angleToSelf = atan2(y, x);
-
-            float otherInfluenceAngle = clamp(dot(otherNormalAngle, angleToSelf), 0.0, 1.0);
-
-            float2 otherInfluence = float2(cos(otherInfluenceAngle), sin(otherInfluenceAngle));
-
-            final += float3(otherInfluence, other.a);
-        }
-    }
-    final /= pow(kernelSize, 2.0);
-    final = final * 0.5 + 0.5;
-    fragColor = float4(final.xy, 0.0, final.z);
-    */
-
-
-    /*
-    float Tau = 6.28318530718; // Pi*2
-    
-    // GAUSSIAN BLUR SETTINGS {{{
-    float Directions = 16.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
-    float Quality = 3.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
-    float Size = 8.0; // BLUR SIZE (Radius)
-    // GAUSSIAN BLUR SETTINGS }}}
-   
-    float2 Radius = Size / iResolution.xy;
-    
-    // Normalized pixel coordinates (from 0 to 1)
-    float2 uv = input.TextureCoordinates/ iResolution.xy;
-    // Pixel colour
-    float4 Color = tex2D(SpriteTextureSampler, input.TextureCoordinates);
-    
-    // Blur calculations
-    for (float d = 0.0; d < Tau; d += Tau / Directions)
-    {
-        for (float i = 1.0 / Quality; i <= 1.0; i += 1.0 / Quality)
-        {
-            Color += tex2D(SpriteTextureSampler, input.TextureCoordinates + float2(cos(d), sin(d)) * Radius * i);
-        }
-    }
-    
-    // Output to screen
-    Color /= Quality * Directions - 15.0;
-    fragColor.r = Color.r;
-    fragColor.gba = float3(0.0, 0.0, 1.0);
-    */
-    
     /*
     float2 offset = float2(1.0, 1.0);
     offset *= iTimer;
@@ -202,7 +126,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
         fragColor = FOAM_COLOR;
     else
         fragColor = input.Color;
-*/
+    */
 
     return fragColor;
 }

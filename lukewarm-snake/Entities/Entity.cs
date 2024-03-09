@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using SharpDX.MediaFoundation;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BlackMagic.Globals;
 
 namespace BlackMagic
 {
@@ -28,8 +30,14 @@ namespace BlackMagic
         public const int PixelateScaler = 8;
         public const float PixelateMultiplier = 1f / PixelateScaler;
 
-        private Effect shockwaveShader;
-        private float shockwaveTimer = 0f;
+        //Background effect variables
+        private Effect BackgroundEffect;
+        private RenderTarget2D BackgroundBuffer1;
+        private RenderTarget2D BackgroundBuffer2;
+        private RenderTarget2D BackgroundRt;
+        private Point iResolution;
+        private const float Damping = 0.99f;
+        private const int BrushSize = 1;
 
         public RenderTarget2D rt { get; private set; }
         private RenderTarget2D rtBuffer;
@@ -41,9 +49,13 @@ namespace BlackMagic
             entityBuckets = new Dictionary<Type, List<Entity>>();
 
             CRTShader ??= Globals.content.Load<Effect>(@"Effects/Pixel");
-            shockwaveShader ??= Globals.content.Load<Effect>(@"Effects/ShockWave");
             rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(1600 * PixelateMultiplier), (int)(900 * PixelateMultiplier));
             rtBuffer = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(1600 * PixelateMultiplier), (int)(900 * PixelateMultiplier));
+
+            BackgroundEffect = content.Load<Effect>(@"Effects/Background");
+            BackgroundBuffer1 = new RenderTarget2D(spriteBatch.GraphicsDevice, (int)(Globals.Camera.Width * PixelateMultiplier), (int)(Globals.Camera.Height * PixelateMultiplier));
+            BackgroundBuffer2 = new RenderTarget2D(spriteBatch.GraphicsDevice, (int)(Globals.Camera.Width * PixelateMultiplier), (int)(Globals.Camera.Height * PixelateMultiplier));
+            BackgroundRt = BackgroundBuffer1;
         }
 
         public void InitTraitBucket<T>()
@@ -139,30 +151,62 @@ namespace BlackMagic
             CRTShader.Parameters["vinVal"].SetValue(0.3f);
             CRTShader.CurrentTechnique.Passes[0].Apply();
 
-            shockwaveTimer += 0.017f;
-            shockwaveShader.Parameters["iTime"].SetValue(shockwaveTimer);
-            shockwaveShader.Parameters["iResolution"].SetValue(new Vector2(rt.Width, rt.Height));
-            shockwaveShader.CurrentTechnique.Passes[0].Apply();
-
-            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);
-            Globals.spriteBatch.GraphicsDevice.Clear(new Color(118, 59, 54));
-            Globals.spriteBatch.Begin(SpriteSortMode.BackToFront, samplerState: SamplerState.PointClamp);
+            spriteBatch.GraphicsDevice.SetRenderTarget(rt);
+            spriteBatch.GraphicsDevice.Clear(/*new Color(118, 59, 54)*/ Color.Transparent);
+            spriteBatch.Begin(SpriteSortMode.BackToFront, samplerState: SamplerState.PointClamp);
             for (int i = 0; i < entities.Count; i++)
                 entities[i].Draw();
-            Globals.spriteBatch.End();
+            spriteBatch.End();
 
-            /*
-            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rtBuffer);
-            Globals.spriteBatch.GraphicsDevice.Clear(new Color(118, 59, 54));
-            Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: shockwaveShader);
-            Globals.spriteBatch.Draw(rt, new Rectangle(0, 0, rt.Width, rt.Height), Color.White);
-            Globals.spriteBatch.End();
-            */
 
-            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
-            Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: CRTShader);
-            Globals.spriteBatch.Draw(rt, new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height), Color.White);
-            Globals.spriteBatch.End();
+            MouseState mouseState = Mouse.GetState();
+            Point mousePos = mouseState.Position;
+            bool isMousePressed = mouseState.LeftButton == ButtonState.Pressed;
+
+            RenderTarget2D newPrev = new RenderTarget2D(spriteBatch.GraphicsDevice, BackgroundBuffer1.Width, BackgroundBuffer1.Height);
+            spriteBatch.GraphicsDevice.SetRenderTarget(newPrev);
+            spriteBatch.Begin(sortMode: SpriteSortMode.Immediate);
+            spriteBatch.Draw(BackgroundBuffer1, Vector2.Zero, Color.White);
+            spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
+                new Rectangle((int)(mousePos.X * PixelateMultiplier), (int)(mousePos.Y * PixelateMultiplier), 1, 1),
+                Color.White);
+            spriteBatch.End();
+            spriteBatch.GraphicsDevice.SetRenderTarget(null);
+
+            BackgroundBuffer1.Dispose();
+            BackgroundBuffer1 = newPrev;
+
+
+
+            BackgroundEffect.Parameters["iResolution"].SetValue(new Vector2(BackgroundRt.Width, BackgroundRt.Height));
+            BackgroundEffect.Parameters["Damping"].SetValue(Damping);
+            BackgroundEffect.Parameters["Previous"].SetValue(BackgroundBuffer1);
+            BackgroundEffect.CurrentTechnique.Passes[0].Apply();
+
+            BackgroundRt = new RenderTarget2D(spriteBatch.GraphicsDevice, BackgroundRt.Width, BackgroundRt.Height);
+            spriteBatch.GraphicsDevice.SetRenderTarget(BackgroundRt);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(effect: BackgroundEffect);
+            spriteBatch.Draw(BackgroundBuffer2, Vector2.Zero, Color.White);
+            spriteBatch.End();
+
+            BackgroundBuffer2.Dispose();
+            BackgroundBuffer2 = BackgroundRt;
+
+            (BackgroundBuffer2, BackgroundBuffer1) = (BackgroundBuffer1, BackgroundBuffer2);
+
+
+            spriteBatch.GraphicsDevice.SetRenderTarget(null);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: CRTShader, sortMode: SpriteSortMode.Immediate);
+
+            spriteBatch.Draw(BackgroundRt,
+                new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height),
+                Color.White);
+
+            spriteBatch.Draw(rt, new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height), Color.White);
+
+
+            spriteBatch.End();
 
         }
 

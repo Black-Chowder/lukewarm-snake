@@ -58,7 +58,7 @@ namespace lukewarm_snake
         protected override void Initialize()
         {
             //Globals.GameState = Globals.GameStates.StartGame;
-            Globals.GameState = Globals.GameStates.Test;
+            Globals.GameState = Globals.GameStates.StartGame;
             IsMouseVisible = true;
 
             iResolution = new Point((int)(Globals.Camera.Width * EntityBatch.PixelateMultiplier), (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier));
