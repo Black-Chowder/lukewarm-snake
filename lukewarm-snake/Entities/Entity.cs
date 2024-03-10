@@ -32,9 +32,11 @@ namespace BlackMagic
 
         //Background effect variables
         private Effect BackgroundEffect;
+        public RenderTarget2D RippleInfluenceBuffer { get; set; }
         public RenderTarget2D BackgroundBuffer1 { get; set; }
         private RenderTarget2D backgroundBuffer2;
         private RenderTarget2D nextBackgroundFrame;
+        private RenderTarget2D hiddenRippleInfluenceBuffer;
         private const float Damping = 0.99f;
 
         public RenderTarget2D rt { get; private set; }
@@ -54,6 +56,8 @@ namespace BlackMagic
             BackgroundBuffer1 = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
             backgroundBuffer2 = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
             nextBackgroundFrame = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
+            RippleInfluenceBuffer = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
+            hiddenRippleInfluenceBuffer = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
         }
 
         public void InitTraitBucket<T>()
@@ -154,6 +158,21 @@ namespace BlackMagic
 
 
             /*  <Handle Background Effect>  */
+
+            //Add ripple influence buffer to background buffer 1
+            spriteBatch.GraphicsDevice.SetRenderTarget(hiddenRippleInfluenceBuffer);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin();
+            spriteBatch.Draw(BackgroundBuffer1,
+                new Rectangle(0, 0, BackgroundBuffer1.Width, BackgroundBuffer1.Height),
+                Color.White);
+            spriteBatch.Draw(RippleInfluenceBuffer, Vector2.Zero, Color.White);
+            spriteBatch.End();
+
+            //Swap buffers
+            (BackgroundBuffer1, hiddenRippleInfluenceBuffer) = (hiddenRippleInfluenceBuffer, BackgroundBuffer1);
+            spriteBatch.GraphicsDevice.SetRenderTarget(null);
+
             //Set parameters
             BackgroundEffect.Parameters["iResolution"].SetValue(new Vector2(nextBackgroundFrame.Width, nextBackgroundFrame.Height));
             BackgroundEffect.Parameters["Damping"].SetValue(Damping);
@@ -176,6 +195,7 @@ namespace BlackMagic
 
             //Swap buffers
             (backgroundBuffer2, BackgroundBuffer1) = (BackgroundBuffer1, backgroundBuffer2);
+
             /*  </Handle Background Effect>  */
 
 
