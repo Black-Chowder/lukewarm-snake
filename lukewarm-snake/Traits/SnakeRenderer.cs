@@ -18,7 +18,8 @@ namespace lukewarm_snake
         //Describe head
         private static RenderTarget2D headTexture;
         private const int headRtBuffer = 4;
-        private float headAngle = 0f;
+        public float HeadAngle { get; private set; } = 0f;
+        public const int HeadSize = 17;
 
         //Describe eyes
         private static RenderTarget2D eyeTexture;
@@ -177,13 +178,13 @@ namespace lukewarm_snake
 
             //Calculate head angle
             if (tail.Anchors.First() != parent.Pos)
-                headAngle = (tail.Anchors.First.Next.Value - parent.Pos).Atan2();
+                HeadAngle = (tail.Anchors.First.Next.Value - parent.Pos).Atan2();
 
             Globals.spriteBatch.Draw(headTexture,
                 new Vector2(rtHead.Width, rtHead.Height) / 2f,
                 new Rectangle(0, 0, headTexture.Width, headTexture.Height),
                 Color.White,
-                headAngle - MathF.PI / 2f,
+                HeadAngle - MathF.PI / 2f,
                 new Vector2(headTexture.Width, headTexture.Height) / 2f,
                 1f,
                 SpriteEffects.None,
@@ -199,7 +200,7 @@ namespace lukewarm_snake
 
             //Draw head
             drawPos = (parent.Pos) * EntityBatch.PixelateMultiplier;
-            Rectangle drawRect = new((int)drawPos.X, (int)drawPos.Y, 17, 17);
+            Rectangle drawRect = new((int)drawPos.X, (int)drawPos.Y, HeadSize, HeadSize);
 
             Globals.spriteBatch.Draw(rtHead,
                 drawRect,
@@ -255,7 +256,7 @@ namespace lukewarm_snake
             Globals.spriteBatch.Draw(rtBorder, Vector2.Zero, Color.White);
 
             //Calculate eye angles to look at food
-            float targetEyesAngle = headAngle - MathF.PI;
+            float targetEyesAngle = HeadAngle - MathF.PI;
             List<Entity> foodEntities = parent.batch.GetEntityBucket<Food>();
             if (foodEntities.Count > 0)
             {
@@ -283,7 +284,7 @@ namespace lukewarm_snake
             {
                 Vector2 curEyeOffset = i == 0 ? eyeOffset : new Vector2(eyeOffset.X, -eyeOffset.Y);
                 float eyeOffsetAngle = curEyeOffset.Atan2();
-                Vector2 angleAdjustedOffset = (eyeOffsetAngle + headAngle).ToVector2() * eyeOffsetMagnitude;
+                Vector2 angleAdjustedOffset = (eyeOffsetAngle + HeadAngle).ToVector2() * eyeOffsetMagnitude;
 
                 Globals.spriteBatch.Draw(eyeTexture,
                     (parent.Pos + angleAdjustedOffset) * EntityBatch.PixelateMultiplier,

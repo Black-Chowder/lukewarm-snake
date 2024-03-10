@@ -13,22 +13,48 @@ namespace lukewarm_snake
 {
     public class SnakeRippleHandler : TUpdates
     {
-        public int Priority { get => Trait.defaultPriority; }
+        private Entity parent;
 
-        public SnakeRippleHandler() { }
+        private static RenderTarget2D headTexture;
+
+        public int Priority { get => Trait.defaultPriority; }
+        public SnakeRippleHandler(Entity parent) 
+        {
+            this.parent = parent;
+
+            //Prerender head texture
+            if (headTexture is null)
+            {
+                Texture2D rawHeadTexture = content.Load<Texture2D>(@"Graphics/SnakeHead");
+                headTexture = new RenderTarget2D(spriteBatch.GraphicsDevice, rawHeadTexture.Width, rawHeadTexture.Height);
+                spriteBatch.GraphicsDevice.SetRenderTarget(headTexture);
+                spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+                spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+                spriteBatch.Draw(rawHeadTexture, Vector2.Zero, Color.White);
+                spriteBatch.End();
+                rawHeadTexture.Dispose();
+            }
+        }
 
         public void Update()
         {
-            MouseState mouseState = Mouse.GetState();
-            Point mousePos = mouseState.Position;
+            //Apply head influence to water ripple buffer
 
             spriteBatch.GraphicsDevice.SetRenderTarget(MainEntityBatch.RippleInfluenceBuffer);
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
             spriteBatch.Begin();
 
-            spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
-                new Vector2((int)(mousePos.X * EntityBatch.PixelateMultiplier), (int)(mousePos.Y * EntityBatch.PixelateMultiplier)),
-                Color.White);
+            Vector2 drawPos = parent.Pos * EntityBatch.PixelateMultiplier;
+            Rectangle drawRect = new((int)drawPos.X, (int)drawPos.Y, SnakeRenderer.HeadSize, SnakeRenderer.HeadSize);
+
+            spriteBatch.Draw(headTexture,
+                drawRect,
+                null,
+                Color.White,
+                parent.GetTrait<SnakeRenderer>().HeadAngle - MathF.PI / 2f,
+                new Vector2(headTexture.Width, headTexture.Height) / 2f,
+                SpriteEffects.None,
+                0f);
 
             spriteBatch.End();
             spriteBatch.GraphicsDevice.SetRenderTarget(null);

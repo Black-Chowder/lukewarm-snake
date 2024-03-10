@@ -25,7 +25,7 @@ namespace lukewarm_snake
             tailRenderer = new(this, tailHandler);
             AddTrait(tailRenderer);
 
-            rippleHandler = new();
+            rippleHandler = new(this);
             AddTrait(rippleHandler);
 
             snakeController = new(this, tailHandler);
