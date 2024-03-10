@@ -17,7 +17,7 @@ namespace lukewarm_snake
 
         //Background effect variables
         private Effect BackgroundEffect;
-        private RenderTarget2D BackgroundBuffer1;
+        public RenderTarget2D BackgroundBuffer1;
         private RenderTarget2D BackgroundBuffer2;
         private RenderTarget2D BackgroundRt;
         private Point iResolution;

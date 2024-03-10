@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -97,7 +98,7 @@ namespace lukewarm_snake
                 Anchors.RemoveLast();
         }
 
-        public const int AnchorSize = 10;
+        public const int AnchorSize = 50;
         private const int halfAnchorSize = AnchorSize / 2;
         public void DrawAnchors()
         {

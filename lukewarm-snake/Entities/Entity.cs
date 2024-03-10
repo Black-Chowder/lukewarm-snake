@@ -32,12 +32,10 @@ namespace BlackMagic
 
         //Background effect variables
         private Effect BackgroundEffect;
-        private RenderTarget2D BackgroundBuffer1;
-        private RenderTarget2D BackgroundBuffer2;
-        private RenderTarget2D BackgroundRt;
-        private Point iResolution;
+        public RenderTarget2D BackgroundBuffer1 { get; set; }
+        private RenderTarget2D backgroundBuffer2;
+        private RenderTarget2D nextBackgroundFrame;
         private const float Damping = 0.99f;
-        private const int BrushSize = 1;
 
         public RenderTarget2D rt { get; private set; }
         private RenderTarget2D rtBuffer;
@@ -49,13 +47,13 @@ namespace BlackMagic
             entityBuckets = new Dictionary<Type, List<Entity>>();
 
             CRTShader ??= Globals.content.Load<Effect>(@"Effects/Pixel");
-            rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(1600 * PixelateMultiplier), (int)(900 * PixelateMultiplier));
-            rtBuffer = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(1600 * PixelateMultiplier), (int)(900 * PixelateMultiplier));
+            rt = new RenderTarget2D(spriteBatch.GraphicsDevice, (int)(Globals.Camera.Width * PixelateMultiplier), (int)(Globals.Camera.Height * PixelateMultiplier));
+            rtBuffer = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
 
             BackgroundEffect = content.Load<Effect>(@"Effects/Background");
-            BackgroundBuffer1 = new RenderTarget2D(spriteBatch.GraphicsDevice, (int)(Globals.Camera.Width * PixelateMultiplier), (int)(Globals.Camera.Height * PixelateMultiplier));
-            BackgroundBuffer2 = new RenderTarget2D(spriteBatch.GraphicsDevice, (int)(Globals.Camera.Width * PixelateMultiplier), (int)(Globals.Camera.Height * PixelateMultiplier));
-            BackgroundRt = BackgroundBuffer1;
+            BackgroundBuffer1 = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
+            backgroundBuffer2 = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
+            nextBackgroundFrame = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
         }
 
         public void InitTraitBucket<T>()
@@ -146,11 +144,7 @@ namespace BlackMagic
 
         public void Draw()
         {
-            CRTTimer -= 0.017f;
-            CRTShader.Parameters["iTime"].SetValue(CRTTimer);
-            CRTShader.Parameters["vinVal"].SetValue(0.3f);
-            CRTShader.CurrentTechnique.Passes[0].Apply();
-
+            //Draw entities to main render target
             spriteBatch.GraphicsDevice.SetRenderTarget(rt);
             spriteBatch.GraphicsDevice.Clear(/*new Color(118, 59, 54)*/ Color.Transparent);
             spriteBatch.Begin(SpriteSortMode.BackToFront, samplerState: SamplerState.PointClamp);
@@ -159,55 +153,51 @@ namespace BlackMagic
             spriteBatch.End();
 
 
-            MouseState mouseState = Mouse.GetState();
-            Point mousePos = mouseState.Position;
-            bool isMousePressed = mouseState.LeftButton == ButtonState.Pressed;
-
-            RenderTarget2D newPrev = new RenderTarget2D(spriteBatch.GraphicsDevice, BackgroundBuffer1.Width, BackgroundBuffer1.Height);
-            spriteBatch.GraphicsDevice.SetRenderTarget(newPrev);
-            spriteBatch.Begin(sortMode: SpriteSortMode.Immediate);
-            spriteBatch.Draw(BackgroundBuffer1, Vector2.Zero, Color.White);
-            spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
-                new Rectangle((int)(mousePos.X * PixelateMultiplier), (int)(mousePos.Y * PixelateMultiplier), 1, 1),
-                Color.White);
-            spriteBatch.End();
-            spriteBatch.GraphicsDevice.SetRenderTarget(null);
-
-            BackgroundBuffer1.Dispose();
-            BackgroundBuffer1 = newPrev;
-
-
-
-            BackgroundEffect.Parameters["iResolution"].SetValue(new Vector2(BackgroundRt.Width, BackgroundRt.Height));
+            /*  <Handle Background Effect>  */
+            //Set parameters
+            BackgroundEffect.Parameters["iResolution"].SetValue(new Vector2(nextBackgroundFrame.Width, nextBackgroundFrame.Height));
             BackgroundEffect.Parameters["Damping"].SetValue(Damping);
             BackgroundEffect.Parameters["Previous"].SetValue(BackgroundBuffer1);
             BackgroundEffect.CurrentTechnique.Passes[0].Apply();
 
-            BackgroundRt = new RenderTarget2D(spriteBatch.GraphicsDevice, BackgroundRt.Width, BackgroundRt.Height);
-            spriteBatch.GraphicsDevice.SetRenderTarget(BackgroundRt);
+            //Calculate new frame of background
+            spriteBatch.GraphicsDevice.SetRenderTarget(nextBackgroundFrame);
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
             spriteBatch.Begin(effect: BackgroundEffect);
-            spriteBatch.Draw(BackgroundBuffer2, Vector2.Zero, Color.White);
+            spriteBatch.Draw(backgroundBuffer2, Vector2.Zero, Color.White);
             spriteBatch.End();
 
-            BackgroundBuffer2.Dispose();
-            BackgroundBuffer2 = BackgroundRt;
+            //Copy contents of BackgroundRt to BackgroundBuffer2
+            spriteBatch.GraphicsDevice.SetRenderTarget(backgroundBuffer2);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin();
+            spriteBatch.Draw(nextBackgroundFrame, Vector2.Zero, Color.White);
+            spriteBatch.End();
 
-            (BackgroundBuffer2, BackgroundBuffer1) = (BackgroundBuffer1, BackgroundBuffer2);
+            //Swap buffers
+            (backgroundBuffer2, BackgroundBuffer1) = (BackgroundBuffer1, backgroundBuffer2);
+            /*  </Handle Background Effect>  */
 
+
+            //Draw to screen
+            CRTTimer -= 0.017f;
+            CRTShader.Parameters["iTime"].SetValue(CRTTimer);
+            CRTShader.Parameters["vinVal"].SetValue(0.3f);
+            CRTShader.CurrentTechnique.Passes[0].Apply();
 
             spriteBatch.GraphicsDevice.SetRenderTarget(null);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: CRTShader, sortMode: SpriteSortMode.Immediate);
 
-            spriteBatch.Draw(BackgroundRt,
+            //Draw background
+            spriteBatch.Draw(BackgroundBuffer1,
                 new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height),
                 Color.White);
 
+            //Draw sprites
             spriteBatch.Draw(rt, new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height), Color.White);
 
-
             spriteBatch.End();
-
         }
 
         public void Dispose()

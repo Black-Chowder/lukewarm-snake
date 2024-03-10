@@ -46,7 +46,6 @@ namespace lukewarm_snake
                     SpriteEffects.None,
                     0f);
                 Globals.spriteBatch.End();
-                Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
             }
 
             rtBuffer = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, Globals.MainEntityBatch.rt.Width, Globals.MainEntityBatch.rt.Height);
@@ -84,8 +83,6 @@ namespace lukewarm_snake
             Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: border);
             Globals.spriteBatch.Draw(rtBuffer, Vector2.Zero, Color.White);
             Globals.spriteBatch.End();
-
-            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
         }
 
         public void Draw() => Globals.spriteBatch.Draw(rt, Vector2.Zero, Color.White);

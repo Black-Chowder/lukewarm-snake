@@ -56,7 +56,7 @@ namespace lukewarm_snake
             this.parent = parent;
             this.tail = tail;
 
-            
+
             //Load border effect
             border ??= Globals.content.Load<Effect>(@"Effects/Border");
 
@@ -76,9 +76,8 @@ namespace lukewarm_snake
                     Vector2.Zero,
                     Color.Green);
                 Globals.spriteBatch.End();
-                Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
             }
-            
+
 
             //Create body texture
             circleShader ??= Globals.content.Load<Effect>(@"Effects/CircleMask");
@@ -98,7 +97,6 @@ namespace lukewarm_snake
                     SpriteEffects.None,
                     0f);
                 Globals.spriteBatch.End();
-                Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
             }
 
 
@@ -146,14 +144,14 @@ namespace lukewarm_snake
                     1f,
                     SpriteEffects.None,
                     0f);
-                
+
                 Globals.spriteBatch.End();
             }
 
 
             //Initialize render targets
             rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, rtSize.X, rtSize.Y);
-            rtHead = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, headTexture.Width + headRtBuffer, headTexture.Height + headRtBuffer); 
+            rtHead = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, headTexture.Width + headRtBuffer, headTexture.Height + headRtBuffer);
             rtBody = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, rtSize.X, rtSize.Y);
             rtBorder = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, rtSize.X, rtSize.Y);
         }
@@ -218,7 +216,7 @@ namespace lukewarm_snake
             for (LinkedListNode<Vector2> cur = tail.Anchors.First, next = cur.Next; next != null; cur = cur.Next, next = cur.Next, tailIndex++)
             {
                 drawPos = Vector2.Lerp(next.Value, cur.Value, tail.FormingAnchorProgress) * EntityBatch.PixelateMultiplier;
-                
+
                 //Calculate draw scale
                 Vector2 drawScale = Vector2.One * EntityBatch.PixelateMultiplier;
                 int tailEndProgressIndex = tail.Anchors.Count - tailIndex;
@@ -299,6 +297,7 @@ namespace lukewarm_snake
             }
 
             Globals.spriteBatch.End();
+
             Globals.spriteBatch.GraphicsDevice.SetRenderTarget(null);
         }
 

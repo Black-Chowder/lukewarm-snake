@@ -13,6 +13,7 @@ namespace lukewarm_snake
         SnakeController snakeController;
         TailHandler tailHandler;
         SnakeRenderer tailRenderer;
+        SnakeRippleHandler rippleHandler;
         FoodEater snakeCollider;
         SnakeHealth health;
         public Snake() : base(new Vector2(Globals.Camera.Width, Globals.Camera.Height) / 2f)
@@ -23,6 +24,9 @@ namespace lukewarm_snake
 
             tailRenderer = new(this, tailHandler);
             AddTrait(tailRenderer);
+
+            rippleHandler = new();
+            AddTrait(rippleHandler);
 
             snakeController = new(this, tailHandler);
             AddTrait(snakeController);
