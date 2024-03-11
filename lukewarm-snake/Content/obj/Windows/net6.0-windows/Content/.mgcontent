@@ -11,6 +11,7 @@
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/CircleUV.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/Pixel.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/ShockWave.fx</File>
+    <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/WaterRipple.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Graphics/SnakeHead.png</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/DefaultFont.spritefont</File>
   </SourceFiles>
@@ -22,6 +23,7 @@
     <File>Effects/CircleUV.fx</File>
     <File>Effects/Pixel.fx</File>
     <File>Effects/ShockWave.fx</File>
+    <File>Effects/WaterRipple.fx</File>
     <File>Graphics/SnakeHead.png</File>
     <File xsi:nil="true" />
   </DestFiles>

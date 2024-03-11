@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using lukewarm_snake;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SharpDX.MediaFoundation;
@@ -32,12 +33,19 @@ namespace BlackMagic
 
         //Background effect variables
         private Effect BackgroundEffect;
+        private RenderTarget2D backgroundRt;
+        private float backgroundEffectTimer = 0f;
+
+        //Water ripple effect variables
+        private Effect WaterRippleEffect;
         public RenderTarget2D RippleInfluenceBuffer { get; set; }
-        public RenderTarget2D BackgroundBuffer1 { get; set; }
-        private RenderTarget2D backgroundBuffer2;
-        private RenderTarget2D nextBackgroundFrame;
         private RenderTarget2D hiddenRippleInfluenceBuffer;
+        private RenderTarget2D rippleBuffer1;
+        private RenderTarget2D rippleBuffer2;
+        private RenderTarget2D nextRippleFrame;
         private const float Damping = 0.99f;
+        private const float TimeStep = 16f;
+        private float rippleEffectTimeAccumulator = TimeStep + 1f;
 
         public RenderTarget2D rt { get; private set; }
         private RenderTarget2D rtBuffer;
@@ -52,12 +60,15 @@ namespace BlackMagic
             rt = new RenderTarget2D(spriteBatch.GraphicsDevice, (int)(Globals.Camera.Width * PixelateMultiplier), (int)(Globals.Camera.Height * PixelateMultiplier));
             rtBuffer = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
 
-            BackgroundEffect = content.Load<Effect>(@"Effects/Background");
-            BackgroundBuffer1 = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
-            backgroundBuffer2 = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
-            nextBackgroundFrame = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
+            WaterRippleEffect = content.Load<Effect>(@"Effects/WaterRipple");
+            rippleBuffer1 = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
+            rippleBuffer2 = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
+            nextRippleFrame = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
             RippleInfluenceBuffer = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
             hiddenRippleInfluenceBuffer = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
+
+            BackgroundEffect = content.Load<Effect>(@"Effects/Background");
+            backgroundRt = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
         }
 
         public void InitTraitBucket<T>()
@@ -159,42 +170,69 @@ namespace BlackMagic
 
             /*  <Handle Background Effect>  */
 
+            /*  <Water Ripple Effect>  */
+
             //Add ripple influence buffer to background buffer 1
             spriteBatch.GraphicsDevice.SetRenderTarget(hiddenRippleInfluenceBuffer);
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
             spriteBatch.Begin();
-            spriteBatch.Draw(BackgroundBuffer1,
-                new Rectangle(0, 0, BackgroundBuffer1.Width, BackgroundBuffer1.Height),
+            spriteBatch.Draw(rippleBuffer1,
+                new Rectangle(0, 0, rippleBuffer1.Width, rippleBuffer1.Height),
                 Color.White);
             spriteBatch.Draw(RippleInfluenceBuffer, Vector2.Zero, Color.White);
             spriteBatch.End();
 
             //Swap buffers
-            (BackgroundBuffer1, hiddenRippleInfluenceBuffer) = (hiddenRippleInfluenceBuffer, BackgroundBuffer1);
+            (rippleBuffer1, hiddenRippleInfluenceBuffer) = (hiddenRippleInfluenceBuffer, rippleBuffer1);
             spriteBatch.GraphicsDevice.SetRenderTarget(null);
 
-            //Set parameters
-            BackgroundEffect.Parameters["iResolution"].SetValue(new Vector2(nextBackgroundFrame.Width, nextBackgroundFrame.Height));
-            BackgroundEffect.Parameters["Damping"].SetValue(Damping);
-            BackgroundEffect.Parameters["Previous"].SetValue(BackgroundBuffer1);
-            BackgroundEffect.CurrentTechnique.Passes[0].Apply();
+            //Handle time manipulation
+            rippleEffectTimeAccumulator += MathF.Max(TimeMod, MinTimeMod);
+            if (ClickHandler.IsClicked(Keys.Space))
+            {
+                Debug.WriteLine($"Time Mod = {TimeMod} | Time Accumulator = {rippleEffectTimeAccumulator}");
+            }
+            for(; rippleEffectTimeAccumulator > TimeStep; rippleEffectTimeAccumulator -= TimeStep)
+            {
+                //Set parameters
+                WaterRippleEffect.Parameters["iResolution"].SetValue(new Vector2(nextRippleFrame.Width, nextRippleFrame.Height));
+                WaterRippleEffect.Parameters["Damping"].SetValue(Damping);
+                WaterRippleEffect.Parameters["Previous"].SetValue(rippleBuffer1);
+                WaterRippleEffect.CurrentTechnique.Passes[0].Apply();
 
-            //Calculate new frame of background
-            spriteBatch.GraphicsDevice.SetRenderTarget(nextBackgroundFrame);
-            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-            spriteBatch.Begin(effect: BackgroundEffect);
-            spriteBatch.Draw(backgroundBuffer2, Vector2.Zero, Color.White);
-            spriteBatch.End();
+                //Calculate new frame of background
+                spriteBatch.GraphicsDevice.SetRenderTarget(nextRippleFrame);
+                spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+                spriteBatch.Begin(effect: WaterRippleEffect);
+                spriteBatch.Draw(rippleBuffer2, Vector2.Zero, Color.White);
+                spriteBatch.End();
 
-            //Copy contents of BackgroundRt to BackgroundBuffer2
-            spriteBatch.GraphicsDevice.SetRenderTarget(backgroundBuffer2);
-            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-            spriteBatch.Begin();
-            spriteBatch.Draw(nextBackgroundFrame, Vector2.Zero, Color.White);
-            spriteBatch.End();
+                //Copy contents of BackgroundRt to BackgroundBuffer2
+                spriteBatch.GraphicsDevice.SetRenderTarget(rippleBuffer2);
+                spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+                spriteBatch.Begin();
+                spriteBatch.Draw(nextRippleFrame, Vector2.Zero, Color.White);
+                spriteBatch.End();
 
-            //Swap buffers
-            (backgroundBuffer2, BackgroundBuffer1) = (BackgroundBuffer1, backgroundBuffer2);
+                //Swap buffers
+                (rippleBuffer2, rippleBuffer1) = (rippleBuffer1, rippleBuffer2);
+                /*  </Water Ripple Effect>  */
+
+                /*  <Background Effect>  */
+                //Set parameters
+                backgroundEffectTimer += MathF.Max(TimeMod, MinTimeMod) / 10000f;
+                BackgroundEffect.Parameters["iTimer"].SetValue(backgroundEffectTimer);
+                BackgroundEffect.CurrentTechnique.Passes[0].Apply();
+
+                //Render background
+                spriteBatch.GraphicsDevice.SetRenderTarget(backgroundRt);
+                spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+                spriteBatch.Begin(effect: BackgroundEffect);
+                spriteBatch.Draw(rippleBuffer1, Vector2.Zero, Color.White);
+                spriteBatch.End();
+            }
+
+            /*  </Background Effect>  */
 
             /*  </Handle Background Effect>  */
 
@@ -210,7 +248,7 @@ namespace BlackMagic
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: CRTShader, sortMode: SpriteSortMode.Immediate);
 
             //Draw background
-            spriteBatch.Draw(BackgroundBuffer1,
+            spriteBatch.Draw(backgroundRt,
                 new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height),
                 Color.White);
 

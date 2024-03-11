@@ -12,13 +12,18 @@
 
 //  <Foam Constants>    //
 #define FOAM_COLOR float4(1.0, 1.0, 1.0, 1.0)
+#define WATER_COLOR float4(100.0/255.0, 149.0/255.0, 237.0/255.0, 1.0)
 
 //Thresholds for what should be colored FOAM_COLOR
 #define LOWER_FOAM_THRESHOLD 0.0
 #define UPPER_FOAM_THRESHOLD 1.0
+#define INPUT_FOAM_THRESHOLD 0.25
 
 //Scale multiplier of simplex noise input coordinates
 #define SIMPLEX_SCALE 2.0
+
+//Scale multiplier of timer
+#define TIMER_SCALE float2(1.5, 1.5)
 
 //Scaler for z-axis variation of noise over time
 #define Z_TIMER_MULTIPLIER 0.8
@@ -31,20 +36,11 @@
 
 //Shader parameters
 float iTimer;
-float2 iWaveCenter;
-float Damping;
-float2 iResolution;
 
-Texture2D Current;
-sampler2D CurrentSampler = sampler_state
+Texture2D SpriteTexture;
+sampler2D SpriteTextureSampler = sampler_state
 {
-    Texture = <Current>;
-};
-
-Texture2D Previous;
-sampler2D PreviousSampler = sampler_state
-{
-    Texture = <Previous>;
+    Texture = <SpriteTexture>;
 };
 
 struct VertexShaderOutput
@@ -100,33 +96,17 @@ float simplexNoise3D(float3 p) {
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 fragColor = float4(1.0, 1.0, 1.0, 1.0);
-    fragColor = tex2D(CurrentSampler, input.TextureCoordinates);
-    
-    float2 texelSize = 1.0f / iResolution;
-    
-    fragColor = (
-        tex2D(PreviousSampler, input.TextureCoordinates + float2(texelSize.x, 0)) +
-        tex2D(PreviousSampler, input.TextureCoordinates + float2(-texelSize.x, 0)) +
-        tex2D(PreviousSampler, input.TextureCoordinates + float2(0, texelSize.y)) +
-        tex2D(PreviousSampler, input.TextureCoordinates + float2(0, -texelSize.y))
-    ) / 2 - fragColor;
-    
-    fragColor *= Damping;
-
-    /*
+    float4 fragColor = tex2D(SpriteTextureSampler, input.TextureCoordinates);
     float2 offset = float2(1.0, 1.0);
     offset *= iTimer;
 
-    float2 sampleCoords2D = input.TextureCoordinates + iTimer;
+    float2 sampleCoords2D = input.TextureCoordinates + iTimer * TIMER_SCALE;
     float val = simplexNoise3D(float3(((input.TextureCoordinates + iTimer) * SIMPLEX_SCALE).xy, iTimer * Z_TIMER_MULTIPLIER));
-
-    fragColor = float4(0.0, 0.0, 0.0, 0.0);
-    if (val > LOWER_FOAM_THRESHOLD && val < UPPER_FOAM_THRESHOLD)
+    
+    if ((val > LOWER_FOAM_THRESHOLD && val < UPPER_FOAM_THRESHOLD) || fragColor.r > INPUT_FOAM_THRESHOLD)
         fragColor = FOAM_COLOR;
     else
-        fragColor = input.Color;
-    */
+        fragColor = WATER_COLOR;
 
     return fragColor;
 }

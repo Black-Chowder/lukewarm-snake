@@ -13,7 +13,7 @@ namespace lukewarm_snake
         private Entity parent;
         public Vector2 Heading;
 
-        public const float MinTimeMod = 0.5f;
+        public static float MinTimeMod { get => Globals.MinTimeMod; }
 
         public int Priority => Trait.defaultPriority;
 

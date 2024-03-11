@@ -39,6 +39,7 @@ namespace BlackMagic
         public static Random rnd = new Random();
 
         public static float TimeMod = 1f;
+        public static float MinTimeMod = 0.5f;
 
         public const float ShadowAngle = 5f * MathF.PI / 4f;
     }
