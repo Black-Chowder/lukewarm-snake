@@ -33,7 +33,13 @@ namespace lukewarm_snake
 
         //Describe body
         private RenderTarget2D bodyTexture;
+        private RenderTarget2D bandBodyTexture;
         public const float BodyRadius = 50f;
+        public static Color MainBodyColor => new Color(130, 74, 22);
+        public static Color BandBodyColor => new Color(64, 36, 10);
+        public static Color ShadowBodyColor => new Color(64, 36, 10);
+        public static Color ShadowBandColor => new Color(0, 0, 0);
+        private const int BandFrequency = 5;
 
         //Describe end of tail
         public const int ShrinkBeginIndex = 15;
@@ -75,7 +81,7 @@ namespace lukewarm_snake
                 Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp);
                 Globals.spriteBatch.Draw(rawHeadTexture,
                     Vector2.Zero,
-                    Color.Green);
+                    MainBodyColor);
                 Globals.spriteBatch.End();
             }
 
@@ -91,7 +97,25 @@ namespace lukewarm_snake
                 Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice),
                     Vector2.Zero,
                     new Rectangle(0, 0, 1, 1),
-                    Color.Green,
+                    MainBodyColor,
+                    0f,
+                    Vector2.Zero,
+                    new Vector2(bodyTexture.Width, bodyTexture.Height),
+                    SpriteEffects.None,
+                    0f);
+                Globals.spriteBatch.End();
+            }
+
+            if (bandBodyTexture is null)
+            {
+                bandBodyTexture = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, (int)(BodyRadius * 2f), (int)(BodyRadius * 2f));
+                Globals.spriteBatch.GraphicsDevice.SetRenderTarget(bandBodyTexture);
+                Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+                Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: circleShader);
+                Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice),
+                    Vector2.Zero,
+                    new Rectangle(0, 0, 1, 1),
+                    BandBodyColor,
                     0f,
                     Vector2.Zero,
                     new Vector2(bodyTexture.Width, bodyTexture.Height),
@@ -162,7 +186,6 @@ namespace lukewarm_snake
         public void Prerender()
         {
             Vector2 drawPos;
-            Color shadowBodyColor = new Color(0f, 0.2f, 0f, 1f);
 
             border.Parameters["OutlineColor"].SetValue(new Vector4(0, 0, 0, 1));
             border.Parameters["texelSize"].SetValue(new Vector2(1f / (rt.Width - 1f), 1f / (rt.Height - 1f)));
@@ -205,7 +228,7 @@ namespace lukewarm_snake
             Globals.spriteBatch.Draw(rtHead,
                 drawRect,
                 null,
-                shadowBodyColor,
+                ShadowBodyColor,
                 0f,
                 new Vector2(rtHead.Width, rtHead.Height) / 2f,
                 SpriteEffects.None,
@@ -224,11 +247,19 @@ namespace lukewarm_snake
                 if (tailEndProgressIndex <= ShrinkBeginIndex)
                     drawScale = Vector2.One * EntityBatch.PixelateMultiplier * MathHelper.Lerp(TailEndRadius, BodyRadius, (float)tailEndProgressIndex / ShrinkBeginIndex) / BodyRadius;
 
+                RenderTarget2D curBodyTexture = bodyTexture;
+                Color shadowColor = ShadowBodyColor;
+                if (tailIndex % BandFrequency == 0)
+                {
+                    curBodyTexture = bandBodyTexture;
+                    shadowColor = ShadowBandColor;
+                }
+
                 //Draw body ball
-                Globals.spriteBatch.Draw(bodyTexture,
+                Globals.spriteBatch.Draw(curBodyTexture,
                     drawPos,
                     new Rectangle(0, 0, bodyTexture.Width, bodyTexture.Height),
-                    shadowBodyColor,
+                    shadowColor,
                     0f,
                     new Vector2(bodyTexture.Width, bodyTexture.Height) / 2f,
                     drawScale,
