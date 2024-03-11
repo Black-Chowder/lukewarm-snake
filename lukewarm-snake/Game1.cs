@@ -15,15 +15,6 @@ namespace lukewarm_snake
     {
         public static GraphicsDeviceManager graphics;
 
-        //Background effect variables
-        private Effect BackgroundEffect;
-        public RenderTarget2D BackgroundBuffer1;
-        private RenderTarget2D BackgroundBuffer2;
-        private RenderTarget2D BackgroundRt;
-        private Point iResolution;
-        private const float Damping = 0.99f;
-        private const int BrushSize = 1;
-
         //fixed update variables
         private float previousT = 0f;
         private float accumulator = 0f;
@@ -58,14 +49,8 @@ namespace lukewarm_snake
         protected override void Initialize()
         {
             //Globals.GameState = Globals.GameStates.StartGame;
-            Globals.GameState = Globals.GameStates.StartGame;
-            IsMouseVisible = true;
-
-            iResolution = new Point((int)(Globals.Camera.Width * EntityBatch.PixelateMultiplier), (int)(Globals.Camera.Height * EntityBatch.PixelateMultiplier));
-
-            BackgroundBuffer1 = new RenderTarget2D(GraphicsDevice, iResolution.X, iResolution.Y);
-            BackgroundBuffer2 = new RenderTarget2D(GraphicsDevice, iResolution.X, iResolution.Y);
-            BackgroundRt = BackgroundBuffer2;
+            GameState = GameStates.StartGame;
+            IsMouseVisible = false;
 
             base.Initialize();
         }
@@ -76,14 +61,11 @@ namespace lukewarm_snake
             content = Content;
             defaultFont = Content.Load<SpriteFont>(@"DefaultFont");
 
-            BackgroundEffect = Content.Load<Effect>(@"Effects/Background");
-
-            // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
         {
-            Globals.gt = gameTime;
+            gt = gameTime;
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -101,88 +83,37 @@ namespace lukewarm_snake
             previousT = now;
             accumulator += frameTime;
 
-            while (accumulator >= Globals.fixedUpdateDelta)
+            while (accumulator >= fixedUpdateDelta)
             {
                 FixedUpdate();
-                accumulator -= Globals.fixedUpdateDelta;
+                accumulator -= fixedUpdateDelta;
             }
 
-            Globals.ALPHA = (accumulator / Globals.fixedUpdateDelta);
+            ALPHA = (accumulator / fixedUpdateDelta);
             //  </Handle Fixed Update>  //
 
             //Normal update loop
-            switch (Globals.GameState)
+            switch (GameState)
             {
-                case Globals.GameStates.Test:
-                    Globals.GameState = Globals.GameStates.TestLoop;
-                    goto case Globals.GameStates.TestLoop;
+                case GameStates.Test:
+                    GameState = GameStates.TestLoop;
+                    goto case GameStates.TestLoop;
 
-                case Globals.GameStates.TestLoop:
-
-                    /*  <Handle Input>  */
-                    //Get mouse input
-                    MouseState mouseState = Mouse.GetState();
-                    Point mousePos = mouseState.Position;
-                    bool isMousePressed = mouseState.LeftButton == ButtonState.Pressed;
-
-                    if (isMousePressed)
-                    {
-                        //Handle input for shader-based effect
-                        RenderTarget2D newPrev = new RenderTarget2D(GraphicsDevice, iResolution.X, iResolution.Y);
-                        GraphicsDevice.SetRenderTarget(newPrev);
-                        spriteBatch.Begin();
-                        spriteBatch.Draw(BackgroundBuffer1, Vector2.Zero, Color.White);
-                        spriteBatch.Draw(DrawUtils.createTexture(GraphicsDevice),
-                            new Rectangle((int)(mousePos.X * EntityBatch.PixelateMultiplier), (int)(mousePos.Y * EntityBatch.PixelateMultiplier), BrushSize, BrushSize),
-                            Color.White);
-                        spriteBatch.End();
-                        GraphicsDevice.SetRenderTarget(null);
-
-                        BackgroundBuffer1.Dispose();
-                        BackgroundBuffer1 = newPrev;
-                    }
-
-                    /*  </Handle Input>  */
-
-                    /*  <Itterate Background Effect>  */
-
-                    //Set effect parameters
-                    BackgroundEffect.Parameters["iResolution"].SetValue(iResolution.ToVector2());
-                    BackgroundEffect.Parameters["damping"].SetValue(Damping);
-                    BackgroundEffect.Parameters["Previous"].SetValue(BackgroundBuffer1);
-
-                    //Calculate new frame
-                    BackgroundRt = new RenderTarget2D(GraphicsDevice, iResolution.X, iResolution.Y);
-                    GraphicsDevice.SetRenderTarget(BackgroundRt);
-                    GraphicsDevice.Clear(Color.Black);
-                    spriteBatch.Begin(effect: BackgroundEffect);
-                    spriteBatch.Draw(BackgroundBuffer2, Vector2.Zero, Color.White);
-                    spriteBatch.End();
-                    GraphicsDevice.SetRenderTarget(null);
-
-                    //Set current render target to new frame
-                    BackgroundBuffer2.Dispose();
-                    BackgroundBuffer2 = BackgroundRt;
-
-                    //Swap
-                    (BackgroundBuffer2, BackgroundBuffer1) = (BackgroundBuffer1, BackgroundBuffer2);
-
-                    /*  </Itterate Background Effect>  */
-
+                case GameStates.TestLoop:
                     break;
 
-                case Globals.GameStates.StartGame:
-                    Globals.MainEntityBatch?.Dispose();
-                    Globals.MainEntityBatch = new();
-                    Globals.MainEntityBatch.InitEntityBucket<Food>();
-                    Globals.MainEntityBatch.InitEntityBucket<Obstacle>();
-                    Globals.MainEntityBatch.Add(new Snake());
-                    Globals.MainEntityBatch.Add(new SpawnManager());
-                    Globals.GameState = Globals.GameStates.GameLoop;
-                    goto case Globals.GameStates.GameLoop;
+                case GameStates.StartGame:
+                    MainEntityBatch?.Dispose();
+                    MainEntityBatch = new();
+                    MainEntityBatch.InitEntityBucket<Food>();
+                    MainEntityBatch.InitEntityBucket<Obstacle>();
+                    MainEntityBatch.Add(new Snake());
+                    MainEntityBatch.Add(new SpawnManager());
+                    GameState = GameStates.GameLoop;
+                    goto case GameStates.GameLoop;
 
-                case Globals.GameStates.GameLoop:
-                    Globals.MainEntityBatch.Update();
+                case GameStates.GameLoop:
+                    MainEntityBatch.Update();
                     break;
             }
 
@@ -191,11 +122,11 @@ namespace lukewarm_snake
 
         private void FixedUpdate()
         {
-            switch (Globals.GameState)
+            switch (GameState)
             {
-                case Globals.GameStates.TestLoop: break;
-                case Globals.GameStates.GameLoop:
-                    Globals.MainEntityBatch.FixedUpdate();
+                case GameStates.TestLoop: break;
+                case GameStates.GameLoop:
+                    MainEntityBatch.FixedUpdate();
                     break;
             }
         }
@@ -205,38 +136,29 @@ namespace lukewarm_snake
             //penumbra.BeginDraw();
             GraphicsDevice.Clear(Color.Black/*new Color(118, 59, 54)*/);
 
-            switch (Globals.GameState)
+            switch (GameState)
             {
-                case Globals.GameStates.TestLoop:
-
-
-                    GraphicsDevice.SetRenderTarget(null);
-                    spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-                    spriteBatch.Draw(BackgroundRt,
-                        new Rectangle(0, 0, (int)(iResolution.X / EntityBatch.PixelateMultiplier), (int)(iResolution.Y / EntityBatch.PixelateMultiplier)),
-                        Color.White);
-                    spriteBatch.End();
-
+                case GameStates.TestLoop:
                     break;
 
-                case Globals.GameStates.GameLoop:
-                    Globals.MainEntityBatch.Draw();
+                case GameStates.GameLoop:
+                    MainEntityBatch.Draw();
                     break;
             }
 
             //Display average fps in top-left corner
-            Globals.spriteBatch.Begin();
-            float FPS = MathF.Round(1f / (float)Globals.gt.ElapsedGameTime.TotalSeconds);
+            spriteBatch.Begin();
+            float FPS = MathF.Round(1f / (float)gt.ElapsedGameTime.TotalSeconds);
             if (fpss.Count >= 100)
                 fpss.Dequeue();
             fpss.Enqueue(FPS);
             FPS = fpss.Average();
 
-            Globals.spriteBatch.DrawString(Globals.defaultFont,
+            spriteBatch.DrawString(defaultFont,
                 $"FPS:{FPS}",
                 Vector2.Zero,
                 Color.White);
-            Globals.spriteBatch.End();
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
