@@ -30,7 +30,7 @@ namespace lukewarm_snake
         public override void Update()
         {
             //Spawn obstacles
-            SpawnObstacleAccumulator += MathF.Max(ObstacleMovement.MinTimeMod, Globals.TimeMod);
+            SpawnObstacleAccumulator += MathF.Max(Globals.MinTimeMod, Globals.TimeMod);
             while (SpawnObstacleAccumulator > SpawnObstacleRate)
             {
                 SpawnObstacleAccumulator -= SpawnObstacleRate;

@@ -4,6 +4,7 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
+    <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/Background.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/BodyShadow.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/Border.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/CircleMask.fx</File>
@@ -11,10 +12,12 @@
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/Pixel.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/ShockWave.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/WaterRipple.fx</File>
+    <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Graphics/Bullet.png</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Graphics/SnakeHead.png</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/DefaultFont.spritefont</File>
   </SourceFiles>
   <DestFiles>
+    <File>Effects/Background.fx</File>
     <File>Effects/BodyShadow.fx</File>
     <File>Effects/Border.fx</File>
     <File>Effects/CircleMask.fx</File>
@@ -22,6 +25,7 @@
     <File>Effects/Pixel.fx</File>
     <File>Effects/ShockWave.fx</File>
     <File>Effects/WaterRipple.fx</File>
+    <File>Graphics/Bullet.png</File>
     <File>Graphics/SnakeHead.png</File>
     <File xsi:nil="true" />
   </DestFiles>

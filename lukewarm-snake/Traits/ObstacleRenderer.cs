@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BlackMagic;
+using static BlackMagic.Globals;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -14,11 +15,15 @@ namespace lukewarm_snake
     {
         public Entity parent;
 
-        public const int ObstacleRadius = 50;
+        public const int ObstacleRadius = 35;
 
-        private static RenderTarget2D texture;
+        private static Texture2D bulletMask;
+        private static Point BulletSize => new Point(100, 100);
         private RenderTarget2D rtBuffer;
         private RenderTarget2D rt;
+
+        private const bool DrawHitbox = false;
+        private static RenderTarget2D hitboxTexture;
 
         private static Effect border;
 
@@ -28,31 +33,33 @@ namespace lukewarm_snake
         {
             this.parent = parent;
 
+            bulletMask ??= content.Load<Texture2D>(@"Graphics/Bullet");
+
             //Create center circle texture
-            if (texture is null)
+            if (hitboxTexture is null)
             {
                 int biggestFoodRadius = ObstacleRadius;
-                texture = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, biggestFoodRadius * 2, biggestFoodRadius * 2);
-                Globals.spriteBatch.GraphicsDevice.SetRenderTarget(texture);
-                Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-                Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: Globals.content.Load<Effect>(@"Effects/CircleMask"));
-                Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice),
+                hitboxTexture = new RenderTarget2D(spriteBatch.GraphicsDevice, biggestFoodRadius * 2, biggestFoodRadius * 2);
+                spriteBatch.GraphicsDevice.SetRenderTarget(hitboxTexture);
+                spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+                spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: content.Load<Effect>(@"Effects/CircleMask"));
+                spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
                     Vector2.Zero,
                     new Rectangle(0, 0, 1, 1),
                     Color.White,
                     0f,
                 Vector2.Zero,
-                new Vector2(texture.Width, texture.Height),
+                new Vector2(hitboxTexture.Width, hitboxTexture.Height),
                     SpriteEffects.None,
                     0f);
-                Globals.spriteBatch.End();
+                spriteBatch.End();
             }
 
-            rtBuffer = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, Globals.MainEntityBatch.rt.Width, Globals.MainEntityBatch.rt.Height);
-            rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, Globals.MainEntityBatch.rt.Width, Globals.MainEntityBatch.rt.Height);
+            rtBuffer = new RenderTarget2D(spriteBatch.GraphicsDevice, MainEntityBatch.rt.Width, MainEntityBatch.rt.Height);
+            rt = new RenderTarget2D(spriteBatch.GraphicsDevice, MainEntityBatch.rt.Width, MainEntityBatch.rt.Height);
 
             //Load border effect
-            border ??= Globals.content.Load<Effect>(@"Effects/Border");
+            border ??= content.Load<Effect>(@"Effects/Border");
         }
 
         public void Update()
@@ -66,29 +73,40 @@ namespace lukewarm_snake
             border.Parameters["texelSize"].SetValue(new Vector2(1f / (rt.Width - 1f), 1f / (rt.Height - 1f)));
             border.CurrentTechnique.Passes[0].Apply();
 
-            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rtBuffer);
-            Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-            Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            spriteBatch.GraphicsDevice.SetRenderTarget(rtBuffer);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-            Globals.spriteBatch.Draw(texture,
+            if (DrawHitbox)
+                spriteBatch.Draw(hitboxTexture,
+                    parent.DrawPos * EntityBatch.PixelateMultiplier,
+                    new Rectangle(0, 0, hitboxTexture.Width, hitboxTexture.Height),
+                    Color.Red,
+                    0f,
+                    new Vector2(hitboxTexture.Width, hitboxTexture.Height) / 2f,
+                    EntityBatch.PixelateMultiplier,
+                    SpriteEffects.None,
+                    0f);
+
+            spriteBatch.Draw(bulletMask,
                 parent.DrawPos * EntityBatch.PixelateMultiplier,
-                new Rectangle(0, 0, texture.Width, texture.Height),
-                Color.Red,
-                0f,
-                new Vector2(texture.Width, texture.Height) / 2f,
-                EntityBatch.PixelateMultiplier,
+                null,
+                Color.White,
+                parent.GetTrait<ObstacleMovement>().Heading.Atan2(),
+                new Vector2(bulletMask.Width, bulletMask.Height) / 2f,
+                BulletSize.ToVector2() / new Vector2(bulletMask.Width, bulletMask.Height) * EntityBatch.PixelateMultiplier,
                 SpriteEffects.None,
                 0f);
 
-            Globals.spriteBatch.End();
-            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);
-            Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-            Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: border);
-            Globals.spriteBatch.Draw(rtBuffer, Vector2.Zero, Color.White);
-            Globals.spriteBatch.End();
+            spriteBatch.End();
+            spriteBatch.GraphicsDevice.SetRenderTarget(rt);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: border);
+            spriteBatch.Draw(rtBuffer, Vector2.Zero, Color.White);
+            spriteBatch.End();
         }
 
-        public void Draw() => Globals.spriteBatch.Draw(rt, Vector2.Zero, Color.White);
+        public void Draw() => spriteBatch.Draw(rt, Vector2.Zero, Color.White);
 
         public void DisposeIndividual() //I'll have to actually handle individual disposing better but this'll work for now
         {

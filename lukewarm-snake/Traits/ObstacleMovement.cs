@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BlackMagic;
 using Microsoft.Xna.Framework;
+using static BlackMagic.Globals;
 
 namespace lukewarm_snake
 {
@@ -13,10 +14,7 @@ namespace lukewarm_snake
         private Entity parent;
         public Vector2 Heading;
 
-        public static float MinTimeMod { get => Globals.MinTimeMod; }
-
         public int Priority => Trait.defaultPriority;
-
         public ObstacleMovement(Entity parent, Vector2 heading)
         {
             this.parent = parent;
@@ -25,7 +23,7 @@ namespace lukewarm_snake
 
         public void Update()
         {
-            parent.DeltaPos = Heading * (Globals.TimeMod < MinTimeMod ? MinTimeMod : Globals.TimeMod);
+            parent.DeltaPos = Heading * (TimeMod < MinTimeMod ? MinTimeMod : TimeMod);
 
             if (((new Vector2(Globals.Camera.Width, Globals.Camera.Height) / 2f) - parent.Pos).Length() > SpawnManager.ObstacleSpawnDist)
             {
