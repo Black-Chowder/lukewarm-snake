@@ -91,7 +91,7 @@ namespace lukewarm_snake
             spriteBatch.Draw(bulletMask,
                 parent.DrawPos * EntityBatch.PixelateMultiplier,
                 null,
-                Color.White,
+                Color.Black,
                 parent.GetTrait<ObstacleMovement>().Heading.Atan2(),
                 new Vector2(bulletMask.Width, bulletMask.Height) / 2f,
                 BulletSize.ToVector2() / new Vector2(bulletMask.Width, bulletMask.Height) * EntityBatch.PixelateMultiplier,

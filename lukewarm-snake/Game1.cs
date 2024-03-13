@@ -15,6 +15,11 @@ namespace lukewarm_snake
     {
         public static GraphicsDeviceManager graphics;
 
+        //Test effect stuff
+        private Effect testEffect;
+        private RenderTarget2D testRt;
+        private float iTimer = 0f;
+
         //fixed update variables
         private float previousT = 0f;
         private float accumulator = 0f;
@@ -49,7 +54,7 @@ namespace lukewarm_snake
         protected override void Initialize()
         {
             //Globals.GameState = Globals.GameStates.StartGame;
-            GameState = GameStates.StartGame;
+            GameState = GameStates.Test;
             IsMouseVisible = false;
 
             base.Initialize();
@@ -61,6 +66,7 @@ namespace lukewarm_snake
             content = Content;
             defaultFont = Content.Load<SpriteFont>(@"DefaultFont");
 
+            testEffect = Content.Load<Effect>(@"Effects/BulletTail");
         }
 
         protected override void Update(GameTime gameTime)
@@ -139,6 +145,18 @@ namespace lukewarm_snake
             switch (GameState)
             {
                 case GameStates.TestLoop:
+                    iTimer += 0.001f;
+
+                    testEffect.Parameters["iTimer"].SetValue(iTimer);
+
+                    spriteBatch.GraphicsDevice.SetRenderTarget(null);
+                    spriteBatch.GraphicsDevice.Clear(Color.Black);
+                    spriteBatch.Begin(effect: testEffect);
+                    spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
+                        new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height),
+                        Color.White);
+                    spriteBatch.End();
+
                     break;
 
                 case GameStates.GameLoop:

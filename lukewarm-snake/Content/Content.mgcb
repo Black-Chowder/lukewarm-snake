@@ -31,6 +31,12 @@
 /processorParam:DebugMode=Auto
 /build:../Effects/Border.fx;Effects/Border.fx
 
+#begin ../Effects/BulletTail.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:../Effects/BulletTail.fx;Effects/BulletTail.fx
+
 #begin ../Effects/CircleMask.fx
 /importer:EffectImporter
 /processor:EffectProcessor
