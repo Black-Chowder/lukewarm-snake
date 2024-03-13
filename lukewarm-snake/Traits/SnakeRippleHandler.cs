@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace lukewarm_snake
 {
-    public class SnakeRippleHandler : TUpdates
+    public class SnakeRippleHandler : TDrawsRippleInfluence
     {
         private Entity parent;
 
@@ -36,14 +36,8 @@ namespace lukewarm_snake
             }
         }
 
-        public void Update()
+        public void DrawRippleInfluence()
         {
-            //Apply head influence to water ripple buffer
-
-            spriteBatch.GraphicsDevice.SetRenderTarget(MainEntityBatch.RippleInfluenceBuffer);
-            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-            spriteBatch.Begin();
-
             Vector2 drawPos = parent.Pos * EntityBatch.PixelateMultiplier;
             Rectangle drawRect = new((int)drawPos.X, (int)drawPos.Y, SnakeRenderer.HeadSize, SnakeRenderer.HeadSize);
 
@@ -55,9 +49,6 @@ namespace lukewarm_snake
                 new Vector2(headTexture.Width, headTexture.Height) / 2f,
                 SpriteEffects.None,
                 0f);
-
-            spriteBatch.End();
-            spriteBatch.GraphicsDevice.SetRenderTarget(null);
         }
     }
 }

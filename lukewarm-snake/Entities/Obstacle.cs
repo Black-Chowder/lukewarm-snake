@@ -12,6 +12,7 @@ namespace lukewarm_snake
     {
         ObstacleMovement movement;
         ObstacleRenderer renderer;
+        ObstacleRippleHandler rippleHandler;
         public Obstacle(Vector2 pos, Vector2 heading) : base(pos)
         {
             movement = new(this, heading);
@@ -19,6 +20,9 @@ namespace lukewarm_snake
 
             renderer = new(this);
             AddTrait(renderer);
+
+            rippleHandler = new(this);
+            AddTrait(rippleHandler);
         }
     }
 }

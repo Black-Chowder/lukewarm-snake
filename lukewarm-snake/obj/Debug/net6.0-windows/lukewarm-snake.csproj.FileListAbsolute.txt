@@ -98,3 +98,5 @@ C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-w
 C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\CircleUV.xnb
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\WaterRipple.xnb
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Graphics\Bullet.xnb
+C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\WaterRipple.xnb
+C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Graphics\Bullet.xnb

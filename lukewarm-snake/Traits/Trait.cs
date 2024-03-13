@@ -49,4 +49,9 @@ namespace BlackMagic
         byte priority { get; }
         void FixedUpdate();
     }
+
+    public interface TDrawsRippleInfluence
+    {
+        void DrawRippleInfluence();
+    }
 }

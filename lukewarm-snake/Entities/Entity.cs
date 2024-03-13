@@ -157,8 +157,20 @@ namespace BlackMagic
                 entities[i].FixedUpdate();
         }
 
+        public void DrawRippleInfluence()
+        {
+            spriteBatch.GraphicsDevice.SetRenderTarget(RippleInfluenceBuffer);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            for (int i = 0; i < entities.Count; i++)
+                entities[i].DrawRippleInfluence();
+            spriteBatch.End();
+        }
+
         public void Draw()
         {
+            DrawRippleInfluence();
+
             //Draw entities to main render target
             spriteBatch.GraphicsDevice.SetRenderTarget(rt);
             spriteBatch.GraphicsDevice.Clear(/*new Color(118, 59, 54)*/ Color.Transparent);
@@ -272,6 +284,7 @@ namespace BlackMagic
         private List<TUpdates> tUpdates;
         private List<TDraws> tDraws;
         private List<TFixedUpdate> tFixedUpdates;
+        private List<TDrawsRippleInfluence> tDrawsRippleInfluences;
 
         public Vector2 Pos { get; set; }
         public float X
@@ -317,6 +330,7 @@ namespace BlackMagic
             tUpdates = new List<TUpdates>();
             tDraws = new List<TDraws>();
             tFixedUpdates = new List<TFixedUpdate>();
+            tDrawsRippleInfluences = new List<TDrawsRippleInfluence>();
             Pos = pos;
             prevPos = pos;
         }
@@ -345,7 +359,9 @@ namespace BlackMagic
                 tFixedUpdates.Add(tf);
                 tFixedUpdates.Sort((a, b) => { return a.priority.CompareTo(b.priority); });
             }
-                
+
+            if (t is TDrawsRippleInfluence tri)
+                tDrawsRippleInfluences.Add(tri);                
         }
 
         public T GetTrait<T>()
@@ -396,6 +412,14 @@ namespace BlackMagic
             DrawPos = Vector2.Lerp(prevPos, Pos, Globals.ALPHA);
             for (int i = 0; i < tDraws.Count; i++)
                 tDraws[i].Draw();
+        }
+
+        public virtual void DrawRippleInfluence()
+        {
+            if (!isVisible) return;
+            DrawPos = Vector2.Lerp(prevPos, Pos, Globals.ALPHA);
+            for (int i = 0; i < tDrawsRippleInfluences.Count; i++)
+                tDrawsRippleInfluences[i].DrawRippleInfluence();
         }
     }
 }
