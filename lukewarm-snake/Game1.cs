@@ -67,6 +67,8 @@ namespace lukewarm_snake
             defaultFont = Content.Load<SpriteFont>(@"DefaultFont");
 
             testEffect = Content.Load<Effect>(@"Effects/BulletTail");
+
+            testRt = new RenderTarget2D(GraphicsDevice, 1600, 900);
         }
 
         protected override void Update(GameTime gameTime)
@@ -145,14 +147,22 @@ namespace lukewarm_snake
             switch (GameState)
             {
                 case GameStates.TestLoop:
-                    iTimer += 0.001f;
+                    iTimer++;
 
                     testEffect.Parameters["iTimer"].SetValue(iTimer);
 
-                    spriteBatch.GraphicsDevice.SetRenderTarget(null);
-                    spriteBatch.GraphicsDevice.Clear(Color.Black);
+                    spriteBatch.GraphicsDevice.SetRenderTarget(testRt);
+                    spriteBatch.GraphicsDevice.Clear(Color.Transparent);
                     spriteBatch.Begin(effect: testEffect);
                     spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
+                        new Rectangle(0, 0, testRt.Width, testRt.Height),
+                        Color.White);
+                    spriteBatch.End();
+
+                    spriteBatch.GraphicsDevice.SetRenderTarget(null);
+                    spriteBatch.GraphicsDevice.Clear(Color.Black);
+                    spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+                    spriteBatch.Draw(testRt,
                         new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height),
                         Color.White);
                     spriteBatch.End();

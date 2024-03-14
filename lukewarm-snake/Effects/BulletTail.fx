@@ -10,6 +10,8 @@
 
 //Scale multiplier of simplex noise input coordinates
 #define SIMPLEX_SCALE 8.0
+#define WARP_SIMPLEX_SCALE 6.0
+#define WARP_INFLUENCE 0.025
 
 float iTimer;
 
@@ -28,11 +30,6 @@ struct VertexShaderOutput
 };
 
 //  <Simplex Noise> //
-
-//------------------------------------------------------------------------------------------
-// 3D Simplex Noise
-//------------------------------------------------------------------------------------------
-
 float2 hash(in float2 p)  // this hash is not production ready, please
 {                        // replace this by something better
 
@@ -74,16 +71,43 @@ float3 noised(in float2 p)
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-	float4 fragColor = float4(0.0, 1.0, 0.0, 1.0);
-	//return tex2D(SpriteTextureSampler,input.TextureCoordinates) * input.Color;
+	float4 fragColor = float4(0.0, 0.0, 0.0, 1.0);
+    
+    //Calculate sampling offset for noise values (warp)
+    float2 warpNoisePos = input.TextureCoordinates.xy + float2(iTimer * 0.001, 1.0);
+    warpNoisePos *= WARP_SIMPLEX_SCALE;
+    float2 warpNoiseVal = noised(warpNoisePos).yz;
 
     //Calculate noise value
-    float2 noiseSamplePos = input.TextureCoordinates.xy + float2(0.0, iTimer);
+    float2 noiseSamplePos = input.TextureCoordinates.xy + float2(0.0, iTimer * 0.005) + warpNoiseVal * WARP_INFLUENCE;
     noiseSamplePos *= SIMPLEX_SCALE;
 	float noiseVal = noised(noiseSamplePos).x;
-    noiseVal = (noiseVal + 0.5) * 0.5;
+    noiseVal = (noiseVal + 0.5) * 0.5; //Convert range from [-1,1] to [0,1]
 
-    fragColor.xyz = noiseVal;
+    //Apply octave to noise value
+    float2 octavePos = input.TextureCoordinates.xy + float2(1.0, iTimer * 0.0025) + warpNoiseVal * WARP_INFLUENCE;
+    octavePos *= SIMPLEX_SCALE * 3.5;
+    float octaveVal = noised(octavePos).x;
+    noiseVal += octaveVal * 0.175;
+    
+    //Get mirrored gradient value
+    float mirroredGradVal = input.TextureCoordinates.y * 0.5 + input.TextureCoordinates.x;
+    if (input.TextureCoordinates.x > 0.5) 
+        mirroredGradVal = input.TextureCoordinates.y * 0.5 + (1.0 - input.TextureCoordinates.x);
+    mirroredGradVal = 1.0 - mirroredGradVal;
+
+    //Increase gradient area
+    mirroredGradVal = smoothstep(0.0, 1.5, mirroredGradVal);
+
+    //Apply gradient to noise val
+    noiseVal -= mirroredGradVal;
+
+    //Make noise val solid color
+    noiseVal = step(0.125, noiseVal);
+    
+    //Apply to red channel of output
+    fragColor.r = noiseVal;
+
 
 	return fragColor;
 }
