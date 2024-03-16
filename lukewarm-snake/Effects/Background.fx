@@ -11,7 +11,7 @@
 #define PI 3.14159265359
 
 //  <Foam Constants>    //
-#define FOAM_COLOR float4(1.0, 1.0, 1.0, 1.0)
+#define FOAM_COLOR float4(120.0 / 255.0, 180.0 / 255.0, 1.0, 1.0)
 #define WATER_COLOR float4(100.0/255.0, 149.0/255.0, 237.0/255.0, 1.0)
 
 //Thresholds for what should be colored FOAM_COLOR
@@ -97,9 +97,17 @@ float simplexNoise3D(float3 p) {
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 fragColor = tex2D(SpriteTextureSampler, input.TextureCoordinates);
+
+    //fragColor = fragColor.r > INPUT_FOAM_VALUE ? FOAM_COLOR : WATER_COLOR
+    float stepVal = step(INPUT_FOAM_THRESHOLD, fragColor.r);
+    fragColor = FOAM_COLOR * stepVal + 
+                WATER_COLOR * (1.0 - stepVal);
+
+    //Noise background effect
+    /*
     float2 offset = float2(1.0, 1.0);
     offset *= iTimer;
-
+    
     float2 sampleCoords2D = input.TextureCoordinates + iTimer * TIMER_SCALE;
     float val = simplexNoise3D(float3(((input.TextureCoordinates + iTimer) * SIMPLEX_SCALE).xy, iTimer * Z_TIMER_MULTIPLIER));
     
@@ -107,6 +115,8 @@ float4 MainPS(VertexShaderOutput input) : COLOR
         fragColor = FOAM_COLOR;
     else
         fragColor = WATER_COLOR;
+    */
+
 
     return fragColor;
 }

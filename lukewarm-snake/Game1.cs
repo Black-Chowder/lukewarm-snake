@@ -54,7 +54,7 @@ namespace lukewarm_snake
         protected override void Initialize()
         {
             //Globals.GameState = Globals.GameStates.StartGame;
-            GameState = GameStates.Test;
+            GameState = GameStates.StartGame;
             IsMouseVisible = false;
 
             base.Initialize();
@@ -68,7 +68,7 @@ namespace lukewarm_snake
 
             testEffect = Content.Load<Effect>(@"Effects/BulletTail");
 
-            testRt = new RenderTarget2D(GraphicsDevice, 1600, 900);
+            testRt = new RenderTarget2D(GraphicsDevice, 10, 50);
         }
 
         protected override void Update(GameTime gameTime)
@@ -163,7 +163,7 @@ namespace lukewarm_snake
                     spriteBatch.GraphicsDevice.Clear(Color.Black);
                     spriteBatch.Begin(samplerState: SamplerState.PointClamp);
                     spriteBatch.Draw(testRt,
-                        new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height),
+                        new Rectangle(0, 0, Globals.Camera.Height / 5, Globals.Camera.Height),
                         Color.White);
                     spriteBatch.End();
 

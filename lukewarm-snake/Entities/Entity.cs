@@ -34,7 +34,6 @@ namespace BlackMagic
         //Background effect variables
         private Effect BackgroundEffect;
         private RenderTarget2D backgroundRt;
-        private float backgroundEffectTimer = 0f;
 
         //Water ripple effect variables
         private Effect WaterRippleEffect;
@@ -200,10 +199,6 @@ namespace BlackMagic
 
             //Handle time manipulation
             rippleEffectTimeAccumulator += MathF.Max(TimeMod, MinTimeMod);
-            if (ClickHandler.IsClicked(Keys.Space))
-            {
-                Debug.WriteLine($"Time Mod = {TimeMod} | Time Accumulator = {rippleEffectTimeAccumulator}");
-            }
             for(; rippleEffectTimeAccumulator > TimeStep; rippleEffectTimeAccumulator -= TimeStep)
             {
                 //Set parameters
@@ -230,13 +225,7 @@ namespace BlackMagic
                 (rippleBuffer2, rippleBuffer1) = (rippleBuffer1, rippleBuffer2);
                 /*  </Water Ripple Effect>  */
 
-                /*  <Background Effect>  */
-                //Set parameters
-                backgroundEffectTimer += MathF.Max(TimeMod, MinTimeMod) / 10000f;
-                BackgroundEffect.Parameters["iTimer"].SetValue(backgroundEffectTimer);
-                BackgroundEffect.CurrentTechnique.Passes[0].Apply();
-
-                //Render background
+                //Render Background
                 spriteBatch.GraphicsDevice.SetRenderTarget(backgroundRt);
                 spriteBatch.GraphicsDevice.Clear(Color.Transparent);
                 spriteBatch.Begin(effect: BackgroundEffect);
@@ -244,7 +233,6 @@ namespace BlackMagic
                 spriteBatch.End();
             }
 
-            /*  </Background Effect>  */
 
             /*  </Handle Background Effect>  */
 

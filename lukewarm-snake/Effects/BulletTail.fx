@@ -106,7 +106,8 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     noiseVal = step(0.125, noiseVal);
     
     //Apply to red channel of output
-    fragColor.r = noiseVal;
+    fragColor = input.Color * noiseVal;
+    fragColor.a *= noiseVal;
 
 
 	return fragColor;
