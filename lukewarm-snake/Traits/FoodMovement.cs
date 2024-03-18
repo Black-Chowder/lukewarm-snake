@@ -21,8 +21,14 @@ namespace lukewarm_snake
 
         //Timing variables
         private float timer = 0f;
-        private const float newMoveTimer = 200f,//Frequency at which food changes directions
-            newMoveTimerVariation = 100f;
+        private bool isMoving = true;
+
+        private const float newMoveTimer = 300f,//Frequency at which food changes directions
+            newMoveTimerVariation = 50f;
+
+        private const float waitTimer = 200f,
+            waitTimerVariation = 200f;
+
 
         int TUpdates.Priority => Trait.defaultPriority;
 
@@ -43,8 +49,18 @@ namespace lukewarm_snake
             timer -= MathF.Max(MinTimeMod, TimeMod);
             if (timer <= 0f)
             {
-                NewHeading();
-                timer = newMoveTimer + newMoveTimerVariation * (float)rnd.NextDouble() - 0.5f * 2f;
+                if (!isMoving)
+                {
+                    NewHeading();
+                    timer = newMoveTimer + newMoveTimerVariation * ((float)rnd.NextDouble() - 0.5f) * 2f;
+                }
+                else
+                {
+                    heading = Vector2.Zero;
+                    timer = waitTimer + waitTimerVariation * ((float)rnd.NextDouble() - 0.5f) * 2f;
+                }
+
+                isMoving = !isMoving;
             }
         }
 
