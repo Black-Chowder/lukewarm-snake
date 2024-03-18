@@ -11,10 +11,14 @@ namespace lukewarm_snake
     public class Food : Entity
     {
         FoodRenderer foodRenderer;
+        FoodMovement movement;
         public Food(Vector2 pos) : base(pos)
         {
             foodRenderer = new FoodRenderer(this);
             AddTrait(foodRenderer);
+
+            movement = new(this);
+            AddTrait(movement);
         }
     }
 }
