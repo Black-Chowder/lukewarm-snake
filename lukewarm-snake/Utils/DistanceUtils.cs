@@ -167,5 +167,61 @@ namespace BlackMagic
             float heightHalf = rectangle.Height / 2f;
             return (float)Math.Sqrt(widthHalf * widthHalf + heightHalf * heightHalf);
         }
+
+        public static float GetEnclosingRadius(Rectangle rectangle)
+        {
+            // Calculate the center of the rectangle
+            Vector2 center = new Vector2(rectangle.X + rectangle.Width / 2f, rectangle.Y + rectangle.Height / 2f);
+
+            // Calculate distances from the center to each corner
+            float[] distances = new float[4];
+            distances[0] = Vector2.Distance(center, new Vector2(rectangle.Left, rectangle.Top));
+            distances[1] = Vector2.Distance(center, new Vector2(rectangle.Right, rectangle.Top));
+            distances[2] = Vector2.Distance(center, new Vector2(rectangle.Left, rectangle.Bottom));
+            distances[3] = Vector2.Distance(center, new Vector2(rectangle.Right, rectangle.Bottom));
+
+            // Find the maximum distance
+            float maxDistance = distances[0];
+            for (int i = 1; i < distances.Length; i++)
+            {
+                if (distances[i] > maxDistance)
+                    maxDistance = distances[i];
+            }
+
+            // Return the maximum distance as the radius
+            return maxDistance;
+        }
+
+        public static float[] GetEncompassingAngles(Rectangle rectangle, Vector2 point)
+        {
+            // Calculate the center of the rectangle
+            Vector2 center = new Vector2(rectangle.X + rectangle.Width / 2f, rectangle.Y + rectangle.Height / 2f);
+
+            // Calculate the vector from the center to the point
+            Vector2 toPoint = point - center;
+
+            // Calculate the vectors from the center to each corner of the rectangle
+            Vector2[] cornerVectors = new Vector2[4];
+            cornerVectors[0] = new Vector2(rectangle.Left, rectangle.Top) - center;
+            cornerVectors[1] = new Vector2(rectangle.Right, rectangle.Top) - center;
+            cornerVectors[2] = new Vector2(rectangle.Left, rectangle.Bottom) - center;
+            cornerVectors[3] = new Vector2(rectangle.Right, rectangle.Bottom) - center;
+
+            // Calculate the angles between the vector to the point and each corner vector
+            float[] angles = new float[4];
+            for (int i = 0; i < cornerVectors.Length; i++)
+            {
+                angles[i] = MathHelper.ToDegrees((float)Math.Atan2(cornerVectors[i].Y, cornerVectors[i].X) -
+                                                 (float)Math.Atan2(toPoint.Y, toPoint.X));
+                if (angles[i] < 0)
+                    angles[i] += 360;
+            }
+
+            // Find the two smallest angles
+            Array.Sort(angles);
+            float[] encompassingAngles = { angles[0], angles[1] };
+
+            return encompassingAngles;
+        }
     }
 }

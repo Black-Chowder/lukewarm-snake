@@ -11,11 +11,11 @@ namespace lukewarm_snake
 {
     public class ObstacleMovement : TUpdates
     {
-        private Entity parent;
+        private Obstacle parent;
         public Vector2 Heading;
 
         public int Priority => Trait.defaultPriority;
-        public ObstacleMovement(Entity parent, Vector2 heading)
+        public ObstacleMovement(Obstacle parent, Vector2 heading)
         {
             this.parent = parent;
             Heading = heading;
@@ -25,10 +25,11 @@ namespace lukewarm_snake
         {
             parent.DeltaPos = Heading * (TimeMod < MinTimeMod ? MinTimeMod : TimeMod);
 
-            if (((new Vector2(Globals.Camera.Width, Globals.Camera.Height) / 2f) - parent.Pos).Length() > SpawnManager.ObstacleSpawnDist)
+            if (((new Vector2(Globals.Camera.Width, Globals.Camera.Height) / 2f) - parent.Pos).Length() > ObstacleManager.ObstacleSpawnDist)
             {
-                parent.GetTrait<ObstacleRenderer>().DisposeIndividual();
-                parent.exists = false;
+                //parent.GetTrait<ObstacleRenderer>().DisposeIndividual();
+                //parent.exists = false;
+                //parent.IsActive = false;
             }
         }
     }

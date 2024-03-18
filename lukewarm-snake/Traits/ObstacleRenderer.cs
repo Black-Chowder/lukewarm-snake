@@ -25,7 +25,7 @@ namespace lukewarm_snake
         //Bullet trail effects
         private static Effect tailEffect;
         private RenderTarget2D tailRt;
-        private float iTimer = 0f;
+        private float tailTimer = 0f;
 
         private const bool DrawHitbox = false;
         private static RenderTarget2D hitboxTexture;
@@ -42,6 +42,7 @@ namespace lukewarm_snake
 
             tailEffect ??= content.Load<Effect>(@"Effects/BulletTail");
             tailRt = new RenderTarget2D(spriteBatch.GraphicsDevice, (int)(BulletSize.X * 0.6f), BulletSize.Y * 4);
+            tailTimer = (float)rnd.NextDouble();
 
             //Create center circle texture
             if (hitboxTexture is null)
@@ -70,16 +71,13 @@ namespace lukewarm_snake
             border ??= content.Load<Effect>(@"Effects/Border");
         }
 
-        public void Update()
-        {
-            if (parent.exists) Prerender();
-        }
+        public void Update() => Prerender();
 
         public void Prerender()
         {
             //Prerender tail
-            iTimer += MathF.Max(TimeMod, MinTimeMod) * 0.1f;
-            tailEffect.Parameters["iTimer"].SetValue(iTimer);
+            tailTimer += MathF.Max(TimeMod, MinTimeMod) * 0.1f;
+            tailEffect.Parameters["iTimer"].SetValue(tailTimer);
 
             spriteBatch.GraphicsDevice.SetRenderTarget(tailRt);
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
@@ -124,7 +122,7 @@ namespace lukewarm_snake
             spriteBatch.Draw(bulletMask,
                 parent.DrawPos * EntityBatch.PixelateMultiplier,
                 null,
-                Color.White,
+                Color.Gray,
                 parent.GetTrait<ObstacleMovement>().Heading.Atan2(),
                 new Vector2(bulletMask.Width, bulletMask.Height) / 2f,
                 BulletSize.ToVector2() / new Vector2(bulletMask.Width, bulletMask.Height) * EntityBatch.PixelateMultiplier,

@@ -27,9 +27,8 @@ namespace lukewarm_snake
 
         public void Update()
         {
-            SnakeRenderer tailRenderer = parent.GetTrait<SnakeRenderer>();
             LinkedList<Vector2> anchors = parent.GetTrait<TailHandler>().Anchors;
-            List<Entity> obstacleEntities = parent.batch.GetEntityBucket<Obstacle>();
+            Obstacle[] obstacles = ((ObstacleManager)parent.batch.GetEntityBucket<ObstacleManager>()[0]).Obstacles;
 
             bool wantToBreak = false;
             int anchorIndex = 0;
@@ -43,14 +42,16 @@ namespace lukewarm_snake
                 anchorHitboxRadius -= HitboxBuffer;
 
                 //Determine anchor collision with obstacles
-                for (int i = 0; i < obstacleEntities.Count; i++)
+                for (int i = 0; i < obstacles.Length; i++)
                 {
-                    Obstacle obstacle = (Obstacle)obstacleEntities[i];
+                    Obstacle obstacle = obstacles[i];
+                    if (!obstacle.IsActive)
+                        continue;
 
                     if (CollisionUtils.IsCirclesColliding(curAnchor.Value, anchorHitboxRadius, obstacle.Pos, ObstacleRenderer.ObstacleRadius))
                     {
                         parent.GetTrait<TailHandler>().MaxAnchors = (int)MathF.Max(1, anchorIndex);
-                        obstacle.exists = false;
+                        obstacle.IsActive = false;
                         wantToBreak = true;
                         break;
                     }
