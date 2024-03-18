@@ -163,7 +163,7 @@ namespace lukewarm_snake
                     spriteBatch.GraphicsDevice.Clear(Color.Black);
                     spriteBatch.Begin(samplerState: SamplerState.PointClamp);
                     spriteBatch.Draw(testRt,
-                        new Rectangle(0, 0, Globals.Camera.Height / 5, Globals.Camera.Height),
+                        new Rectangle(Globals.Camera.Width / 2 - Globals.Camera.Height / (5 * 2), 0, Globals.Camera.Height / 5, Globals.Camera.Height),
                         Color.White);
                     spriteBatch.End();
 

@@ -79,13 +79,13 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float2 warpNoiseVal = noised(warpNoisePos).yz;
 
     //Calculate noise value
-    float2 noiseSamplePos = input.TextureCoordinates.xy + float2(0.0, iTimer * 0.005) + warpNoiseVal * WARP_INFLUENCE;
+    float2 noiseSamplePos = input.TextureCoordinates.xy + float2(0.0, iTimer * 0.005)/* + warpNoiseVal * WARP_INFLUENCE*/;
     noiseSamplePos *= SIMPLEX_SCALE;
 	float noiseVal = noised(noiseSamplePos).x;
     noiseVal = (noiseVal + 0.5) * 0.5; //Convert range from [-1,1] to [0,1]
 
     //Apply octave to noise value
-    float2 octavePos = input.TextureCoordinates.xy + float2(1.0, iTimer * 0.0025) + warpNoiseVal * WARP_INFLUENCE;
+    float2 octavePos = input.TextureCoordinates.xy + float2(1.0, iTimer * 0.0025)/* + warpNoiseVal * WARP_INFLUENCE*/;
     octavePos *= SIMPLEX_SCALE * 3.5;
     float octaveVal = noised(octavePos).x;
     noiseVal += octaveVal * 0.175;
