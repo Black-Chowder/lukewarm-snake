@@ -10,6 +10,7 @@
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/BulletTail.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/CircleMask.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/CircleUV.fx</File>
+    <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/FoodTail.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/Pixel.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/ShockWave.fx</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/WaterRipple.fx</File>
@@ -24,6 +25,7 @@
     <File>Effects/BulletTail.fx</File>
     <File>Effects/CircleMask.fx</File>
     <File>Effects/CircleUV.fx</File>
+    <File>Effects/FoodTail.fx</File>
     <File>Effects/Pixel.fx</File>
     <File>Effects/ShockWave.fx</File>
     <File>Effects/WaterRipple.fx</File>

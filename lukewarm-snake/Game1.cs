@@ -54,7 +54,7 @@ namespace lukewarm_snake
         protected override void Initialize()
         {
             //Globals.GameState = Globals.GameStates.StartGame;
-            GameState = GameStates.StartGame;
+            GameState = GameStates.Test;
             IsMouseVisible = false;
 
             base.Initialize();
@@ -66,9 +66,9 @@ namespace lukewarm_snake
             content = Content;
             defaultFont = Content.Load<SpriteFont>(@"DefaultFont");
 
-            testEffect = Content.Load<Effect>(@"Effects/BulletTail");
+            testEffect = Content.Load<Effect>(@"Effects/FoodTail");
 
-            testRt = new RenderTarget2D(GraphicsDevice, 10, 50);
+            testRt = new RenderTarget2D(GraphicsDevice, 100, 100);
         }
 
         protected override void Update(GameTime gameTime)
@@ -149,7 +149,9 @@ namespace lukewarm_snake
                 case GameStates.TestLoop:
                     iTimer++;
 
-                    testEffect.Parameters["iTimer"].SetValue(iTimer);
+                    //testEffect.Parameters["iTimer"].SetValue(iTimer);
+                    testEffect.Parameters["iTime"].SetValue(iTimer);
+                    testEffect.Parameters["iResolution"].SetValue(new Vector2(testRt.Width, testRt.Height));
 
                     spriteBatch.GraphicsDevice.SetRenderTarget(testRt);
                     spriteBatch.GraphicsDevice.Clear(Color.Transparent);
@@ -160,10 +162,15 @@ namespace lukewarm_snake
                     spriteBatch.End();
 
                     spriteBatch.GraphicsDevice.SetRenderTarget(null);
-                    spriteBatch.GraphicsDevice.Clear(Color.Black);
+                    spriteBatch.GraphicsDevice.Clear(Color.CornflowerBlue);
                     spriteBatch.Begin(samplerState: SamplerState.PointClamp);
                     spriteBatch.Draw(testRt,
-                        new Rectangle(Globals.Camera.Width / 2 - Globals.Camera.Height / (5 * 2), 0, Globals.Camera.Height / 5, Globals.Camera.Height),
+                        new Rectangle(
+                            Globals.Camera.Width / 2 - Globals.Camera.Height / 4, 
+                            0, 
+                            Globals.Camera.Height / 2, 
+                            Globals.Camera.Height
+                        ),
                         Color.White);
                     spriteBatch.End();
 
