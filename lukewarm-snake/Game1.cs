@@ -66,7 +66,7 @@ namespace lukewarm_snake
             content = Content;
             defaultFont = Content.Load<SpriteFont>(@"DefaultFont");
 
-            testEffect = Content.Load<Effect>(@"Effects/FoodTail");
+            testEffect = Content.Load<Effect>(@"Effects/FoodTailRipple");
 
             testRt = new RenderTarget2D(GraphicsDevice, 100, 100);
         }
@@ -151,7 +151,7 @@ namespace lukewarm_snake
 
                     //testEffect.Parameters["iTimer"].SetValue(iTimer);
                     testEffect.Parameters["iTime"].SetValue(iTimer);
-                    testEffect.Parameters["iResolution"].SetValue(new Vector2(testRt.Width, testRt.Height));
+                    //testEffect.Parameters["iResolution"].SetValue(new Vector2(testRt.Width, testRt.Height));
 
                     spriteBatch.GraphicsDevice.SetRenderTarget(testRt);
                     spriteBatch.GraphicsDevice.Clear(Color.Transparent);

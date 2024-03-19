@@ -24,7 +24,7 @@ namespace lukewarm_snake
         private static Effect border;
 
         private RenderTarget2D tailRt;
-        private float iTime = 0f;
+        public float iTime { get; private set; } = 0f;
         private static Point tailRtSize => new Point(75, 140);
         private static Effect tailEffect;
 

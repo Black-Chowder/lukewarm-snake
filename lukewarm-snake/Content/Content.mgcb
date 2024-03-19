@@ -55,6 +55,12 @@
 /processorParam:DebugMode=Auto
 /build:../Effects/FoodTail.fx;Effects/FoodTail.fx
 
+#begin ../Effects/FoodTailRipple.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:../Effects/FoodTailRipple.fx;Effects/FoodTailRipple.fx
+
 #begin ../Effects/Pixel.fx
 /importer:EffectImporter
 /processor:EffectProcessor

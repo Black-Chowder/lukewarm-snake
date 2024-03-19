@@ -12,6 +12,7 @@ namespace lukewarm_snake
     {
         FoodRenderer foodRenderer;
         FoodMovement movement;
+        FoodRippleHandler rippleHandler;
         public Food(Vector2 pos) : base(pos)
         {
             foodRenderer = new FoodRenderer(this);
@@ -19,6 +20,9 @@ namespace lukewarm_snake
 
             movement = new(this);
             AddTrait(movement);
+
+            rippleHandler = new(this);
+            AddTrait(rippleHandler);
         }
     }
 }
