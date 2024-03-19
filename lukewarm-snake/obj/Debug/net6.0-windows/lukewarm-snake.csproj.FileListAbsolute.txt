@@ -103,3 +103,4 @@ C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-w
 C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\BulletTail.xnb
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\BulletTail.xnb
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\FoodTail.xnb
+C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\FoodTail.xnb

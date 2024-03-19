@@ -78,7 +78,7 @@ float4 CalcTail(in float2 textureCoords)
     
     float offsetVal = sin((textureCoords.y + iTime) * 25.0);
     float2 ellipseSamplePos = textureCoords;
-    ellipseSamplePos.x += offsetVal * 0.05;
+    ellipseSamplePos.x += offsetVal * lerp(0, 0.05, textureCoords.y);
 	
     //Calculate distance to ellipse
     float2 p = ellipseSamplePos - float2(0.5, 0.5);
