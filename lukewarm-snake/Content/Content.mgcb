@@ -49,6 +49,12 @@
 /processorParam:DebugMode=Auto
 /build:../Effects/CircleUV.fx;Effects/CircleUV.fx
 
+#begin ../Effects/Depth.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:../Effects/Depth.fx;Effects/Depth.fx
+
 #begin ../Effects/FoodTail.fx
 /importer:EffectImporter
 /processor:EffectProcessor

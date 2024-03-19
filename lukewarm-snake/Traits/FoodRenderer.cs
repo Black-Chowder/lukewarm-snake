@@ -28,6 +28,9 @@ namespace lukewarm_snake
         private static Point tailRtSize => new Point(75, 140);
         private static Effect tailEffect;
 
+        private float depth = 0f;
+        private static Effect depthEffect;
+
         public int Priority => Trait.defaultPriority;
 
         public FoodRenderer(Entity parent)
@@ -63,6 +66,7 @@ namespace lukewarm_snake
             //Load tail effect
             tailEffect ??= content.Load<Effect>(@"Effects/FoodTail");
             tailRt = new RenderTarget2D(spriteBatch.GraphicsDevice, tailRtSize.X, tailRtSize.Y);
+            depthEffect ??= content.Load<Effect>(@"Effects/Depth");
         }
 
         public void Update() => Prerender();
@@ -84,14 +88,13 @@ namespace lukewarm_snake
 
             spriteBatch.End();
 
-
-            border.Parameters["OutlineColor"].SetValue(new Vector4(0, 0, 0, 1));
-            border.Parameters["texelSize"].SetValue(new Vector2(1f / (rt.Width - 1f), 1f / (rt.Height - 1f)));
-            border.CurrentTechnique.Passes[0].Apply();
+            depth = MathF.Min(1f, depth + 0.01f);
+            depthEffect.Parameters["depth"].SetValue(depth);
+            depthEffect.CurrentTechnique.Passes[0].Apply();
 
             spriteBatch.GraphicsDevice.SetRenderTarget(rtBuffer);
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: depthEffect);
 
             spriteBatch.Draw(texture,
                 parent.DrawPos * EntityBatch.PixelateMultiplier,
@@ -114,6 +117,12 @@ namespace lukewarm_snake
                 0f);
 
             spriteBatch.End();
+
+
+            border.Parameters["OutlineColor"].SetValue(new Vector4(0, 0, 0, 1));
+            border.Parameters["texelSize"].SetValue(new Vector2(1f / (rt.Width - 1f), 1f / (rt.Height - 1f)));
+            border.CurrentTechnique.Passes[0].Apply();
+
             spriteBatch.GraphicsDevice.SetRenderTarget(rt);
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: border);

@@ -66,7 +66,7 @@ namespace lukewarm_snake
             content = Content;
             defaultFont = Content.Load<SpriteFont>(@"DefaultFont");
 
-            testEffect = Content.Load<Effect>(@"Effects/FoodTailRipple");
+            testEffect = Content.Load<Effect>(@"Effects/Depth");
 
             testRt = new RenderTarget2D(GraphicsDevice, 100, 100);
         }
@@ -147,18 +147,19 @@ namespace lukewarm_snake
             switch (GameState)
             {
                 case GameStates.TestLoop:
-                    iTimer++;
+                    iTimer += MathF.Min(0.001f, 1f);
 
                     //testEffect.Parameters["iTimer"].SetValue(iTimer);
-                    testEffect.Parameters["iTime"].SetValue(iTimer);
+                    //testEffect.Parameters["iTime"].SetValue(iTimer);
                     //testEffect.Parameters["iResolution"].SetValue(new Vector2(testRt.Width, testRt.Height));
+                    testEffect.Parameters["depth"].SetValue(iTimer);
 
                     spriteBatch.GraphicsDevice.SetRenderTarget(testRt);
                     spriteBatch.GraphicsDevice.Clear(Color.Transparent);
                     spriteBatch.Begin(effect: testEffect);
-                    spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
+                    spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice, Color.Red),
                         new Rectangle(0, 0, testRt.Width, testRt.Height),
-                        Color.White);
+                        Color.Gray);
                     spriteBatch.End();
 
                     spriteBatch.GraphicsDevice.SetRenderTarget(null);
@@ -166,9 +167,9 @@ namespace lukewarm_snake
                     spriteBatch.Begin(samplerState: SamplerState.PointClamp);
                     spriteBatch.Draw(testRt,
                         new Rectangle(
-                            Globals.Camera.Width / 2 - Globals.Camera.Height / 4, 
+                            Globals.Camera.Width / 2 - Globals.Camera.Height / 2, 
                             0, 
-                            Globals.Camera.Height / 2, 
+                            Globals.Camera.Height, 
                             Globals.Camera.Height
                         ),
                         Color.White);
