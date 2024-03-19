@@ -18,6 +18,8 @@ namespace lukewarm_snake
         private const float speed = 2f,
             speedVariance = 1f;
         private Vector2 heading;
+        private float targetAngle = 0f;
+        public float Angle { get; private set; }
 
         //Timing variables
         private float timer = 0f;
@@ -37,6 +39,7 @@ namespace lukewarm_snake
             this.parent = parent;
 
             NewHeading();
+            Angle = targetAngle;
         }
 
         public void Update()
@@ -44,6 +47,8 @@ namespace lukewarm_snake
             //Move parent
             heading *= 0.99f;
             parent.DeltaPos = heading * MathF.Max(MinTimeMod, TimeMod);
+
+            Angle = MathHelper.Lerp(Angle, targetAngle, 0.1f);
 
             //Update parent heading
             timer -= MathF.Max(MinTimeMod, TimeMod);
@@ -78,6 +83,8 @@ namespace lukewarm_snake
 
             //Apply to heading
             heading = headingAngle.ToVector2() * newSpeed;
+
+            targetAngle = headingAngle;
         }
     }
 }

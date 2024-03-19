@@ -14,7 +14,6 @@
 
 float2 iResolution;
 float iTime;
-float speed;
 
 Texture2D SpriteTexture;
 
@@ -78,7 +77,7 @@ float4 CalcTail(in float2 textureCoords)
     
     float offsetVal = sin((textureCoords.y + iTime) * 25.0);
     float2 ellipseSamplePos = textureCoords;
-    ellipseSamplePos.x += offsetVal * lerp(0, 0.05, textureCoords.y);
+    ellipseSamplePos.x += offsetVal * lerp(0, 0.1, textureCoords.y);
 	
     //Calculate distance to ellipse
     float2 p = ellipseSamplePos - float2(0.5, 0.5);
@@ -109,6 +108,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     //Apply border effect using CalcTail as pseudo lookup texture
     float4 fragColor = CalcTail(input.TextureCoordinates);
     
+    /*
     float2 texelSize = 1.0 / iResolution;
     if (fragColor.a != 0)
     {
@@ -126,6 +126,8 @@ float4 MainPS(VertexShaderOutput input) : COLOR
         }
 
     }
+    */
+
     return fragColor;
 }
 

@@ -1,4 +1,5 @@
 ﻿using BlackMagic;
+using static BlackMagic.Globals;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -22,6 +23,11 @@ namespace lukewarm_snake
 
         private static Effect border;
 
+        private RenderTarget2D tailRt;
+        private float iTime = 0f;
+        private static Point tailRtSize => new Point(75, 140);
+        private static Effect tailEffect;
+
         public int Priority => Trait.defaultPriority;
 
         public FoodRenderer(Entity parent)
@@ -32,11 +38,11 @@ namespace lukewarm_snake
             if (texture is null)
             {
                 int biggestFoodRadius = FoodRadius;
-                texture = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, biggestFoodRadius * 2, biggestFoodRadius * 2);
-                Globals.spriteBatch.GraphicsDevice.SetRenderTarget(texture);
-                Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-                Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: Globals.content.Load<Effect>(@"Effects/CircleMask"));
-                Globals.spriteBatch.Draw(DrawUtils.createTexture(Globals.spriteBatch.GraphicsDevice),
+                texture = new RenderTarget2D(spriteBatch.GraphicsDevice, biggestFoodRadius * 2, biggestFoodRadius * 2);
+                spriteBatch.GraphicsDevice.SetRenderTarget(texture);
+                spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+                spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: content.Load<Effect>(@"Effects/CircleMask"));
+                spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
                     Vector2.Zero,
                     new Rectangle(0, 0, 1, 1),
                     Color.White,
@@ -45,46 +51,76 @@ namespace lukewarm_snake
                     new Vector2(texture.Width, texture.Height),
                     SpriteEffects.None,
                     0f);
-                Globals.spriteBatch.End();
+                spriteBatch.End();
             }
 
-            rtBuffer = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, Globals.MainEntityBatch.rt.Width, Globals.MainEntityBatch.rt.Height);
-            rt = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, Globals.MainEntityBatch.rt.Width, Globals.MainEntityBatch.rt.Height);
+            rtBuffer = new RenderTarget2D(spriteBatch.GraphicsDevice, MainEntityBatch.rt.Width, MainEntityBatch.rt.Height);
+            rt = new RenderTarget2D(spriteBatch.GraphicsDevice, MainEntityBatch.rt.Width, MainEntityBatch.rt.Height);
 
             //Load border effect
-            border ??= Globals.content.Load<Effect>(@"Effects/Border");
+            border ??= content.Load<Effect>(@"Effects/Border");
+
+            //Load tail effect
+            tailEffect ??= content.Load<Effect>(@"Effects/FoodTail");
+            tailRt = new RenderTarget2D(spriteBatch.GraphicsDevice, tailRtSize.X, tailRtSize.Y);
         }
 
         public void Update() => Prerender();
 
         public void Prerender()
         {
+            //Prerender tail
+            iTime += MathF.Min(MathF.Max(MinTimeMod, TimeMod), 2f);
+            tailEffect.Parameters["iTime"].SetValue(iTime);
+            tailEffect.CurrentTechnique.Passes[0].Apply();
+
+            spriteBatch.GraphicsDevice.SetRenderTarget(tailRt);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: tailEffect);
+
+            spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
+                new Rectangle(0, 0, tailRt.Width, tailRt.Height),
+                Color.White);
+
+            spriteBatch.End();
+
+
             border.Parameters["OutlineColor"].SetValue(new Vector4(0, 0, 0, 1));
             border.Parameters["texelSize"].SetValue(new Vector2(1f / (rt.Width - 1f), 1f / (rt.Height - 1f)));
             border.CurrentTechnique.Passes[0].Apply();
 
-            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rtBuffer);
-            Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-            Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            spriteBatch.GraphicsDevice.SetRenderTarget(rtBuffer);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-            Globals.spriteBatch.Draw(texture,
+            spriteBatch.Draw(texture,
                 parent.DrawPos * EntityBatch.PixelateMultiplier,
                 new Rectangle(0, 0, texture.Width, texture.Height),
-                Color.White,
+                Color.DarkOliveGreen,
                 0f,
                 new Vector2(texture.Width, texture.Height) / 2f,
                 EntityBatch.PixelateMultiplier,
                 SpriteEffects.None,
                 0f);
 
-            Globals.spriteBatch.End();
-            Globals.spriteBatch.GraphicsDevice.SetRenderTarget(rt);
-            Globals.spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-            Globals.spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: border);
-            Globals.spriteBatch.Draw(rtBuffer, Vector2.Zero, Color.White);
-            Globals.spriteBatch.End();
+            spriteBatch.Draw(tailRt,
+                parent.DrawPos * EntityBatch.PixelateMultiplier,
+                null,
+                Color.White,
+                parent.GetTrait<FoodMovement>().Angle + MathF.PI / 2f,
+                new Vector2(tailRt.Width / 2f, 0f),
+                EntityBatch.PixelateMultiplier,
+                SpriteEffects.None,
+                0f);
+
+            spriteBatch.End();
+            spriteBatch.GraphicsDevice.SetRenderTarget(rt);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: border);
+            spriteBatch.Draw(rtBuffer, Vector2.Zero, Color.White);
+            spriteBatch.End();
         }
 
-        public void Draw() => Globals.spriteBatch.Draw(rt, Vector2.Zero, Color.White);
+        public void Draw() => spriteBatch.Draw(rt, Vector2.Zero, Color.White);
     }
 }
