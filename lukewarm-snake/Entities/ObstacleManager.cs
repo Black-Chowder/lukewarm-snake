@@ -26,6 +26,11 @@ namespace lukewarm_snake
 
         public static float ObstacleSpawnDist { get; private set; } = 0f;
 
+        //Obstacle drawing variables
+        private RenderTarget2D obstacleRt;
+        private RenderTarget2D borderRt;
+        private static Effect borderEffect;
+
         //Food spawning variables
         Food food;
         public const int FoodSpawnPadding = 50;
@@ -39,11 +44,17 @@ namespace lukewarm_snake
 
             if (ObstacleSpawnDist == 0f)
                 ObstacleSpawnDist = DistanceUtils.GetCircleRadiusForRectangle(new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height));
+
+            //Set up border effect stuff
+            borderEffect ??= content.Load<Effect>(@"Effects/Border");
+            borderRt = new RenderTarget2D(spriteBatch.GraphicsDevice, MainEntityBatch.rt.Width, MainEntityBatch.rt.Height);
+            obstacleRt = new RenderTarget2D(spriteBatch.GraphicsDevice, MainEntityBatch.rt.Width, MainEntityBatch.rt.Height);
         }
 
         public override void Update()
         {
             UpdateObstacles();
+            PrerenderObstacles();
             SpawnManager();
         }
 
@@ -53,12 +64,7 @@ namespace lukewarm_snake
                 if (Obstacles[i].IsActive) Obstacles[i].FixedUpdate();
         }
 
-        public override void Draw()
-        {
-            for (int i = 0; i < Obstacles.Length; i++)
-                if (Obstacles[i].IsActive) 
-                    Obstacles[i].Draw();
-        }
+        public override void Draw() => spriteBatch.Draw(borderRt, Vector2.Zero, Color.White);
 
         public override void DrawRippleInfluence()
         {
@@ -121,6 +127,34 @@ namespace lukewarm_snake
 
                 Obstacles[i].Update();
             }
+        }
+
+        private void PrerenderObstacles()
+        {
+            //Draw all sprites to obstacle render target
+            spriteBatch.GraphicsDevice.SetRenderTarget(obstacleRt);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+
+            for (int i = 0; i < Obstacles.Length; i++)
+            {
+                if (!Obstacles[i].IsActive)
+                    continue;
+
+                Obstacles[i].GetTrait<ObstacleRenderer>().DrawObstacle();
+            }
+
+            spriteBatch.End();
+
+            //Draw all sprites with border effect applied
+            borderEffect.Parameters["OutlineColor"].SetValue(new Vector4(0, 0, 0, 1));
+            borderEffect.Parameters["texelSize"].SetValue(new Vector2(1f / (obstacleRt.Width - 1f), 1f / (obstacleRt.Height - 1f)));
+
+            spriteBatch.GraphicsDevice.SetRenderTarget(borderRt);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: borderEffect);
+            spriteBatch.Draw(obstacleRt, Vector2.Zero, Color.White);
+            spriteBatch.End();
         }
     }
 }

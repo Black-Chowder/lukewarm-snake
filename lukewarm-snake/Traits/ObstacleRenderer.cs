@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace lukewarm_snake
 {
-    public class ObstacleRenderer : TUpdates, TDraws
+    public class ObstacleRenderer : TUpdates
     {
         public Entity parent;
 
@@ -71,9 +71,7 @@ namespace lukewarm_snake
             border ??= content.Load<Effect>(@"Effects/Border");
         }
 
-        public void Update() => Prerender();
-
-        public void Prerender()
+        public void Update()
         {
             //Prerender tail
             tailTimer += MathF.Max(TimeMod, MinTimeMod) * 0.1f;
@@ -86,17 +84,11 @@ namespace lukewarm_snake
                 new Rectangle(0, 0, tailRt.Width, tailRt.Height),
                 Color.White);
             spriteBatch.End();
+        }
 
-
-            //Draw bullet
-            border.Parameters["OutlineColor"].SetValue(new Vector4(0, 0, 0, 1));
-            border.Parameters["texelSize"].SetValue(new Vector2(1f / (rt.Width - 1f), 1f / (rt.Height - 1f)));
-            border.CurrentTechnique.Passes[0].Apply();
-
-            spriteBatch.GraphicsDevice.SetRenderTarget(rtBuffer);
-            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-
+        public void DrawObstacle()
+        {
+            //Draw hitbox (if applicable)
             if (DrawHitbox)
                 spriteBatch.Draw(hitboxTexture,
                     parent.DrawPos * EntityBatch.PixelateMultiplier,
@@ -108,7 +100,7 @@ namespace lukewarm_snake
                     SpriteEffects.None,
                     0f);
 
-
+            //Draw tail
             spriteBatch.Draw(tailRt,
                 (parent.DrawPos) * EntityBatch.PixelateMultiplier,
                 null,
@@ -119,6 +111,7 @@ namespace lukewarm_snake
                 SpriteEffects.None,
                 0f);
 
+            //Draw bullet
             spriteBatch.Draw(bulletMask,
                 parent.DrawPos * EntityBatch.PixelateMultiplier,
                 null,
@@ -128,16 +121,7 @@ namespace lukewarm_snake
                 BulletSize.ToVector2() / new Vector2(bulletMask.Width, bulletMask.Height) * EntityBatch.PixelateMultiplier,
                 SpriteEffects.None,
                 0f);
-
-            spriteBatch.End();
-            spriteBatch.GraphicsDevice.SetRenderTarget(rt);
-            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: border);
-            spriteBatch.Draw(rtBuffer, Vector2.Zero, Color.White);
-            spriteBatch.End();
         }
-
-        public void Draw() => spriteBatch.Draw(rt, Vector2.Zero, Color.White);
 
         public void DisposeIndividual() //I'll have to actually handle individual disposing better but this'll work for now
         {
