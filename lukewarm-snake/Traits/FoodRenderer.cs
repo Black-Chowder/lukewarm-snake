@@ -28,7 +28,7 @@ namespace lukewarm_snake
         private static Point tailRtSize => new Point(75, 140);
         private static Effect tailEffect;
 
-        private float depth = 0f;
+        public float Depth { get; set; } = 0f;
         private static Effect depthEffect;
 
         public int Priority => Trait.defaultPriority;
@@ -88,8 +88,8 @@ namespace lukewarm_snake
 
             spriteBatch.End();
 
-            depth = MathF.Min(1f, depth + 0.01f);
-            depthEffect.Parameters["depth"].SetValue(depth);
+            Depth = MathF.Min(1f, Depth + 0.01f);
+            depthEffect.Parameters["depth"].SetValue(Depth);
             depthEffect.CurrentTechnique.Passes[0].Apply();
 
             spriteBatch.GraphicsDevice.SetRenderTarget(rtBuffer);

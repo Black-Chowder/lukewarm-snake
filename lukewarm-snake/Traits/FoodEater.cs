@@ -26,17 +26,13 @@ namespace lukewarm_snake
         public void Update()
         {
             //Eat food
-            List<Entity> foodEntityList = parent.batch.GetEntityBucket<Food>();
-            for (int i = 0; i < foodEntityList.Count; i++)
-            {
-                Food food = (Food)foodEntityList[i];
+            Food food = (parent.batch.GetEntityBucket<ObstacleManager>().First() as ObstacleManager).Food;
 
-                if (CollisionUtils.IsCirclesColliding(food.Pos, FoodRenderer.FoodRadius, parent.Pos, SnakeRenderer.BodyRadius))
-                {
-                    food.exists = false;
-                    Debug.WriteLine($"Score: {parent.GetTrait<TailHandler>().Anchors.Count}");
-                    parent.GetTrait<TailHandler>().MaxAnchors += FoodValue;
-                }
+            if (CollisionUtils.IsCirclesColliding(food.Pos, FoodRenderer.FoodRadius, parent.Pos, SnakeRenderer.BodyRadius))
+            {
+                food.IsActive = false;
+                Debug.WriteLine($"Score: {parent.GetTrait<TailHandler>().Anchors.Count}");
+                parent.GetTrait<TailHandler>().MaxAnchors += FoodValue;
             }
         }
     }
