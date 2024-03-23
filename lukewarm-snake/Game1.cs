@@ -64,7 +64,7 @@ namespace lukewarm_snake
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             content = Content;
-            defaultFont = Content.Load<SpriteFont>(@"SuperBloom");
+            defaultFont = Content.Load<SpriteFont>(@"DefaultFont");
 
             testEffect = Content.Load<Effect>(@"Effects/Depth");
 

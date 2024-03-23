@@ -19,7 +19,6 @@
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Graphics/Bullet.png</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Graphics/SnakeHead.png</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/DefaultFont.spritefont</File>
-    <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/SuperBloom.spritefont</File>
   </SourceFiles>
   <DestFiles>
     <File>Effects/Background.fx</File>
@@ -36,7 +35,6 @@
     <File>Effects/WaterRipple.fx</File>
     <File>Graphics/Bullet.png</File>
     <File>Graphics/SnakeHead.png</File>
-    <File xsi:nil="true" />
     <File xsi:nil="true" />
   </DestFiles>
 </SourceFileCollection>
