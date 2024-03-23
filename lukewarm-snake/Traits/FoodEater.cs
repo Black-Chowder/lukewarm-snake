@@ -26,7 +26,12 @@ namespace lukewarm_snake
         public void Update()
         {
             //Eat food
-            Food food = (parent.batch.GetEntityBucket<ObstacleManager>().First() as ObstacleManager).Food;
+            ObstacleManager obstacleManager = parent.batch.GetEntityBucket<ObstacleManager>()?.First() as ObstacleManager;
+
+            if (obstacleManager is null)
+                return;
+
+            Food food = obstacleManager.Food;
 
             if (CollisionUtils.IsCirclesColliding(food.Pos, FoodRenderer.FoodRadius, parent.Pos, SnakeRenderer.BodyRadius))
             {

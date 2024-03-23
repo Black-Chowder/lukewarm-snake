@@ -84,7 +84,7 @@ namespace BlackMagic
 
         public List<Entity> GetTraitBucket<T>() => traitBuckets[typeof(T)];
 
-        public List<Entity> GetEntityBucket<T>() where T : Entity => entityBuckets[typeof(T)];
+        public List<Entity> GetEntityBucket<T>() where T : Entity => entityBuckets.ContainsKey(typeof(T)) ? entityBuckets[typeof(T)] : null;
 
         public void LoadMap(byte[] byteMap)
         {

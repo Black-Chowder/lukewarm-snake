@@ -26,7 +26,6 @@ namespace BlackMagic
             Test,
             TestLoop,
             StartScreen,
-            StartRound,
             StartGame,
             GameLoop,
             GameOver

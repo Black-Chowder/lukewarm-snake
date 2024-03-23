@@ -54,7 +54,7 @@ namespace lukewarm_snake
         protected override void Initialize()
         {
             //Globals.GameState = Globals.GameStates.StartGame;
-            GameState = GameStates.StartGame;
+            GameState = GameStates.StartScreen;
             IsMouseVisible = false;
 
             base.Initialize();
@@ -109,6 +109,13 @@ namespace lukewarm_snake
 
                 case GameStates.TestLoop:
                     break;
+
+                case GameStates.StartScreen:
+                    MainEntityBatch?.Dispose();
+                    MainEntityBatch = new();
+                    MainEntityBatch.Add(new Snake());
+                    GameState = GameStates.GameLoop;
+                    goto case GameStates.GameLoop;
 
                 case GameStates.StartGame:
                     MainEntityBatch?.Dispose();

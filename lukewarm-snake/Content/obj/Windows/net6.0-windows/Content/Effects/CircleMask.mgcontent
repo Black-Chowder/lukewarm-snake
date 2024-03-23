@@ -1,18 +1,1 @@
-<?xml version="1.0" encoding="utf-8"?>
-<PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../Effects/CircleMask.fx</SourceFile>
-  <SourceTime>2024-02-13T12:34:06.075287-05:00</SourceTime>
-  <DestFile>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/bin/Windows/Content/Effects/CircleMask.xnb</DestFile>
-  <DestTime>2024-03-19T23:38:54.2415979-04:00</DestTime>
-  <Importer>EffectImporter</Importer>
-  <ImporterTime>2022-07-26T07:44:56-04:00</ImporterTime>
-  <Processor>EffectProcessor</Processor>
-  <ProcessorTime>2022-07-26T07:44:56-04:00</ProcessorTime>
-  <Parameters>
-    <Key>DebugMode</Key>
-    <Value>Auto</Value>
-  </Parameters>
-  <Dependencies />
-  <BuildAsset />
-  <BuildOutput />
-</PipelineBuildEvent>
+<?xml version="1.0" encoding="utf-8"?><PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><SourceFile>C:/Users/iabla/Documents/GitHub/lukewarm-snake/lukewarm-snake/Content/../Effects/CircleMask.fx</SourceFile><SourceTime>2024-02-20T16:15:53.783636-05:00</SourceTime><DestFile>C:/Users/iabla/Documents/GitHub/lukewarm-snake/lukewarm-snake/Content/bin/Windows/Content/Effects/CircleMask.xnb</DestFile><DestTime>2024-03-21T16:19:28.5442158-04:00</DestTime><Importer>EffectImporter</Importer><ImporterTime>2022-07-26T07:44:56-04:00</ImporterTime><Processor>EffectProcessor</Processor><ProcessorTime>2022-07-26T07:44:56-04:00</ProcessorTime><Parameters><Key>DebugMode</Key><Value>Auto</Value></Parameters><Dependencies /><BuildAsset /><BuildOutput /></PipelineBuildEvent>

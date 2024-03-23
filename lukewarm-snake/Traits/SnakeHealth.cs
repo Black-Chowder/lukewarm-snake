@@ -28,7 +28,11 @@ namespace lukewarm_snake
         public void Update()
         {
             LinkedList<Vector2> anchors = parent.GetTrait<TailHandler>().Anchors;
-            Obstacle[] obstacles = ((ObstacleManager)parent.batch.GetEntityBucket<ObstacleManager>()[0]).Obstacles;
+
+            if (parent.batch.GetEntityBucket<ObstacleManager>()?.First() is not ObstacleManager obstacleManager)
+                return;
+
+            Obstacle[] obstacles = obstacleManager.Obstacles;
 
             bool wantToBreak = false;
             int anchorIndex = 0;

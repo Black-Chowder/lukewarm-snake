@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using BlackMagic;
@@ -288,24 +289,11 @@ namespace lukewarm_snake
 
             //Calculate eye angles to look at food
             float targetEyesAngle = HeadAngle - MathF.PI;
-            List<Entity> foodEntities = parent.batch.GetEntityBucket<Food>();
-            if (foodEntities.Count > 0)
+            ObstacleManager obstacleManager = parent.batch.GetEntityBucket<ObstacleManager>()?.First() as ObstacleManager;
+            if (obstacleManager is not null) 
             {
-                Food closestFood = (Food)foodEntities[0];
-                float closestFoodDistSquared = (closestFood.Pos - parent.Pos).LengthSquared();
-                for (int i = 1; i < foodEntities.Count; i++)
-                {
-                    Food curFood = (Food)foodEntities[i];
-                    float curFoodDistSquared = (curFood.Pos - parent.Pos).LengthSquared();
-
-                    if (curFoodDistSquared < closestFoodDistSquared)
-                    {
-                        closestFoodDistSquared = curFoodDistSquared;
-                        closestFood = curFood;
-                    }
-                }
-
-                targetEyesAngle = (closestFood.Pos - parent.Pos).Atan2();
+                Food food = obstacleManager.Food;
+                targetEyesAngle = (food.Pos - parent.Pos).Atan2();
             }
             eyesAngle = MathHelper.Lerp(eyesAngle, targetEyesAngle, 0.1f);
 
