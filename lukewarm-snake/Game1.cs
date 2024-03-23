@@ -114,6 +114,7 @@ namespace lukewarm_snake
                     MainEntityBatch?.Dispose();
                     MainEntityBatch = new();
                     MainEntityBatch.Add(new Snake());
+                    MainEntityBatch.Add(new Title());
                     GameState = GameStates.GameLoop;
                     goto case GameStates.GameLoop;
 

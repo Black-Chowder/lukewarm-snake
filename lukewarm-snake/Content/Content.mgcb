@@ -79,6 +79,12 @@
 /processorParam:DebugMode=Auto
 /build:../Effects/ShockWave.fx;Effects/ShockWave.fx
 
+#begin ../Effects/UIShader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:../Effects/UIShader.fx;Effects/UIShader.fx
+
 #begin ../Effects/WaterRipple.fx
 /importer:EffectImporter
 /processor:EffectProcessor

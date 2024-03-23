@@ -26,10 +26,17 @@ namespace BlackMagic
         public delegate void DisposeDelegate();
         public event DisposeDelegate disposeEvent;
 
+        //CRT shader effect variables
         private Effect CRTShader;
         private float CRTTimer = 0f;
         public const int PixelateScaler = 8;
         public const float PixelateMultiplier = 1f / PixelateScaler;
+        private RenderTarget2D CRTRt;
+
+        //UI variables
+        private RenderTarget2D UIRt;
+        private RenderTarget2D UIRtBuffer;
+        private static Effect UIEffect;
 
         //Background effect variables
         private Effect BackgroundEffect;
@@ -56,8 +63,12 @@ namespace BlackMagic
             entityBuckets = new Dictionary<Type, List<Entity>>();
 
             CRTShader ??= Globals.content.Load<Effect>(@"Effects/Pixel");
+            CRTRt = new RenderTarget2D(spriteBatch.GraphicsDevice, Globals.Camera.Width, Globals.Camera.Height);
             rt = new RenderTarget2D(spriteBatch.GraphicsDevice, (int)(Globals.Camera.Width * PixelateMultiplier), (int)(Globals.Camera.Height * PixelateMultiplier));
             rtBuffer = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
+            UIEffect ??= content.Load<Effect>(@"Effects/UIShader");
+            UIRt = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
+            UIRtBuffer = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
 
             WaterRippleEffect = content.Load<Effect>(@"Effects/WaterRipple");
             rippleBuffer1 = new RenderTarget2D(spriteBatch.GraphicsDevice, rt.Width, rt.Height);
@@ -237,13 +248,13 @@ namespace BlackMagic
             /*  </Handle Background Effect>  */
 
 
-            //Draw to screen
+            //Draw to CRT render target
             CRTTimer -= 0.017f;
             CRTShader.Parameters["iTime"].SetValue(CRTTimer);
             CRTShader.Parameters["vinVal"].SetValue(0.3f);
             CRTShader.CurrentTechnique.Passes[0].Apply();
 
-            spriteBatch.GraphicsDevice.SetRenderTarget(null);
+            spriteBatch.GraphicsDevice.SetRenderTarget(CRTRt);
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: CRTShader, sortMode: SpriteSortMode.Immediate);
 
@@ -255,6 +266,27 @@ namespace BlackMagic
             //Draw sprites
             spriteBatch.Draw(rt, new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height), Color.White);
 
+            spriteBatch.End();
+
+            //Draw UI
+            UIEffect.Parameters["iResolution"].SetValue(new Vector2(UIRt.Width, UIRt.Height));
+            spriteBatch.GraphicsDevice.SetRenderTarget(UIRtBuffer);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            for (int i = 0; i < entities.Count; i++) entities[i].DrawRaw();
+            spriteBatch.End();
+            spriteBatch.GraphicsDevice.SetRenderTarget(UIRt);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: UIEffect);
+            spriteBatch.Draw(UIRtBuffer, Vector2.Zero, Color.White);
+            spriteBatch.End();
+
+            //Draw to screen
+            spriteBatch.GraphicsDevice.SetRenderTarget(null);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            spriteBatch.Draw(CRTRt, Vector2.Zero, Color.White);
+            spriteBatch.Draw(UIRt, new Rectangle(0, 0, Globals.Camera.Width, Globals.Camera.Height), Color.White);
             spriteBatch.End();
         }
 
@@ -409,5 +441,7 @@ namespace BlackMagic
             for (int i = 0; i < tDrawsRippleInfluences.Count; i++)
                 tDrawsRippleInfluences[i].DrawRippleInfluence();
         }
+
+        public virtual void DrawRaw() { }
     }
 }
