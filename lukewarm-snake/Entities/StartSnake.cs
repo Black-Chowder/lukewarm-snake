@@ -16,9 +16,9 @@ namespace lukewarm_snake
         SnakeRippleHandler rippleHandler;
         FoodEater foodEater;
         AISnakeController AIController;
-        public StartSnake() : base(new Vector2(Globals.Camera.Width, Globals.Camera.Height) / 2f)
+        public StartSnake(int startSnakeLength = TailHandler.minAnchors) : base(new Vector2(Globals.Camera.Width, Globals.Camera.Height) / 2f)
         {
-            tail = new(this);
+            tail = new(this, startAnchors: startSnakeLength);
             AddTrait(tail);
 
             renderer = new(this, tail);

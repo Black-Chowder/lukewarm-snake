@@ -115,7 +115,7 @@ namespace lukewarm_snake
                     MainEntityBatch?.Dispose();
                     MainEntityBatch = new();
                     MainEntityBatch.InitEntityBucket<FoodManager>();
-                    MainEntityBatch.Add(new StartSnake());
+                    MainEntityBatch.Add(new StartSnake(50));
                     MainEntityBatch.Add(new FoodManager());
                     MainEntityBatch.Add(new Title());
                     GameState = GameStates.GameLoop;

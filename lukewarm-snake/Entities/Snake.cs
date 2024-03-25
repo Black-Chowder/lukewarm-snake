@@ -16,10 +16,10 @@ namespace lukewarm_snake
         SnakeRippleHandler rippleHandler;
         FoodEater snakeCollider;
         SnakeHealth health;
-        public Snake() : base(new Vector2(Globals.Camera.Width, Globals.Camera.Height) / 2f)
+        public Snake(int startSnakeLength = TailHandler.minAnchors) : base(new Vector2(Globals.Camera.Width, Globals.Camera.Height) / 2f)
         {
 
-            tailHandler = new(this);
+            tailHandler = new(this, startAnchors: startSnakeLength);
             AddTrait(tailHandler);
 
             tailRenderer = new(this, tailHandler);

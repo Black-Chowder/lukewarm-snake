@@ -46,10 +46,12 @@ namespace lukewarm_snake
         //TUpdates priority setting
         public int Priority { get => Trait.defaultPriority; }
 
-        public TailHandler(Entity parent, float anchorDist = DefaultAnchorDist)
+        public TailHandler(Entity parent, float anchorDist = DefaultAnchorDist, int startAnchors = minAnchors)
         {
             this.parent = parent;
             prevPos = parent.Pos;
+
+            MaxAnchors = startAnchors;
 
             while (Anchors.Count < minAnchors)
                 Anchors.AddFirst(prevPos);
