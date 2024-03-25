@@ -50,7 +50,7 @@ namespace BlackMagic
         private RenderTarget2D rippleBuffer2;
         private RenderTarget2D nextRippleFrame;
         private const float Damping = 0.99f;
-        private const float TimeStep = 16f;
+        public const float TimeStep = 16f;
         private float rippleEffectTimeAccumulator = TimeStep + 1f;
 
         public RenderTarget2D rt { get; private set; }
