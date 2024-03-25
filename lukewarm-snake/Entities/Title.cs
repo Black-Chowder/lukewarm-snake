@@ -61,6 +61,10 @@ namespace lukewarm_snake
             MouseState mouse = Mouse.GetState();
 
             isHoveringOverStart = startHitbox.Contains(mouse.Position.ToVector2() * EntityBatch.PixelateMultiplier) && timer - StartTimerWait > 1;
+
+            if (mouse.LeftButton == ButtonState.Pressed && isHoveringOverStart)
+                GameState = GameStates.StartGame;
+            
         }
 
         public override void Draw()
