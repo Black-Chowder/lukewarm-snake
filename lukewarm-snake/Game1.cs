@@ -114,7 +114,9 @@ namespace lukewarm_snake
                     IsMouseVisible = true;
                     MainEntityBatch?.Dispose();
                     MainEntityBatch = new();
-                    MainEntityBatch.Add(new Snake());
+                    MainEntityBatch.InitEntityBucket<FoodManager>();
+                    MainEntityBatch.Add(new StartSnake());
+                    MainEntityBatch.Add(new FoodManager());
                     MainEntityBatch.Add(new Title());
                     GameState = GameStates.GameLoop;
                     goto case GameStates.GameLoop;
@@ -124,9 +126,11 @@ namespace lukewarm_snake
                     MainEntityBatch?.Dispose();
                     MainEntityBatch = new();
                     MainEntityBatch.InitEntityBucket<Food>();
+                    MainEntityBatch.InitEntityBucket<FoodManager>();
                     MainEntityBatch.InitEntityBucket<ObstacleManager>();
                     MainEntityBatch.Add(new Snake());
                     MainEntityBatch.Add(new ObstacleManager());
+                    MainEntityBatch.Add(new FoodManager());
                     GameState = GameStates.GameLoop;
                     goto case GameStates.GameLoop;
 

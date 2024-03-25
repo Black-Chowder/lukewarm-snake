@@ -289,10 +289,10 @@ namespace lukewarm_snake
 
             //Calculate eye angles to look at food
             float targetEyesAngle = HeadAngle - MathF.PI;
-            ObstacleManager obstacleManager = parent.batch.GetEntityBucket<ObstacleManager>()?.First() as ObstacleManager;
-            if (obstacleManager is not null) 
+            FoodManager foodManager = parent.batch.GetEntityBucket<FoodManager>()?.First() as FoodManager;
+            if (foodManager is not null) 
             {
-                Food food = obstacleManager.Food;
+                Food food = foodManager.Food;
                 targetEyesAngle = (food.Pos - parent.Pos).Atan2();
             }
             eyesAngle = MathHelper.Lerp(eyesAngle, targetEyesAngle, 0.1f);

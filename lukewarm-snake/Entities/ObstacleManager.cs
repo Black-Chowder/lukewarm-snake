@@ -31,10 +31,6 @@ namespace lukewarm_snake
         private RenderTarget2D borderRt;
         private static Effect borderEffect;
 
-        //Food spawning variables
-        public Food Food { get; set; }
-        public const int FoodSpawnPadding = 50;
-
         public ObstacleManager() : base(Vector2.Zero)
         {
             //Initialize obstacle batch
@@ -49,15 +45,12 @@ namespace lukewarm_snake
             borderEffect ??= content.Load<Effect>(@"Effects/Border");
             borderRt = new RenderTarget2D(spriteBatch.GraphicsDevice, MainEntityBatch.rt.Width, MainEntityBatch.rt.Height);
             obstacleRt = new RenderTarget2D(spriteBatch.GraphicsDevice, MainEntityBatch.rt.Width, MainEntityBatch.rt.Height);
-
-            Food = new Food();
         }
 
         public override void Update()
         {
             UpdateObstacles();
             PrerenderObstacles();
-            Food.Update();
             SpawnManager();
         }
 
@@ -65,22 +58,15 @@ namespace lukewarm_snake
         {
             for (int i = 0; i < Obstacles.Length; i++)
                 if (Obstacles[i].IsActive) Obstacles[i].FixedUpdate();
-
-            Food.FixedUpdate();
         }
 
-        public override void Draw()
-        {
+        public override void Draw() =>
             spriteBatch.Draw(borderRt, Vector2.Zero, Color.White);
-            Food.Draw();
-        }
 
         public override void DrawRippleInfluence()
         {
             for (int i = 0; i < Obstacles.Length; i++)
                 if (Obstacles[i].IsActive) Obstacles[i].DrawRippleInfluence();
-
-            Food.DrawRippleInfluence();
         }
 
 
@@ -111,21 +97,6 @@ namespace lukewarm_snake
                 if (curObstacleIndex >= Obstacles.Length)
                     curObstacleIndex = 0;
             }
-
-            //Spawn food
-            if (!Food.IsActive)
-            {
-                Food.Init(GenerateRandomPosInRect(new Rectangle(
-                    FoodSpawnPadding, FoodSpawnPadding, Globals.Camera.Width - FoodSpawnPadding * 2, Globals.Camera.Height - FoodSpawnPadding * 2
-                )));
-            }
-        }
-
-        private Vector2 GenerateRandomPosInRect(Rectangle rectangle)
-        {
-            int x = rnd.Next(rectangle.Left, rectangle.Right);
-            int y = rnd.Next(rectangle.Top, rectangle.Bottom);
-            return new Vector2(x, y);
         }
 
         private void UpdateObstacles()
