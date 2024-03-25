@@ -55,7 +55,7 @@ namespace lukewarm_snake
         {
             //Globals.GameState = Globals.GameStates.StartGame;
             GameState = GameStates.StartScreen;
-            IsMouseVisible = false;
+            IsMouseVisible = true;
 
             base.Initialize();
         }
@@ -111,6 +111,7 @@ namespace lukewarm_snake
                     break;
 
                 case GameStates.StartScreen:
+                    IsMouseVisible = true;
                     MainEntityBatch?.Dispose();
                     MainEntityBatch = new();
                     MainEntityBatch.Add(new Snake());
@@ -119,6 +120,7 @@ namespace lukewarm_snake
                     goto case GameStates.GameLoop;
 
                 case GameStates.StartGame:
+                    IsMouseVisible = false;
                     MainEntityBatch?.Dispose();
                     MainEntityBatch = new();
                     MainEntityBatch.InitEntityBucket<Food>();
