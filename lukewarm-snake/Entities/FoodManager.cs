@@ -22,6 +22,8 @@ namespace lukewarm_snake
             SpawnManager();
         }
 
+        public override void FixedUpdate() => Food.FixedUpdate();
+
         public override void Draw() => Food.Draw();
 
         public override void DrawRippleInfluence() => Food.DrawRippleInfluence();
