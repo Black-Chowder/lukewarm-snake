@@ -32,6 +32,8 @@ namespace lukewarm_snake
         private readonly float[] startLetterOffsets = new float[Start.Length];
         private const float StartLetterOffsetVariation = 0.5f;
         private const float StartTimerWait = 0.25f;
+        private const float BobTime = 1f;
+        private const float BobDist = 8f;
 
         private bool isHoveringOverStart = false;
         private Rectangle startHitbox;
@@ -43,13 +45,13 @@ namespace lukewarm_snake
                 titleLetterOffsets[i] = (float)rnd.NextDouble() * TitleLetterOffsetVariation;
             
             for (int i = 0; i < startLetterOffsets.Length; i++)
-                startLetterOffsets[i] = (float)rnd.NextDouble() * StartLetterOffsetVariation;
+                startLetterOffsets[i] = ((float)i / startLetterOffsets.Length) * StartLetterOffsetVariation;
 
 
             Vector2 startSize = defaultFont.MeasureString(Start) + StartHitboxBuffer;
             startHitbox = new Rectangle(
                 (int)((Globals.Camera.Width * EntityBatch.PixelateMultiplier - startSize.X) / 2f),
-                (int)((Globals.Camera.Height - startSize.Y) * EntityBatch.PixelateMultiplier / 2f),
+                (int)((Globals.Camera.Height * EntityBatch.PixelateMultiplier + startSize.Y / 2f) / 2f),
                 (int)startSize.X, (int)startSize.Y
             );
         }
@@ -106,7 +108,16 @@ namespace lukewarm_snake
             fullStringWidth = defaultFont.MeasureString(Start).X;
             for (int i = 0; i < Start.Length; i++)
             {
-                Vector2 curDrawPos = Vector2.Lerp(StartStartPos, StartEndPos, EasingFunctions.OutBack(MathHelper.Clamp(timer - StartTimerWait - titleLetterOffsets[i], 0, 1)));
+                Vector2 curDrawPos = Vector2.Lerp(StartStartPos, StartEndPos, EasingFunctions.OutBack(MathHelper.Clamp(timer - StartTimerWait - startLetterOffsets[i], 0, 1)));
+
+                if (timer - StartLetterOffsetVariation > 0)
+                {
+                    float yOffsetProgress = (timer - startLetterOffsets[i]) % (BobTime);
+                    yOffsetProgress = 1 - MathF.Abs(yOffsetProgress - 0.5f) * 2f;
+
+                    yOffsetProgress = EasingFunctions.InOutCubic(yOffsetProgress);
+                    curDrawPos += new Vector2(0, yOffsetProgress * BobDist);
+                }
 
                 spriteBatch.DrawString(defaultFont,
                     Start[i].ToString(),

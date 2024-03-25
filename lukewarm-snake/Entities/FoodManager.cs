@@ -14,10 +14,7 @@ namespace lukewarm_snake
         public Food Food { get; set; }
         public const int FoodSpawnPadding = 50;
 
-        public FoodManager() : base(Vector2.Zero)
-        {
-            Food = new Food();
-        }
+        public FoodManager() : base(Vector2.Zero) => Food = new Food();
 
         public override void Update()
         {
@@ -25,15 +22,9 @@ namespace lukewarm_snake
             SpawnManager();
         }
 
-        public override void Draw()
-        {
-            Food.Draw();
-        }
+        public override void Draw() => Food.Draw();
 
-        public override void DrawRippleInfluence()
-        {
-            Food.DrawRippleInfluence();
-        }
+        public override void DrawRippleInfluence() => Food.DrawRippleInfluence();
 
         private void SpawnManager()
         {
