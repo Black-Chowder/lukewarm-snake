@@ -37,7 +37,7 @@ namespace lukewarm_snake
 
         private bool isHoveringOverStart = false;
         private Rectangle startHitbox;
-        private static Vector2 StartHitboxBuffer => new(20, 0);
+        private static Vector2 StartHitboxBuffer => new(20, 5);
 
         public Title() : base(Vector2.Zero)
         {
@@ -51,7 +51,7 @@ namespace lukewarm_snake
             Vector2 startSize = defaultFont.MeasureString(Start) + StartHitboxBuffer;
             startHitbox = new Rectangle(
                 (int)((Globals.Camera.Width * EntityBatch.PixelateMultiplier - startSize.X) / 2f),
-                (int)((Globals.Camera.Height * EntityBatch.PixelateMultiplier + startSize.Y / 2f) / 2f),
+                (int)(((Globals.Camera.Height - 6) * EntityBatch.PixelateMultiplier + startSize.Y / 2f) / 2f),
                 (int)startSize.X, (int)startSize.Y
             );
         }
@@ -108,7 +108,7 @@ namespace lukewarm_snake
             fullStringWidth = defaultFont.MeasureString(Start).X;
             for (int i = 0; i < Start.Length; i++)
             {
-                Vector2 curDrawPos = Vector2.Lerp(StartStartPos, StartEndPos, EasingFunctions.OutBack(MathHelper.Clamp(timer - StartTimerWait - startLetterOffsets[i], 0, 1)));
+                Vector2 curDrawPos = Vector2.Lerp(StartStartPos, StartEndPos, EasingFunctions.OutBounce(MathHelper.Clamp(timer - StartTimerWait - startLetterOffsets[i], 0, 1)));
 
                 if (timer - StartLetterOffsetVariation > 0)
                 {
