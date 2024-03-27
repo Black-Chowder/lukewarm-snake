@@ -15,6 +15,7 @@ namespace lukewarm_snake
 
         //Eat food variables
         public int FoodValue { get; set; } = 3;
+        public int FoodEaten { get; set; } = 0;
 
         public int Priority => Trait.defaultPriority;
 
@@ -38,6 +39,7 @@ namespace lukewarm_snake
                 food.IsActive = false;
                 Debug.WriteLine($"Score: {parent.GetTrait<TailHandler>().Anchors.Count}");
                 parent.GetTrait<TailHandler>().MaxAnchors += FoodValue;
+                FoodEaten++;
             }
         }
     }
