@@ -15,17 +15,31 @@ namespace lukewarm_snake
     {
         public int PlayerScore { get; set; } = 0;
 
+        //Score grow on score change variables
+        private float maxGrowPercent = 1.25f;
+        private float growMultiplier = 1f;
+        private float growthTimer = 0f;
+        private const float growthTimerSet = 25f;
         
         public Score() : base(Vector2.Zero)
         {
-            CalcPos();
+            Pos = prevPos = new Vector2(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, 0);
         }
 
         public override void Update()
         {
+            //Handle growth multiplier
+            growthTimer--;
+            growMultiplier = MathHelper.Clamp(EasingFunctions.OutCubic(growthTimer / growthTimerSet) * (maxGrowPercent - 1f) + 1f, 1f, maxGrowPercent);
+
+            //Set Score
             Snake snake = batch.GetEntityBucket<Snake>()?.First() as Snake;
-            PlayerScore = snake.GetTrait<FoodEater>().FoodEaten;
-            CalcPos();
+            int newScore = snake.GetTrait<FoodEater>().FoodEaten;
+            if (newScore == PlayerScore) //If score isn't new, return early
+                return;
+            PlayerScore = newScore;
+
+            growthTimer = growthTimerSet; //Reset score growth multiplier timer
         }
 
         public override void DrawRaw()
@@ -37,12 +51,9 @@ namespace lukewarm_snake
                 Color.White,
                 0f,
                 new Vector2(textSize.X / 2f, 0f),
-                Vector2.One * 1.001f,
+                Vector2.One * 1.001f * growMultiplier,
                 SpriteEffects.None,
                 0f);
         }
-
-        private void CalcPos() =>
-            Pos = prevPos = new Vector2(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, 0);
     }
 }
