@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using BlackMagic;
+using Kryz.Tweening;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -15,6 +16,9 @@ namespace lukewarm_snake
     {
         private TailHandler tail;
         private Entity parent;
+
+        //Digestion Variables
+        private readonly LinkedList<float> digestProgresses = new();
 
         //Describe head
         private static RenderTarget2D headTexture;
@@ -182,7 +186,18 @@ namespace lukewarm_snake
             rtBorder = new RenderTarget2D(Globals.spriteBatch.GraphicsDevice, rtSize.X, rtSize.Y);
         }
 
-        public void Update() => Prerender();
+        public void Update()
+        {
+            //Update digestion
+            for (LinkedListNode<float> curNode = digestProgresses.First; curNode != null; curNode = curNode.Next)
+            {
+                curNode.Value += 0.01f;
+                if (curNode.Value > 2f)
+                    digestProgresses.Remove(curNode);
+            }
+
+            Prerender();
+        }
 
         public void Prerender()
         {
@@ -224,7 +239,23 @@ namespace lukewarm_snake
 
             //Draw head
             drawPos = (parent.Pos) * EntityBatch.PixelateMultiplier;
-            Rectangle drawRect = new((int)drawPos.X, (int)drawPos.Y, HeadSize, HeadSize);
+
+            //Calculate size
+            float headDigestModifier = 1f;
+            if (digestProgresses.Count > 0)
+            {
+                //Get closest digest progress
+                float dist = float.PositiveInfinity;
+                for (LinkedListNode<float>curDigestProgress = digestProgresses.First; curDigestProgress != null; curDigestProgress = curDigestProgress.Next)
+                {
+                    float adjustedDigestProgress = curDigestProgress.Value;
+                    dist = MathF.Min(MathF.Abs(adjustedDigestProgress), dist);
+                }
+                headDigestModifier = 1f - dist + 0.5f;
+            }
+            headDigestModifier = MathHelper.Clamp(headDigestModifier, 1f, 2f);
+
+            Rectangle drawRect = new((int)drawPos.X, (int)drawPos.Y, (int)(HeadSize * headDigestModifier), (int)(HeadSize * headDigestModifier));
 
             Globals.spriteBatch.Draw(rtHead,
                 drawRect,
@@ -248,6 +279,23 @@ namespace lukewarm_snake
                 if (tailEndProgressIndex <= ShrinkBeginIndex)
                     drawScale = Vector2.One * EntityBatch.PixelateMultiplier * MathHelper.Lerp(TailEndRadius, BodyRadius, (float)tailEndProgressIndex / ShrinkBeginIndex) / BodyRadius;
 
+                //Calculate digest modifier (size of segment based on digestion)
+                float digestModifier = 1f;
+                if (digestProgresses.Count > 0)
+                {
+                    //Get closest digest progress
+                    float tailProgress = (float)tailIndex / tail.Anchors.Count;
+                    float dist = float.PositiveInfinity;
+                    for (LinkedListNode<float> curDigestProgress = digestProgresses.First; curDigestProgress != null; curDigestProgress = curDigestProgress.Next)
+                    {
+                        float adjustedDigestProgress = curDigestProgress.Value;
+                        dist = MathF.Min(MathF.Abs(tailProgress - adjustedDigestProgress), dist);
+                    }
+                    digestModifier = 1f - dist + 0.5f;
+                }
+                digestModifier = MathHelper.Clamp(digestModifier, 1f, 2f);
+
+                //Calculate which body texture to use
                 RenderTarget2D curBodyTexture = bodyTexture;
                 Color shadowColor = ShadowBodyColor;
                 if (tailIndex % BandFrequency == 0)
@@ -263,7 +311,7 @@ namespace lukewarm_snake
                     shadowColor,
                     0f,
                     new Vector2(bodyTexture.Width, bodyTexture.Height) / 2f,
-                    drawScale,
+                    drawScale * digestModifier,
                     SpriteEffects.None,
                     (tailIndex + 1f) / (tail.Anchors.Count + 1f));
             }
@@ -303,7 +351,7 @@ namespace lukewarm_snake
             {
                 Vector2 curEyeOffset = i == 0 ? eyeOffset : new Vector2(eyeOffset.X, -eyeOffset.Y);
                 float eyeOffsetAngle = curEyeOffset.Atan2();
-                Vector2 angleAdjustedOffset = (eyeOffsetAngle + HeadAngle).ToVector2() * eyeOffsetMagnitude;
+                Vector2 angleAdjustedOffset = (eyeOffsetAngle + HeadAngle).ToVector2() * eyeOffsetMagnitude * headDigestModifier;
 
                 Globals.spriteBatch.Draw(eyeTexture,
                     (parent.Pos + angleAdjustedOffset) * EntityBatch.PixelateMultiplier,
@@ -311,7 +359,7 @@ namespace lukewarm_snake
                     Color.White,
                     eyesAngle,
                     new Vector2(eyeTexture.Width, eyeTexture.Height) / 2f,
-                    EntityBatch.PixelateMultiplier,
+                    EntityBatch.PixelateMultiplier * headDigestModifier * headDigestModifier,
                     SpriteEffects.None,
                     0f);
             }
@@ -322,5 +370,7 @@ namespace lukewarm_snake
         }
 
         public void Draw() => Globals.spriteBatch.Draw(rt, Vector2.Zero, Color.White);
+
+        public void EatenFood() => digestProgresses.AddLast(0f);
     }
 }

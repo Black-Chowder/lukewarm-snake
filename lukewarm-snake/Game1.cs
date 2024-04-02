@@ -54,7 +54,7 @@ namespace lukewarm_snake
         protected override void Initialize()
         {
             //Globals.GameState = Globals.GameStates.StartGame;
-            GameState = GameStates.StartScreen;
+            GameState = GameStates.StartGame;
             IsMouseVisible = true;
 
             base.Initialize();
@@ -104,10 +104,14 @@ namespace lukewarm_snake
             switch (GameState)
             {
                 case GameStates.Test:
+                    MainEntityBatch = new();
+                    MainEntityBatch.Add(new TailTester());
+
                     GameState = GameStates.TestLoop;
                     goto case GameStates.TestLoop;
 
                 case GameStates.TestLoop:
+                    MainEntityBatch.Update();
                     break;
 
                 case GameStates.StartScreen:
@@ -163,6 +167,8 @@ namespace lukewarm_snake
             switch (GameState)
             {
                 case GameStates.TestLoop:
+
+                    /*
                     iTimer += MathF.Min(0.001f, 1f);
 
                     //testEffect.Parameters["iTimer"].SetValue(iTimer);
@@ -190,7 +196,8 @@ namespace lukewarm_snake
                         ),
                         Color.White);
                     spriteBatch.End();
-
+                    */
+                    MainEntityBatch.Draw();
                     break;
 
                 case GameStates.GameLoop:

@@ -39,6 +39,7 @@ namespace lukewarm_snake
                 food.IsActive = false;
                 Debug.WriteLine($"Score: {parent.GetTrait<TailHandler>().Anchors.Count}");
                 parent.GetTrait<TailHandler>().MaxAnchors += FoodValue;
+                parent.GetTrait<SnakeRenderer>().EatenFood();
                 FoodEaten++;
             }
         }
