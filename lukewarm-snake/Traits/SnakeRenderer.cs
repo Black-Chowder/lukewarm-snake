@@ -9,6 +9,7 @@ using BlackMagic;
 using Kryz.Tweening;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using static BlackMagic.Globals;
 
 namespace lukewarm_snake
 {
@@ -19,6 +20,18 @@ namespace lukewarm_snake
 
         //Digestion Variables
         private readonly LinkedList<float> digestProgresses = new();
+
+        //Death Variables
+        public enum DeathStates
+        {
+            Alive,//When the player is alive
+            Reaction,//When first hit.  Bullets get deleted and eyes grow
+            Decomposition, //some time after Reaction.  Tail bits grow and fade "explode" starting from end going up to head
+            Linger //Wait a bit before showing game over screen
+        }
+        public DeathStates DeathState { get; set; } = DeathStates.Alive;
+        public TimeSpan ReactionPhaseStartTime = TimeSpan.Zero;
+        public TimeSpan ReactionPhaseTime = new TimeSpan(0, 0, 0, 2);
 
         //Describe head
         private static RenderTarget2D headTexture;
@@ -63,11 +76,13 @@ namespace lukewarm_snake
 
         public int Priority => Trait.defaultPriority;
 
-        public SnakeRenderer(Entity parent, TailHandler tail)
+        public SnakeRenderer(Entity parent, TailHandler tail, SnakeHealth health = null)
         {
             this.parent = parent;
             this.tail = tail;
 
+            //Subscribe to death event
+            if (health is not null) health.deathEvent += OnDeath;
 
             //Load border effect
             border ??= Globals.content.Load<Effect>(@"Effects/Border");
@@ -194,6 +209,31 @@ namespace lukewarm_snake
                 curNode.Value += 0.01f;
                 if (curNode.Value > 2f)
                     digestProgresses.Remove(curNode);
+            }
+
+            //Handle Death
+            switch (DeathState)
+            {
+                case (DeathStates.Reaction):
+                    //If timer is complete
+                    if (gt.TotalGameTime - ReactionPhaseStartTime > ReactionPhaseTime)
+                    {
+                        //Move onto next phase
+                        DeathState = DeathStates.Decomposition;
+                        break;
+                    }
+
+                    Debug.WriteLine("In Reaction");
+
+                    break;
+
+                case (DeathStates.Decomposition):
+                    Debug.WriteLine("In Decomposition");
+                    break;
+
+                case (DeathStates.Linger):
+
+                    break;
             }
 
             Prerender();
@@ -372,5 +412,11 @@ namespace lukewarm_snake
         public void Draw() => Globals.spriteBatch.Draw(rt, Vector2.Zero, Color.White);
 
         public void EatenFood() => digestProgresses.AddLast(0f);
+
+        private void OnDeath()
+        {
+            DeathState = DeathStates.Reaction;
+            ReactionPhaseStartTime = gt.TotalGameTime;
+        }
     }
 }

@@ -44,6 +44,9 @@ namespace lukewarm_snake
 
         public void Update()
         {
+            if (!(parent as Food).IsActive)
+                return;
+
             //Move parent
             heading *= 0.99f;
             parent.DeltaPos = heading * MathF.Max(MinTimeMod, TimeMod);

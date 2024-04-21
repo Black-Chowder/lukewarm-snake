@@ -24,6 +24,9 @@ namespace lukewarm_snake
 
         public void Update()
         {
+            if (!parent.GetTrait<SnakeHealth>().IsAlive)
+                return;
+
             MouseState mouse = Mouse.GetState();
             parent.Pos = mouse.Position.ToVector2();
         }

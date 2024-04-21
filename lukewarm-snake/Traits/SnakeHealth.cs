@@ -6,6 +6,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using BlackMagic;
+using static BlackMagic.Globals;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -17,6 +18,10 @@ namespace lukewarm_snake
 
         public const float HitboxBuffer = 10;
         public const float HitboxRadius = SnakeRenderer.BodyRadius - HitboxBuffer;
+
+        public bool IsAlive { get; private set; } = true;
+        public delegate void DeathDelegate();
+        public event DeathDelegate deathEvent;
 
         public int Priority => Trait.defaultPriority;
 
@@ -52,10 +57,27 @@ namespace lukewarm_snake
                     if (!obstacle.IsActive)
                         continue;
 
+                    //If is colliding
                     if (CollisionUtils.IsCirclesColliding(curAnchor.Value, anchorHitboxRadius, obstacle.Pos, ObstacleRenderer.ObstacleRadius))
                     {
-                        parent.GetTrait<TailHandler>().MaxAnchors = (int)MathF.Max(1, anchorIndex);
+                        //Snake is hit!
+                        IsAlive = false;
+                        deathEvent?.Invoke();
+
+                        //Delete obstacles
                         obstacle.IsActive = false;
+                        for (int j = 0; j < obstacles.Length; j++)
+                        {
+                            obstacles[j].IsActive = false;
+                        }
+                        obstacleManager.IsSpawningObstacles = false;
+
+                        FoodManager foodManager = MainEntityBatch.GetEntityBucket<FoodManager>()[0] as FoodManager;
+                        foodManager.IsSpawningFood = false;
+                        foodManager.Food.IsActive = false;
+
+                        //parent.GetTrait<TailHandler>().MaxAnchors = (int)MathF.Max(1, anchorIndex);
+                        
                         wantToBreak = true;
                         break;
                     }

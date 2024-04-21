@@ -130,6 +130,10 @@ namespace lukewarm_snake
             spriteBatch.End();
         }
 
-        public void Draw() => spriteBatch.Draw(rt, Vector2.Zero, Color.White);
+        public void Draw()
+        {
+            if ((parent as Food).IsActive) 
+                spriteBatch.Draw(rt, Vector2.Zero, Color.White);
+        }
     }
 }

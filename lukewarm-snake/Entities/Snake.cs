@@ -18,11 +18,13 @@ namespace lukewarm_snake
         SnakeHealth health;
         public Snake(int startSnakeLength = TailHandler.minAnchors) : base(new Vector2(Globals.Camera.Width, Globals.Camera.Height) / 2f)
         {
+            health = new(this);
+            AddTrait(health);
 
             tailHandler = new(this, startAnchors: startSnakeLength);
             AddTrait(tailHandler);
 
-            tailRenderer = new(this, tailHandler);
+            tailRenderer = new(this, tailHandler, health);
             AddTrait(tailRenderer);
 
             rippleHandler = new(this);
@@ -34,8 +36,6 @@ namespace lukewarm_snake
             snakeCollider = new(this);
             AddTrait(snakeCollider);
 
-            health = new(this);
-            AddTrait(health);
         }
     }
 }

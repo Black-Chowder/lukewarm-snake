@@ -19,6 +19,7 @@ namespace lukewarm_snake
         private int curObstacleIndex = 0;
 
         //Obstacle spawning variables
+        public bool IsSpawningObstacles { get; set; } = true;
         public float SpawnObstacleRate = 400f;
         public float SpawnObstacleAccumulator = 0f;
 
@@ -72,6 +73,9 @@ namespace lukewarm_snake
 
         private void SpawnManager()
         {
+            if (!IsSpawningObstacles)
+                return;
+
             //Spawn ostacles
             SpawnObstacleAccumulator += MathF.Max(Globals.MinTimeMod, Globals.TimeMod);
             for (; SpawnObstacleAccumulator > SpawnObstacleRate; SpawnObstacleAccumulator -= SpawnObstacleRate)

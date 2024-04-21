@@ -33,6 +33,8 @@ namespace lukewarm_snake
                 return;
 
             Food food = foodManager.Food;
+            if (!food.IsActive)
+                return;
 
             if (CollisionUtils.IsCirclesColliding(food.Pos, FoodRenderer.FoodRadius, parent.Pos, SnakeRenderer.BodyRadius))
             {

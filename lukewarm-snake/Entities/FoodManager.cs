@@ -14,6 +14,8 @@ namespace lukewarm_snake
         public Food Food { get; set; }
         public const int FoodSpawnPadding = 50;
 
+        public bool IsSpawningFood { get; set; } = true;
+
         public FoodManager() : base(Vector2.Zero) => Food = new Food();
 
         public override void Update()
@@ -30,6 +32,9 @@ namespace lukewarm_snake
 
         private void SpawnManager()
         {
+            if (!IsSpawningFood)
+                return;
+
             //Spawn food
             if (!Food.IsActive)
             {
