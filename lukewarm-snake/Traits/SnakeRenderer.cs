@@ -32,6 +32,7 @@ namespace lukewarm_snake
         public DeathStates DeathState { get; set; } = DeathStates.Alive;
         public TimeSpan ReactionPhaseStartTime = TimeSpan.Zero;
         public TimeSpan ReactionPhaseTime = new TimeSpan(0, 0, 0, 2);
+        private const float ReactionHeadSizeModifier = 1.25f;
 
         //Describe head
         private static RenderTarget2D headTexture;
@@ -223,12 +224,10 @@ namespace lukewarm_snake
                         break;
                     }
 
-                    Debug.WriteLine("In Reaction");
-
                     break;
 
                 case (DeathStates.Decomposition):
-                    Debug.WriteLine("In Decomposition");
+
                     break;
 
                 case (DeathStates.Linger):
@@ -294,6 +293,10 @@ namespace lukewarm_snake
                 headDigestModifier = 1f - dist + 0.5f;
             }
             headDigestModifier = MathHelper.Clamp(headDigestModifier, 1f, 2f);
+
+            //Handle head size on death
+            if (DeathState != DeathStates.Alive)
+                headDigestModifier = ReactionHeadSizeModifier;
 
             Rectangle drawRect = new((int)drawPos.X, (int)drawPos.Y, (int)(HeadSize * headDigestModifier), (int)(HeadSize * headDigestModifier));
 
