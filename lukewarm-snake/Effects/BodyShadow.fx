@@ -41,7 +41,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 
 	//Only apply effect to non-transparent pixels
     if (fragColor.a > 0)
-        fragColor = lerp(fragColor, input.Color, shadowVal);
+        fragColor = lerp(fragColor, input.Color, shadowVal) * input.Color.a;
 	
     return fragColor;
 }

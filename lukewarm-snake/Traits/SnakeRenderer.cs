@@ -31,8 +31,10 @@ namespace lukewarm_snake
         }
         public DeathStates DeathState { get; set; } = DeathStates.Alive;
         public TimeSpan ReactionPhaseStartTime = TimeSpan.Zero;
-        public TimeSpan ReactionPhaseTime = new TimeSpan(0, 0, 0, 2);
+        public TimeSpan ReactionPhaseTime = new TimeSpan(0, 0, 0, 1);
         private const float ReactionHeadSizeModifier = 1.25f;
+        private float decompositionTimer = 0f;
+        private const float DecompositionTimerStep = 0.1f;
 
         //Describe head
         private static RenderTarget2D headTexture;
@@ -216,18 +218,17 @@ namespace lukewarm_snake
             switch (DeathState)
             {
                 case (DeathStates.Reaction):
-                    //If timer is complete
+                    //Reaction state complete
                     if (gt.TotalGameTime - ReactionPhaseStartTime > ReactionPhaseTime)
-                    {
-                        //Move onto next phase
                         DeathState = DeathStates.Decomposition;
-                        break;
-                    }
-
                     break;
 
                 case (DeathStates.Decomposition):
+                    decompositionTimer += DecompositionTimerStep;
 
+                    //If decomposition state is over
+                    if (decompositionTimer >= tail.Anchors.Count)
+                        DeathState = DeathStates.Linger;
                     break;
 
                 case (DeathStates.Linger):
@@ -338,6 +339,35 @@ namespace lukewarm_snake
                 }
                 digestModifier = MathHelper.Clamp(digestModifier, 1f, 2f);
 
+                //Calculate size of segment based on death progress
+                float deathSizeModifier = 1f;
+                float deathOpacityModifier = 1f;
+                if (DeathState == DeathStates.Decomposition)
+                {
+                    //Calculate progress of current segment's decomposition
+                    float curDecompSegmentProgress = decompositionTimer % 1f;
+                    
+                    //Calculate which index is currently being decomposed
+                    int curDecompIndex = (int)MathF.Floor(decompositionTimer);
+                    curDecompIndex = tail.Anchors.Count - curDecompIndex;
+
+                    //If is tail segment that is actively decomposing
+                    if (tailIndex == curDecompIndex)
+                    {
+                        deathSizeModifier = EasingFunctions.OutCubic(curDecompSegmentProgress) + 1f;
+                        deathOpacityModifier = 1f - EasingFunctions.InCubic(curDecompSegmentProgress);
+                    }
+                    
+                    //Current decomposition index past point of decomposition
+                    else if (tailIndex > curDecompIndex)
+                        deathOpacityModifier = 0f; //Make segment transparent
+                }
+
+                //Keep segment transparent if in linger state
+                else if (DeathState == DeathStates.Linger)
+                    deathOpacityModifier = 0f;
+
+
                 //Calculate which body texture to use
                 RenderTarget2D curBodyTexture = bodyTexture;
                 Color shadowColor = ShadowBodyColor;
@@ -351,10 +381,10 @@ namespace lukewarm_snake
                 Globals.spriteBatch.Draw(curBodyTexture,
                     drawPos,
                     new Rectangle(0, 0, bodyTexture.Width, bodyTexture.Height),
-                    shadowColor,
+                    new Color(shadowColor, deathOpacityModifier),
                     0f,
                     new Vector2(bodyTexture.Width, bodyTexture.Height) / 2f,
-                    drawScale * digestModifier,
+                    drawScale * digestModifier * deathSizeModifier,
                     SpriteEffects.None,
                     (tailIndex + 1f) / (tail.Anchors.Count + 1f));
             }
