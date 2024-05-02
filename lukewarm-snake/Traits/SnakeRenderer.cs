@@ -35,6 +35,8 @@ namespace lukewarm_snake
         private const float ReactionHeadSizeModifier = 1.25f;
         private float decompositionTimer = 0f;
         private const float DecompositionTimerStep = 0.1f;
+        public TimeSpan LingerPhaseStartTime = TimeSpan.Zero;
+        public TimeSpan LingerPhaseTime = new TimeSpan(0, 0, 0, 1);
 
         //Describe head
         private static RenderTarget2D headTexture;
@@ -226,13 +228,20 @@ namespace lukewarm_snake
                 case (DeathStates.Decomposition):
                     decompositionTimer += DecompositionTimerStep;
 
-                    //If decomposition state is over
-                    if (decompositionTimer >= tail.Anchors.Count + 1)
-                        DeathState = DeathStates.Linger;
+                    //Decomposition state is over gate
+                    if (decompositionTimer < tail.Anchors.Count + 1)
+                        break;
+
+                    DeathState = DeathStates.Linger;
+                    LingerPhaseStartTime = gt.TotalGameTime;
+
                     break;
 
                 case (DeathStates.Linger):
-
+                    if (gt.TotalGameTime - LingerPhaseStartTime > LingerPhaseTime)
+                    {
+                        //TODO: Transition to death screen
+                    }
                     break;
             }
 
