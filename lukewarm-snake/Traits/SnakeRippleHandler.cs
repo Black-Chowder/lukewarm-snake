@@ -38,6 +38,10 @@ namespace lukewarm_snake
 
         public void DrawRippleInfluence()
         {
+            //Don't draw ripple once head has disappeared
+            if (parent.GetTrait<SnakeRenderer>().DeathState == SnakeRenderer.DeathStates.Linger)
+                return;
+
             Vector2 drawPos = parent.Pos * EntityBatch.PixelateMultiplier;
             Rectangle drawRect = new((int)drawPos.X, (int)drawPos.Y, SnakeRenderer.HeadSize, SnakeRenderer.HeadSize);
 

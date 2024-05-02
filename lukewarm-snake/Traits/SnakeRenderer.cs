@@ -227,7 +227,7 @@ namespace lukewarm_snake
                     decompositionTimer += DecompositionTimerStep;
 
                     //If decomposition state is over
-                    if (decompositionTimer >= tail.Anchors.Count)
+                    if (decompositionTimer >= tail.Anchors.Count + 1)
                         DeathState = DeathStates.Linger;
                     break;
 
@@ -295,16 +295,41 @@ namespace lukewarm_snake
             }
             headDigestModifier = MathHelper.Clamp(headDigestModifier, 1f, 2f);
 
+            float headDeathSizeModifier = 1f;
+            float headDeathOpacityModifier = 1f;
+            if (DeathState == DeathStates.Decomposition)
+            {
+                //Calculate which index is currently being decomposed
+                int curDecompIndex = (int)MathF.Floor(decompositionTimer);
+
+                if (curDecompIndex == tail.Anchors.Count)
+                {
+                    float headDecompProgress = decompositionTimer % 1f;
+
+                    headDeathSizeModifier = EasingFunctions.OutCubic(headDecompProgress) + 1f;
+                    headDeathOpacityModifier = 1f - EasingFunctions.InCubic(headDecompProgress);
+                }
+                else if (curDecompIndex > tail.Anchors.Count)
+                {
+                    headDeathOpacityModifier = 0f;
+                }
+            }
+            else if (DeathState == DeathStates.Linger)
+            {
+                headDeathOpacityModifier = 0f;
+            }
+
             //Handle head size on death
             if (DeathState != DeathStates.Alive)
                 headDigestModifier = ReactionHeadSizeModifier;
 
-            Rectangle drawRect = new((int)drawPos.X, (int)drawPos.Y, (int)(HeadSize * headDigestModifier), (int)(HeadSize * headDigestModifier));
+            float curHeadSize = HeadSize * headDigestModifier * headDeathSizeModifier; //Head size on current frame
+            Rectangle drawRect = new((int)drawPos.X, (int)drawPos.Y, (int)(curHeadSize), (int)(curHeadSize));
 
             Globals.spriteBatch.Draw(rtHead,
                 drawRect,
                 null,
-                ShadowBodyColor,
+                new Color(ShadowBodyColor, headDeathOpacityModifier),
                 0f,
                 new Vector2(rtHead.Width, rtHead.Height) / 2f,
                 SpriteEffects.None,
@@ -420,19 +445,33 @@ namespace lukewarm_snake
 
             //Draw Eyes
             float eyeOffsetMagnitude = eyeOffset.Length();
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 2 && DeathState != DeathStates.Linger; i++)
             {
+                //Handle decomposition
+                float eyeDeathSizeMultiplier = 1f;
+                float eyeDeathPosOffsetMultiplier = 1f;
+                float eyeDeathOpacityMultiplier = 1f;
+                int curDecompIndex = (int)MathF.Floor(decompositionTimer);
+                if (curDecompIndex == tail.Anchors.Count)
+                {
+                    float eyeDecompProgress = decompositionTimer % 1f;
+
+                    eyeDeathSizeMultiplier = EasingFunctions.OutCubic(eyeDecompProgress) + 1f;
+                    eyeDeathPosOffsetMultiplier = eyeDeathSizeMultiplier;
+                    eyeDeathOpacityMultiplier = 1f - EasingFunctions.InCubic(eyeDecompProgress);
+                }
+
                 Vector2 curEyeOffset = i == 0 ? eyeOffset : new Vector2(eyeOffset.X, -eyeOffset.Y);
                 float eyeOffsetAngle = curEyeOffset.Atan2();
-                Vector2 angleAdjustedOffset = (eyeOffsetAngle + HeadAngle).ToVector2() * eyeOffsetMagnitude * headDigestModifier;
+                Vector2 angleAdjustedOffset = (eyeOffsetAngle + HeadAngle).ToVector2() * (eyeOffsetMagnitude * eyeDeathPosOffsetMultiplier) * headDigestModifier;
 
                 Globals.spriteBatch.Draw(eyeTexture,
                     (parent.Pos + angleAdjustedOffset) * EntityBatch.PixelateMultiplier,
                     new Rectangle(0, 0, eyeTexture.Width, eyeTexture.Height),
-                    Color.White,
+                    new Color(Color.White, eyeDeathOpacityMultiplier),
                     eyesAngle,
                     new Vector2(eyeTexture.Width, eyeTexture.Height) / 2f,
-                    EntityBatch.PixelateMultiplier * headDigestModifier * headDigestModifier,
+                    EntityBatch.PixelateMultiplier * headDigestModifier * headDigestModifier * eyeDeathSizeMultiplier,
                     SpriteEffects.None,
                     0f);
             }
