@@ -54,7 +54,7 @@ namespace lukewarm_snake
         protected override void Initialize()
         {
             //Globals.GameState = Globals.GameStates.StartGame;
-            GameState = GameStates.StartScreen;
+            GameState = GameStates.GameOver;
             IsMouseVisible = true;
 
             base.Initialize();
