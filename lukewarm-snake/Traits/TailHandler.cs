@@ -69,7 +69,7 @@ namespace lukewarm_snake
         public void Update()
         {
             //When alive, caluclate time mod based on distance traveled.  When dead, have set to constant
-            if (parent.GetTrait<SnakeHealth>().IsAlive)
+            if (parent.HasTrait<SnakeHealth>() && parent.GetTrait<SnakeHealth>().IsAlive)
                 Globals.TimeMod = (prevPos - parent.Pos).Length();
             else
                 Globals.TimeMod = AISnakeController.Speed;

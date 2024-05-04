@@ -54,7 +54,7 @@ namespace lukewarm_snake
         protected override void Initialize()
         {
             //Globals.GameState = Globals.GameStates.StartGame;
-            GameState = GameStates.StartGame;
+            GameState = GameStates.StartScreen;
             IsMouseVisible = true;
 
             base.Initialize();
@@ -137,6 +137,16 @@ namespace lukewarm_snake
                     MainEntityBatch.Add(new ObstacleManager());
                     MainEntityBatch.Add(new FoodManager());
                     MainEntityBatch.Add(new Score());
+                    GameState = GameStates.GameLoop;
+                    goto case GameStates.GameLoop;
+
+                case GameStates.GameOver:
+                    Debug.WriteLine("In game over state!");
+                    IsMouseVisible = true;
+                    MainEntityBatch?.Dispose();
+                    MainEntityBatch = new();
+                    MainEntityBatch.Add(new GameOverUI());
+
                     GameState = GameStates.GameLoop;
                     goto case GameStates.GameLoop;
 

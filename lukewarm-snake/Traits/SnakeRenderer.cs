@@ -239,9 +239,7 @@ namespace lukewarm_snake
 
                 case (DeathStates.Linger):
                     if (gt.TotalGameTime - LingerPhaseStartTime > LingerPhaseTime)
-                    {
-                        //TODO: Transition to death screen
-                    }
+                        GameState = GameStates.GameOver; //Transition to death scene
                     break;
             }
 
