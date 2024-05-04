@@ -34,7 +34,7 @@ namespace lukewarm_snake
         public TimeSpan ReactionPhaseTime = new TimeSpan(0, 0, 0, 1);
         private const float ReactionHeadSizeModifier = 1.25f;
         private float decompositionTimer = 0f;
-        private const float DecompositionTimerStep = 0.1f;
+        private const float DecompositionTimerStep = 0.12f;
         public TimeSpan LingerPhaseStartTime = TimeSpan.Zero;
         public TimeSpan LingerPhaseTime = new TimeSpan(0, 0, 0, 1);
 
