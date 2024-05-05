@@ -33,6 +33,7 @@ namespace lukewarm_snake
         private const float ScoreLetterOffsetVariation = 0.5f;
         private string scoreAsString;
         private string SScore;
+        private const float SizeChangeTime = 1f;
 
 
         public GameOverUI() : base(Vector2.Zero)
@@ -85,7 +86,7 @@ namespace lukewarm_snake
             //Draw score
             stringWidthProgress = 0f;
             fullStringWidth = defaultFont.MeasureString(SScoreBase + scoreAsString).X;
-            for (int i = 0; i < SScore.Length; i++)
+            for (int i = 0; i < SScoreBase.Length; i++)
             {
                 Vector2 curDrawPos = Vector2.Lerp(ScoreStartPos, ScoreEndPos, EasingFunctions.OutBack(MathHelper.Clamp(timer - scoreLetterOffsets[i], 0, 1)));
 
@@ -96,6 +97,24 @@ namespace lukewarm_snake
                     0f,
                     Vector2.Zero,
                     Vector2.One,
+                    SpriteEffects.None,
+                    0f);
+
+                stringWidthProgress += defaultFont.MeasureString(SScore[i].ToString()).X;
+            }
+
+            //Draw score number
+            for (int i = SScoreBase.Length; i < SScore.Length; i++)
+            {
+                Vector2 curDrawPos = Vector2.Lerp(ScoreStartPos, ScoreEndPos, EasingFunctions.OutBack(MathHelper.Clamp(timer - scoreLetterOffsets[i], 0, 1)));
+
+                spriteBatch.DrawString(defaultFont,
+                    SScore[i].ToString(),
+                    curDrawPos + new Vector2(stringWidthProgress - fullStringWidth / 2f, 0),
+                    Color.White,
+                    0f,
+                    Vector2.One ,
+                    Vector2.One * 1.001f,
                     SpriteEffects.None,
                     0f);
 
