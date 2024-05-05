@@ -15,6 +15,8 @@ namespace lukewarm_snake
     {
         public const string STitle = "GAME OVER";
         public const string SScoreBase = "SCORE: ";
+        public const string SRestart = "RESTART";
+        public const string SHome = "HOME";
 
         private float timer = 0f;
 
@@ -24,6 +26,14 @@ namespace lukewarm_snake
         private readonly float[] titleLetterOffsets = new float[STitle.Length];
         private const float TitleLetterOffsetVariation = 0.5f;
 
+        //Score Position Variables
+        private static Vector2 ScoreStartPos => new (Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, -50f);
+        private static Vector2 ScoreEndPos => new(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, 30f);
+        private readonly float[] scoreLetterOffsets;
+        private const float ScoreLetterOffsetVariation = 0.5f;
+        private string scoreAsString;
+        private string SScore;
+
 
         public GameOverUI() : base(Vector2.Zero)
         {
@@ -31,6 +41,12 @@ namespace lukewarm_snake
             for (int i = 0; i < titleLetterOffsets.Length; i++)
                 titleLetterOffsets[i] = (float)rnd.NextDouble() * TitleLetterOffsetVariation;
 
+            //Initialize score
+            scoreAsString = PlayerScore.ToString();
+            SScore = SScoreBase + scoreAsString;
+            scoreLetterOffsets = new float[SScore.Length];
+            for (int i = 0; i < scoreLetterOffsets.Length; i++)
+                scoreLetterOffsets[i] = (float)rnd.NextDouble() * ScoreLetterOffsetVariation;
         }
 
         public override void Update()
@@ -65,6 +81,27 @@ namespace lukewarm_snake
 
                 stringWidthProgress += defaultFont.MeasureString(STitle[i].ToString()).X;
             }
+
+            //Draw score
+            stringWidthProgress = 0f;
+            fullStringWidth = defaultFont.MeasureString(SScoreBase + scoreAsString).X;
+            for (int i = 0; i < SScore.Length; i++)
+            {
+                Vector2 curDrawPos = Vector2.Lerp(ScoreStartPos, ScoreEndPos, EasingFunctions.OutBack(MathHelper.Clamp(timer - scoreLetterOffsets[i], 0, 1)));
+
+                spriteBatch.DrawString(defaultFont,
+                    SScore[i].ToString(),
+                    curDrawPos + new Vector2(stringWidthProgress - fullStringWidth / 2f, 0),
+                    Color.White,
+                    0f,
+                    Vector2.Zero,
+                    Vector2.One,
+                    SpriteEffects.None,
+                    0f);
+
+                stringWidthProgress += defaultFont.MeasureString(SScore[i].ToString()).X;
+            }
+
         }
     }
 }

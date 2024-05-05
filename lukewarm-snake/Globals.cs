@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX.MediaFoundation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,5 +42,7 @@ namespace BlackMagic
         public static float MinTimeMod = 0.5f;
 
         public const float ShadowAngle = 5f * MathF.PI / 4f;
+
+        public static int PlayerScore = 0;
     }
 }

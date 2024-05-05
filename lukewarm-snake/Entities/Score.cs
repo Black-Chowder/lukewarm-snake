@@ -13,7 +13,7 @@ namespace lukewarm_snake
 {
     public class Score : Entity
     {
-        public int PlayerScore { get; set; } = 0;
+        public int PlayerScore { get => Globals.PlayerScore; set => Globals.PlayerScore = value; }
 
         //Score grow on score change variables
         private float maxGrowPercent = 1.25f;
