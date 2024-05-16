@@ -8,6 +8,7 @@ using static BlackMagic.Globals;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Kryz.Tweening;
+using Microsoft.Xna.Framework.Input;
 
 namespace lukewarm_snake
 {
@@ -35,6 +36,16 @@ namespace lukewarm_snake
         private string SScore;
         private const float SizeChangeTime = 1f;
 
+        //Restart Button Position Variables
+        private static Vector2 RestartStartPos => new Vector2(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, -50f);
+        private static Vector2 RestartEndPos => new Vector2(Globals.Camera.Width, Globals.Camera.Height + 150f) * EntityBatch.PixelateMultiplier / 2f;
+        private readonly float[] restartLetterOffsets = new float[SRestart.Length];
+        private const float RestartLetterOffsetVariation = 0.5f;
+
+        private bool isHoveringOverRestart = false;
+        private Rectangle restartHitbox;
+        private static Vector2 RestartHitboxBuffer => new(20, 5);
+
 
         public GameOverUI() : base(Vector2.Zero)
         {
@@ -48,16 +59,39 @@ namespace lukewarm_snake
             scoreLetterOffsets = new float[SScore.Length];
             for (int i = 0; i < scoreLetterOffsets.Length; i++)
                 scoreLetterOffsets[i] = (float)rnd.NextDouble() * ScoreLetterOffsetVariation;
+
+            //Initialize restart button
+            for (int i = 0; i < restartLetterOffsets.Length; i++)
+                restartLetterOffsets[i] = (float)rnd.NextDouble() * RestartLetterOffsetVariation;
+
+            Vector2 restartSize = defaultFont.MeasureString(SRestart) + RestartHitboxBuffer;
+            restartHitbox = new Rectangle(
+                (int)((Globals.Camera.Width * EntityBatch.PixelateMultiplier - restartSize.X) / 2f),
+                (int)(((Globals.Camera.Height - 6) * EntityBatch.PixelateMultiplier + restartSize.Y / 2f) / 2f),
+                (int)restartSize.X, (int)restartSize.Y
+            );
         }
 
         public override void Update()
         {
             timer += 0.01f;
+
+            MouseState mouse = Mouse.GetState();
+
+            isHoveringOverRestart = restartHitbox.Contains(mouse.Position.ToVector2() * EntityBatch.PixelateMultiplier);
+
+            if (mouse.LeftButton == ButtonState.Pressed && isHoveringOverRestart)
+                GameState = GameStates.StartGame;
         }
 
         public override void Draw()
         {
-
+            if (isHoveringOverRestart)
+            {
+                spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
+                    restartHitbox,
+                    Color.Black * 0.25f);
+            }
         }
 
         //Draw call with UI shader effect applied
@@ -121,6 +155,26 @@ namespace lukewarm_snake
                 stringWidthProgress += defaultFont.MeasureString(SScore[i].ToString()).X;
             }
 
+
+            //Draw restart button
+            stringWidthProgress = 0f;
+            fullStringWidth = defaultFont.MeasureString(SRestart).X;
+            for (int i = 0; i < SRestart.Length; i++)
+            {
+                Vector2 curDrawPos = Vector2.Lerp(RestartStartPos, RestartEndPos, EasingFunctions.OutBack(MathHelper.Clamp(timer - restartLetterOffsets[i], 0, 1)));
+
+                spriteBatch.DrawString(defaultFont,
+                    SRestart[i].ToString(),
+                    curDrawPos + new Vector2(stringWidthProgress - fullStringWidth / 2f, 0),
+                    Color.White,
+                    0f,
+                    Vector2.Zero,
+                    Vector2.One,
+                    SpriteEffects.None,
+                    0f);
+
+                stringWidthProgress += defaultFont.MeasureString(SRestart[i].ToString()).X;
+            }
         }
     }
 }
