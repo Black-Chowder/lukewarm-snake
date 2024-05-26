@@ -23,6 +23,8 @@
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../SFX/15_Calm sea_close shot_few people_few cars.wav</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../SFX/24_Roosvelt Island_water_air_birds_distant traffic.wav</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../SFX/GS projectile splash 004.wav</File>
+    <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../SFX/UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_12 (1).wav</File>
+    <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/../SFX/UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_33.wav</File>
     <File>D:/Programming/C#/lukewarm-snake/lukewarm-snake/Content/DefaultFont.spritefont</File>
   </SourceFiles>
   <DestFiles>
@@ -45,6 +47,8 @@
     <File>SFX/15_Calm sea_close shot_few people_few cars.wav</File>
     <File>SFX/24_Roosvelt Island_water_air_birds_distant traffic.wav</File>
     <File>SFX/GS projectile splash 004.wav</File>
+    <File>SFX/UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_12 (1).wav</File>
+    <File>SFX/UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_33.wav</File>
     <File xsi:nil="true" />
   </DestFiles>
 </SourceFileCollection>

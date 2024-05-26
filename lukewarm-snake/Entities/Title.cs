@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Kryz.Tweening;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 
 namespace lukewarm_snake
 {
@@ -36,8 +37,15 @@ namespace lukewarm_snake
         private const float BobDist = 8f;
 
         private bool isHoveringOverStart = false;
+        private bool wasHovering = false;
         private Rectangle startHitbox;
         private static Vector2 StartHitboxBuffer => new(20, 5);
+
+        //Sound effect variables
+        SoundEffect hoverSfx;
+        SoundEffectInstance hoverSfxInstance;
+        SoundEffect clickSfx;
+        SoundEffectInstance clickSfxInstance;
 
         public Title() : base(Vector2.Zero)
         {
@@ -54,6 +62,12 @@ namespace lukewarm_snake
                 (int)(((Globals.Camera.Height - 6) * EntityBatch.PixelateMultiplier + startSize.Y / 2f) / 2f),
                 (int)startSize.X, (int)startSize.Y
             );
+
+            hoverSfx = content.Load<SoundEffect>(@"SFX/UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_12 (1)");
+            hoverSfxInstance = hoverSfx.CreateInstance();
+
+            clickSfx = content.Load<SoundEffect>(@"SFX/UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_33");
+            clickSfxInstance = clickSfx.CreateInstance();
         }
 
         public override void Update()
@@ -64,8 +78,16 @@ namespace lukewarm_snake
 
             isHoveringOverStart = startHitbox.Contains(mouse.Position.ToVector2() * EntityBatch.PixelateMultiplier) && timer - StartTimerWait > 1;
 
+            //Play mouse over sound handling
+            if (isHoveringOverStart && !wasHovering)
+                hoverSfxInstance.Play();
+            wasHovering = isHoveringOverStart;
+
             if (mouse.LeftButton == ButtonState.Pressed && isHoveringOverStart)
+            {
+                clickSfxInstance.Play();
                 GameState = GameStates.StartGame;
+            }
             
         }
 

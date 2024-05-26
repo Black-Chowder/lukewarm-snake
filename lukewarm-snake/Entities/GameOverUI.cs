@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Kryz.Tweening;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 
 namespace lukewarm_snake
 {
@@ -43,6 +44,7 @@ namespace lukewarm_snake
         private const float RestartLetterOffsetVariation = 0.5f;
 
         private bool isHoveringOverRestart = false;
+        private bool wasHoveringOverRestart = false;
         private Rectangle restartHitbox;
         private static Vector2 RestartHitboxBuffer => new(20, 5);
 
@@ -53,8 +55,15 @@ namespace lukewarm_snake
         private const float HomeLetterOffsetVariation = 0.5f;
 
         private bool isHoveringOverHome = false;
+        private bool wasHoveringOverHome = false;
         private Rectangle homeHitbox;
         private static Vector2 HomeHitboxBuffer => new(20, 5);
+
+        //Sound effect variables
+        SoundEffect hoverSfx;
+        SoundEffectInstance hoverSfxInstance;
+        SoundEffect clickSfx;
+        SoundEffectInstance clickSfxInstance;
 
 
         public GameOverUI() : base(Vector2.Zero)
@@ -91,6 +100,12 @@ namespace lukewarm_snake
                 (int)(((Globals.Camera.Height - 6) * EntityBatch.PixelateMultiplier + homeSize.Y / 2f) / 2f + 23),
                 (int)homeSize.X, (int)homeSize.Y
             );
+
+            hoverSfx = content.Load<SoundEffect>(@"SFX/UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_12 (1)");
+            hoverSfxInstance = hoverSfx.CreateInstance();
+
+            clickSfx = content.Load<SoundEffect>(@"SFX/UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_33");
+            clickSfxInstance = clickSfx.CreateInstance();
         }
 
         public override void Update()
@@ -99,13 +114,28 @@ namespace lukewarm_snake
 
             MouseState mouse = Mouse.GetState();
 
+            //Play mouse over sound handling
+            if (isHoveringOverHome && !wasHoveringOverHome)
+                hoverSfxInstance.Play();
+            wasHoveringOverHome = isHoveringOverHome;
+
+            if (isHoveringOverRestart && !wasHoveringOverRestart)
+                hoverSfxInstance.Play();
+            wasHoveringOverRestart = isHoveringOverRestart;
+
             isHoveringOverRestart = restartHitbox.Contains(mouse.Position.ToVector2() * EntityBatch.PixelateMultiplier);
             if (mouse.LeftButton == ButtonState.Pressed && isHoveringOverRestart)
+            {
+                clickSfxInstance.Play();
                 GameState = GameStates.StartGame;
+            }
 
             isHoveringOverHome = homeHitbox.Contains(mouse.Position.ToVector2() * EntityBatch.PixelateMultiplier);
             if (mouse.LeftButton == ButtonState.Pressed && isHoveringOverHome)
+            {
+                clickSfxInstance.Play();
                 GameState = GameStates.StartScreen;
+            }
         }
 
         public override void Draw()
