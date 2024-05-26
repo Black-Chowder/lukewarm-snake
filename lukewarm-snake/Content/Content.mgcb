@@ -115,6 +115,30 @@
 /processorParam:TextureFormat=Color
 /build:../Graphics/SnakeHead.png;Graphics/SnakeHead.png
 
+#begin ../SFX/09_River close shot, nature, birds, no people.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:../SFX/09_River close shot, nature, birds, no people.wav;SFX/09_River close shot, nature, birds, no people.wav
+
+#begin ../SFX/15_Calm sea_close shot_few people_few cars.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:../SFX/15_Calm sea_close shot_few people_few cars.wav;SFX/15_Calm sea_close shot_few people_few cars.wav
+
+#begin ../SFX/24_Roosvelt Island_water_air_birds_distant traffic.wav
+/importer:WavImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:../SFX/24_Roosvelt Island_water_air_birds_distant traffic.wav;SFX/24_Roosvelt Island_water_air_birds_distant traffic.wav
+
+#begin ../SFX/GS projectile splash 004.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:../SFX/GS projectile splash 004.wav;SFX/GS projectile splash 004.wav
+
 #begin DefaultFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

@@ -110,3 +110,8 @@ D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\FoodTailRipple.xnb
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\UIShader.xnb
 C:\Users\iabla\Documents\GitHub\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\Effects\UIShader.xnb
+D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\SFX\09_River close shot, nature, birds, no people.xnb
+D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\SFX\15_Calm sea_close shot_few people_few cars.xnb
+D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\SFX\24_Roosvelt Island_water_air_birds_distant traffic.xnb
+D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\SFX\GS projectile splash 004.xnb
+D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\SFX\24_Roosvelt Island_water_air_birds_distant traffic.wma

@@ -8,6 +8,8 @@ using BlackMagic;
 using System;
 using System.Linq;
 using static BlackMagic.Globals;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Audio;
 
 namespace lukewarm_snake
 {
@@ -69,6 +71,11 @@ namespace lukewarm_snake
             testEffect = Content.Load<Effect>(@"Effects/Depth");
 
             testRt = new RenderTarget2D(GraphicsDevice, 100, 100);
+
+            //Main background ambience handling
+            bgAmbience = Content.Load<Song>(@"SFX/24_Roosvelt Island_water_air_birds_distant traffic");
+            MediaPlayer.Play(bgAmbience);
+            MediaPlayer.IsRepeating = true;
         }
 
         protected override void Update(GameTime gameTime)
@@ -76,6 +83,10 @@ namespace lukewarm_snake
             gt = gameTime;
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            //Background ambience handling
+            if (MediaPlayer.State == MediaState.Stopped) MediaPlayer.Play(bgAmbience);
+            else if (MediaPlayer.State == MediaState.Paused) MediaPlayer.Resume();
 
             ClickHandler.Update();
 
