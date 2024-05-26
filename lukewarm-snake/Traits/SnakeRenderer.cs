@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using BlackMagic;
 using Kryz.Tweening;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using static BlackMagic.Globals;
 
@@ -37,6 +38,16 @@ namespace lukewarm_snake
         private const float DecompositionTimerStep = 0.12f;
         public TimeSpan LingerPhaseStartTime = TimeSpan.Zero;
         public TimeSpan LingerPhaseTime = new TimeSpan(0, 0, 0, 1);
+
+        //Death sfx variables
+        SoundEffect decompSfx;
+        SoundEffectInstance decompSfxInstance;
+        private float sfxTimer = 0f,
+            sfxTimerStep = 0.025f;
+
+        SoundEffect deathSfx;
+        SoundEffectInstance deathSfxInstance;
+
 
         //Describe head
         private static RenderTarget2D headTexture;
@@ -85,6 +96,15 @@ namespace lukewarm_snake
         {
             this.parent = parent;
             this.tail = tail;
+
+            //Load sfx
+            decompSfx = content.Load<SoundEffect>(@"SFX/Pressing Down Sizzling Burger");
+            decompSfxInstance = decompSfx.CreateInstance();
+            decompSfxInstance.IsLooped = true;
+
+            deathSfx = content.Load<SoundEffect>(@"SFX/GS projectile splash 004");
+            deathSfxInstance = deathSfx.CreateInstance();
+
 
             //Subscribe to death event
             if (health is not null) health.deathEvent += OnDeath;
@@ -222,11 +242,19 @@ namespace lukewarm_snake
                 case (DeathStates.Reaction):
                     //Reaction state complete
                     if (gt.TotalGameTime - ReactionPhaseStartTime > ReactionPhaseTime)
+                    {
+                        decompSfxInstance.Play();
                         DeathState = DeathStates.Decomposition;
+                    }
                     break;
 
                 case (DeathStates.Decomposition):
                     decompositionTimer += DecompositionTimerStep;
+
+                    //Handle sfx
+                    sfxTimer += sfxTimerStep;
+                    sfxTimer = MathHelper.Clamp(sfxTimer, 0f, 1f);
+                    decompSfxInstance.Volume = EasingFunctions.InOutCubic(sfxTimer);
 
                     //Decomposition state is over gate
                     if (decompositionTimer < tail.Anchors.Count + 1)
@@ -234,10 +262,17 @@ namespace lukewarm_snake
 
                     DeathState = DeathStates.Linger;
                     LingerPhaseStartTime = gt.TotalGameTime;
+                    deathSfxInstance.Play();
 
                     break;
 
                 case (DeathStates.Linger):
+
+                    //Handle sfx
+                    sfxTimer -= sfxTimerStep;
+                    sfxTimer = MathHelper.Clamp(sfxTimer, 0f, 1f);
+                    decompSfxInstance.Volume = EasingFunctions.InOutCubic(sfxTimer);
+
                     if (gt.TotalGameTime - LingerPhaseStartTime > LingerPhaseTime)
                         GameState = GameStates.GameOver; //Transition to death scene
                     break;

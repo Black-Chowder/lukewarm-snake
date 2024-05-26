@@ -9,6 +9,7 @@ using BlackMagic;
 using static BlackMagic.Globals;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 
 namespace lukewarm_snake
 {
@@ -25,9 +26,15 @@ namespace lukewarm_snake
 
         public int Priority => Trait.defaultPriority;
 
+        SoundEffect deathSfx;
+        SoundEffectInstance deathSfxInstance;
+
         public SnakeHealth(Entity parent)
         {
             this.parent = parent;
+
+            deathSfx = content.Load<SoundEffect>(@"SFX/GS projectile splash 004");
+            deathSfxInstance = deathSfx.CreateInstance();
         }
 
         public void Update()
@@ -77,7 +84,10 @@ namespace lukewarm_snake
                         foodManager.Food.IsActive = false;
 
                         //parent.GetTrait<TailHandler>().MaxAnchors = (int)MathF.Max(1, anchorIndex);
-                        
+
+                        //Sound effect
+                        deathSfxInstance.Play();
+
                         wantToBreak = true;
                         break;
                     }

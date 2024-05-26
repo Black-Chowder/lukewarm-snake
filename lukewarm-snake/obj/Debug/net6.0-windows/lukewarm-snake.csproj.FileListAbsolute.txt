@@ -118,3 +118,4 @@ D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\SFX\MagicPack2_WaterExplosions_Explosion2-004.xnb
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\SFX\UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_12 (1).xnb
 D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\SFX\UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_33.xnb
+D:\Programming\C#\lukewarm-snake\lukewarm-snake\bin\Debug\net6.0-windows\Content\SFX\Pressing Down Sizzling Burger.xnb

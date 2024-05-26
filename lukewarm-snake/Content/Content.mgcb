@@ -139,6 +139,12 @@
 /processorParam:Quality=Best
 /build:../SFX/GS projectile splash 004.wav;SFX/GS projectile splash 004.wav
 
+#begin ../SFX/Pressing Down Sizzling Burger.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:../SFX/Pressing Down Sizzling Burger.wav;SFX/Pressing Down Sizzling Burger.wav
+
 #begin ../SFX/UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_12 (1).wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
