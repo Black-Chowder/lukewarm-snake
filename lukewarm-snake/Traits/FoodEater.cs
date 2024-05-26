@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BlackMagic;
+using static BlackMagic.Globals;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 
 namespace lukewarm_snake
 {
@@ -17,11 +19,18 @@ namespace lukewarm_snake
         public int FoodValue { get; set; } = 3;
         public int FoodEaten { get; set; } = 0;
 
+        //Sfx variables
+        SoundEffect eatSfx;
+        SoundEffectInstance eatSfxInstance;
+
         public int Priority => Trait.defaultPriority;
 
         public FoodEater(Entity parent)
         {
             this.parent = parent;
+
+            eatSfx = content.Load<SoundEffect>(@"SFX/Short Rising Flutter");//content.Load<SoundEffect>(@"SFX/PLOP Mouth Drip Dry");
+            eatSfxInstance = eatSfx.CreateInstance();
         }
 
         public void Update()
@@ -43,6 +52,8 @@ namespace lukewarm_snake
                 parent.GetTrait<TailHandler>().MaxAnchors += FoodValue;
                 parent.GetTrait<SnakeRenderer>().EatenFood();
                 FoodEaten++;
+
+                eatSfxInstance.Play();
             }
         }
     }

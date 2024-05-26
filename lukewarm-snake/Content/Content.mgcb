@@ -139,11 +139,23 @@
 /processorParam:Quality=Best
 /build:../SFX/GS projectile splash 004.wav;SFX/GS projectile splash 004.wav
 
+#begin ../SFX/PLOP Mouth Drip Dry.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:../SFX/PLOP Mouth Drip Dry.wav;SFX/PLOP Mouth Drip Dry.wav
+
 #begin ../SFX/Pressing Down Sizzling Burger.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:../SFX/Pressing Down Sizzling Burger.wav;SFX/Pressing Down Sizzling Burger.wav
+
+#begin ../SFX/Short Rising Flutter.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:../SFX/Short Rising Flutter.wav;SFX/Short Rising Flutter.wav
 
 #begin ../SFX/UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_12 (1).wav
 /importer:WavImporter
