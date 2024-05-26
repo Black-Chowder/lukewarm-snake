@@ -22,12 +22,14 @@ namespace lukewarm_snake
         //Sfx variables
         SoundEffect eatSfx;
         SoundEffectInstance eatSfxInstance;
+        readonly bool sfxOn;
 
         public int Priority => Trait.defaultPriority;
 
-        public FoodEater(Entity parent)
+        public FoodEater(Entity parent, bool sfxOn = true)
         {
             this.parent = parent;
+            this.sfxOn = sfxOn;
 
             eatSfx = content.Load<SoundEffect>(@"SFX/Short Rising Flutter");//content.Load<SoundEffect>(@"SFX/PLOP Mouth Drip Dry");
             eatSfxInstance = eatSfx.CreateInstance();
@@ -53,7 +55,7 @@ namespace lukewarm_snake
                 parent.GetTrait<SnakeRenderer>().EatenFood();
                 FoodEaten++;
 
-                eatSfxInstance.Play();
+                if (sfxOn) eatSfxInstance.Play();
             }
         }
     }

@@ -27,7 +27,7 @@ namespace lukewarm_snake
             rippleHandler = new(this);
             AddTrait(rippleHandler);
 
-            foodEater = new(this);
+            foodEater = new(this, false);
             AddTrait(foodEater);
 
             AIController = new(this);
