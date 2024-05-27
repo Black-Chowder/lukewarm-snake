@@ -11,6 +11,7 @@ using Kryz.Tweening;
 using Microsoft.Xna.Framework.Graphics;
 using static System.Formats.Asn1.AsnWriter;
 using Microsoft.Xna.Framework.Audio;
+using System.IO;
 
 namespace lukewarm_snake
 {
@@ -22,17 +23,26 @@ namespace lukewarm_snake
         private float timer = 0f;
         private const float TimerStep = 0.01f;
 
+
         //Title position variables
         private static Vector2 TitleStartPos => new(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, -50f);
         private static Vector2 TitleEndPos => new(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, 10f);
         private readonly float[] titleLetterOffsets = new float[STitle.Length];
         private const float TitleLetterOffsetVariation = 0.5f;
 
+
         //Scores position variables
         private static Vector2 ScoreStartPos => new(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, -50f);
         private static Vector2 ScoreEndPos => new(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, 30f);
         private const float ScoreSpacing = 17f;
         private const float TimerWaitOffset = 0.25f;
+
+
+        //New score variables
+        private int newScore;
+        private int newScoreIndex = -1;
+        private int newScoreNameIndex = 0;
+        private bool keyPressedLastFrame = false;
 
         //Home Button Position Variables
         private static Vector2 HomeStartPos => new Vector2(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, -50f);
@@ -43,14 +53,27 @@ namespace lukewarm_snake
         private Rectangle homeHitbox;
         private static Vector2 HomeHitboxBuffer => new(20, 4);
 
+
         //Sound effect variables
         SoundEffect hoverSfx;
         SoundEffectInstance hoverSfxInstance;
         SoundEffect clickSfx;
         SoundEffectInstance clickSfxInstance;
 
-        public Scoreboard() : base(Vector2.Zero)
+        public Scoreboard(int newScore = -1) : base(Vector2.Zero)
         {
+            //Handle score counting
+            this.newScore = newScore;
+
+            for (int i = 0; i < ScoreboardScores.Count; i++)
+            {
+                if (ScoreboardScores[i].Item2 < newScore)
+                {
+                    ScoreboardScores[i] = ("___", newScore);
+                    newScoreIndex = i;
+                }
+            }
+
             //Initialize title
             for (int i = 0; i < titleLetterOffsets.Length; i++)
                 titleLetterOffsets[i] = (float)rnd.NextDouble() * TitleLetterOffsetVariation;
@@ -84,6 +107,36 @@ namespace lukewarm_snake
             {
                 clickSfxInstance.Play();
                 GameState = GameStates.StartScreen;
+            }
+
+            //Handle adding new scores to scoreboard
+            if (newScoreIndex == -1)
+                return;
+            KeyboardState keyboardState = Keyboard.GetState();
+            Keys[] keys = keyboardState.GetPressedKeys();
+
+            if (keys.Length > 0 && !keyPressedLastFrame)
+            {
+                keyPressedLastFrame = true;
+                ScoreboardScores[newScoreIndex] = (
+                    ScoreboardScores[newScoreIndex].Item1[..newScoreNameIndex] + keys[0].ToString() + (newScoreNameIndex < 2 ? ScoreboardScores[newScoreIndex].Item1[(newScoreNameIndex + 1)..] : ""),
+                    newScore
+                );
+                newScoreNameIndex++;
+
+                if (newScoreNameIndex == 3)
+                {
+                    using (StreamWriter sw = new(File.Create(ScoreboardPath)))
+                    {
+                        for (int i = 0; i < ScoreboardScores.Count; i++)
+                            sw.WriteLine(ScoreboardScores[i].Item1 + ScoreboardScores[i].Item2);
+                    }
+                    newScoreIndex = -1;
+                }
+            }
+            else if (keys.Length == 0)
+            {
+                keyPressedLastFrame = false;
             }
         }
 

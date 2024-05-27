@@ -69,6 +69,8 @@ namespace lukewarm_snake
                     ScoreboardScores.Add((line[..3], int.Parse(line[3..])));
             }
 
+            ScoreboardScores.Sort((a, b) => b.Item2.CompareTo(a.Item2)); //Sort in ascending order
+
             base.Initialize();
         }
 
@@ -175,7 +177,7 @@ namespace lukewarm_snake
                 case GameStates.Scoreboard:
                     MainEntityBatch?.Dispose();
                     MainEntityBatch = new();
-                    MainEntityBatch.Add(new Scoreboard());
+                    MainEntityBatch.Add(new Scoreboard(5));
 
                     GameState = GameStates.GameLoop;
                     goto case GameStates.GameLoop;
