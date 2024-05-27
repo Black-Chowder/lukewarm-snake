@@ -21,6 +21,7 @@ namespace lukewarm_snake
         public const string SHome = "HOME";
 
         private float timer = 0f;
+        const float TimerStep = 0.025f;
 
         //Title Position Variables
         private static Vector2 TitleStartPos => new(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, -50f);
@@ -110,7 +111,7 @@ namespace lukewarm_snake
 
         public override void Update()
         {
-            timer += 0.01f;
+            timer += TimerStep;
 
             MouseState mouse = Mouse.GetState();
 
