@@ -55,8 +55,19 @@ namespace lukewarm_snake
 
         protected override void Initialize()
         {
-            GameState = GameStates.StartScreen;
+            GameState = GameStates.Scoreboard;
             IsMouseVisible = true;
+
+            //Initialize scoreboard
+            ScoreboardScores = new();
+            if (!File.Exists(ScoreboardPath))
+                File.Create(ScoreboardPath).Close();
+            using (StreamReader sr = new(File.OpenRead(ScoreboardPath)))
+            {
+                string line;
+                for (int i = 0; (line = sr.ReadLine()) != null && i < MaxScoreboardScores; i++)
+                    ScoreboardScores.Add((line[..3], int.Parse(line[3..])));
+            }
 
             base.Initialize();
         }
@@ -156,6 +167,15 @@ namespace lukewarm_snake
                     MainEntityBatch?.Dispose();
                     MainEntityBatch = new();
                     MainEntityBatch.Add(new GameOverUI());
+
+                    GameState = GameStates.GameLoop;
+                    goto case GameStates.GameLoop;
+
+
+                case GameStates.Scoreboard:
+                    MainEntityBatch?.Dispose();
+                    MainEntityBatch = new();
+                    MainEntityBatch.Add(new Scoreboard());
 
                     GameState = GameStates.GameLoop;
                     goto case GameStates.GameLoop;

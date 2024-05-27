@@ -31,7 +31,8 @@ namespace BlackMagic
             StartScreen,
             StartGame,
             GameLoop,
-            GameOver
+            GameOver,
+            Scoreboard
         }
         public static GameStates GameState = GameStates.Test;
         public static Camera Camera;
@@ -48,5 +49,9 @@ namespace BlackMagic
         public static int PlayerScore = 0;
 
         public static Song bgAmbience;
+
+        public const int MaxScoreboardScores = 3;
+        public const string ScoreboardPath = "scoreboard";
+        public static List<(string, int)> ScoreboardScores { get; set; }
     }
 }
