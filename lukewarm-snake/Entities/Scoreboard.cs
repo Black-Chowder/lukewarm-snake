@@ -9,12 +9,15 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Kryz.Tweening;
 using Microsoft.Xna.Framework.Graphics;
+using static System.Formats.Asn1.AsnWriter;
+using Microsoft.Xna.Framework.Audio;
 
 namespace lukewarm_snake
 {
     public class Scoreboard : Entity
     {
         public const string STitle = "TOP SCORES";
+        public const string SHome = "HOME";
 
         private float timer = 0f;
         private const float TimerStep = 0.01f;
@@ -31,12 +34,39 @@ namespace lukewarm_snake
         private const float ScoreSpacing = 17f;
         private const float TimerWaitOffset = 0.25f;
 
+        //Home Button Position Variables
+        private static Vector2 HomeStartPos => new Vector2(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, -50f);
+        private static Vector2 HomeEndPos => new Vector2(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, (Globals.Camera.Height + 150f) * EntityBatch.PixelateMultiplier / 2f + 20f);
+
+        private bool isHoveringOverHome = false;
+        private bool wasHoveringOverHome = false;
+        private Rectangle homeHitbox;
+        private static Vector2 HomeHitboxBuffer => new(20, 4);
+
+        //Sound effect variables
+        SoundEffect hoverSfx;
+        SoundEffectInstance hoverSfxInstance;
+        SoundEffect clickSfx;
+        SoundEffectInstance clickSfxInstance;
 
         public Scoreboard() : base(Vector2.Zero)
         {
             //Initialize title
             for (int i = 0; i < titleLetterOffsets.Length; i++)
                 titleLetterOffsets[i] = (float)rnd.NextDouble() * TitleLetterOffsetVariation;
+
+            Vector2 homeSize = defaultFont.MeasureString(SHome) + HomeHitboxBuffer;
+            homeHitbox = new Rectangle(
+                (int)((Globals.Camera.Width * EntityBatch.PixelateMultiplier - homeSize.X) / 2f),
+                (int)(((Globals.Camera.Height - 6) * EntityBatch.PixelateMultiplier + homeSize.Y / 2f) / 2f + 22),
+                (int)homeSize.X, (int)homeSize.Y
+            );
+
+            hoverSfx = content.Load<SoundEffect>(@"SFX/UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_12 (1)");
+            hoverSfxInstance = hoverSfx.CreateInstance();
+
+            clickSfx = content.Load<SoundEffect>(@"SFX/UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_33");
+            clickSfxInstance = clickSfx.CreateInstance();
         }
 
         public override void Update()
@@ -45,12 +75,26 @@ namespace lukewarm_snake
 
             MouseState mouse = Mouse.GetState();
 
-            //TODO Handle back button hover
+            if (isHoveringOverHome && !wasHoveringOverHome)
+                hoverSfxInstance.Play();
+            wasHoveringOverHome = isHoveringOverHome;
+
+            isHoveringOverHome = homeHitbox.Contains(mouse.Position.ToVector2() * EntityBatch.PixelateMultiplier) && timer - TimerWaitOffset * (ScoreboardScores.Count + 2) >= 1f;
+            if (mouse.LeftButton == ButtonState.Pressed && isHoveringOverHome)
+            {
+                clickSfxInstance.Play();
+                GameState = GameStates.StartScreen;
+            }
         }
 
         public override void Draw()
         {
-            //TODO: Handle back button
+            if (isHoveringOverHome)
+            {
+                spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
+                    homeHitbox,
+                    Color.Black * 0.25f);
+            }
         }
 
         public override void DrawRaw()
@@ -104,8 +148,29 @@ namespace lukewarm_snake
 
                     stringWidthProgress += defaultFont.MeasureString(curScoreStr[j].ToString()).X;
                 }
-                
             }
+
+
+            //Draw home button
+            stringWidthProgress = 0f;
+            fullStringWidth = defaultFont.MeasureString(SHome).X;
+            for (int i = 0; i < SHome.Length; i++)
+            {
+                Vector2 curDrawPos = Vector2.Lerp(HomeStartPos, HomeEndPos, EasingFunctions.OutBack(MathHelper.Clamp(timer - TimerWaitOffset * (ScoreboardScores.Count + 2), 0, 1)));
+
+                spriteBatch.DrawString(defaultFont,
+                    SHome[i].ToString(),
+                    curDrawPos + new Vector2(stringWidthProgress - fullStringWidth / 2f, 0),
+                    Color.White,
+                    0f,
+                    Vector2.Zero,
+                    Vector2.One,
+                    SpriteEffects.None,
+                    0f);
+
+                stringWidthProgress += defaultFont.MeasureString(SHome[i].ToString()).X;
+            }
+
         }
     }
 }
