@@ -55,7 +55,7 @@ namespace lukewarm_snake
 
         protected override void Initialize()
         {
-            GameState = GameStates.Scoreboard;
+            GameState = GameStates.StartScreen;
             IsMouseVisible = true;
 
             //Initialize scoreboard
