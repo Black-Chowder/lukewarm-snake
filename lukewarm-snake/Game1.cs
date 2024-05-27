@@ -177,7 +177,7 @@ namespace lukewarm_snake
                 case GameStates.Scoreboard:
                     MainEntityBatch?.Dispose();
                     MainEntityBatch = new();
-                    MainEntityBatch.Add(new Scoreboard(5));
+                    MainEntityBatch.Add(new Scoreboard());
 
                     GameState = GameStates.GameLoop;
                     goto case GameStates.GameLoop;

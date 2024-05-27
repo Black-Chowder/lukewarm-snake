@@ -44,6 +44,7 @@ namespace lukewarm_snake
         private static Vector2 StartHitboxBuffer => new(20, 5);
 
         //Scoreboard button variables
+        public const bool ScoreboardButtonEnabled = false;
         private static Vector2 ScoreboardStartPos => new Vector2(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, -50f);
         private static Vector2 ScoreboardEndPos => new Vector2(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, (Globals.Camera.Height + 150f) * EntityBatch.PixelateMultiplier / 2f + 20f);
 
@@ -107,6 +108,9 @@ namespace lukewarm_snake
                 GameState = GameStates.StartGame;
             }
 
+            //Scoreboard button handling
+            if (!ScoreboardButtonEnabled)
+                return;
 
             if (isHoveringOverScore && !wasHoveringOverScore)
                 hoverSfxInstance.Play();
@@ -130,7 +134,7 @@ namespace lukewarm_snake
                     Color.Black * 0.25f);
             }
 
-            if (isHoveringOverScore)
+            if (ScoreboardButtonEnabled && isHoveringOverScore)
             {
                 spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
                     scoreboardHitbox,
@@ -192,6 +196,9 @@ namespace lukewarm_snake
             }
 
             //Draw score button
+            if (!ScoreboardButtonEnabled)
+                return;
+
             stringWidthProgress = 0f;
             fullStringWidth = defaultFont.MeasureString(SScoreboard).X;
             for (int i = 0; i < SScoreboard.Length; i++)
