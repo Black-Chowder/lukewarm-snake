@@ -11,6 +11,7 @@ using System.Diagnostics;
 using Kryz.Tweening;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace lukewarm_snake
 {
@@ -18,6 +19,7 @@ namespace lukewarm_snake
     {
         public const string STitle = "SUPERHOT SNAKE";
         public const string Start = "START";
+        public const string SScoreboard = "SCORES";
 
         private float timer = 0f;
 
@@ -41,6 +43,15 @@ namespace lukewarm_snake
         private Rectangle startHitbox;
         private static Vector2 StartHitboxBuffer => new(20, 5);
 
+        //Scoreboard button variables
+        private static Vector2 ScoreboardStartPos => new Vector2(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, -50f);
+        private static Vector2 ScoreboardEndPos => new Vector2(Globals.Camera.Width * EntityBatch.PixelateMultiplier / 2f, (Globals.Camera.Height + 150f) * EntityBatch.PixelateMultiplier / 2f + 20f);
+
+        private bool isHoveringOverScore = false;
+        private bool wasHoveringOverScore = false;
+        private Rectangle scoreboardHitbox;
+        private static Vector2 SoreboardHitboxBuffer => new(20, 5);
+
         //Sound effect variables
         SoundEffect hoverSfx;
         SoundEffectInstance hoverSfxInstance;
@@ -61,6 +72,13 @@ namespace lukewarm_snake
                 (int)((Globals.Camera.Width * EntityBatch.PixelateMultiplier - startSize.X) / 2f),
                 (int)(((Globals.Camera.Height - 6) * EntityBatch.PixelateMultiplier + startSize.Y / 2f) / 2f),
                 (int)startSize.X, (int)startSize.Y
+            );
+
+            Vector2 scoreboardSize = defaultFont.MeasureString(SScoreboard) + SoreboardHitboxBuffer;
+            scoreboardHitbox = new Rectangle(
+                (int)((Globals.Camera.Width * EntityBatch.PixelateMultiplier - scoreboardSize.X) / 2f),
+                (int)(((Globals.Camera.Height - 6) * EntityBatch.PixelateMultiplier + scoreboardSize.Y / 2f) / 2f + 23),
+                (int)scoreboardSize.X, (int)scoreboardSize.Y
             );
 
             hoverSfx = content.Load<SoundEffect>(@"SFX/UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_12 (1)");
@@ -88,7 +106,19 @@ namespace lukewarm_snake
                 clickSfxInstance.Play();
                 GameState = GameStates.StartGame;
             }
-            
+
+
+            if (isHoveringOverScore && !wasHoveringOverScore)
+                hoverSfxInstance.Play();
+            wasHoveringOverScore = isHoveringOverScore;
+
+            isHoveringOverScore = scoreboardHitbox.Contains(mouse.Position.ToVector2() * EntityBatch.PixelateMultiplier);
+            if (mouse.LeftButton == ButtonState.Pressed && isHoveringOverScore)
+            {
+                clickSfxInstance.Play();
+                GameState = GameStates.StartScreen;
+            }
+
         }
 
         public override void Draw()
@@ -97,6 +127,13 @@ namespace lukewarm_snake
             {
                 spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
                     startHitbox,
+                    Color.Black * 0.25f);
+            }
+
+            if (isHoveringOverScore)
+            {
+                spriteBatch.Draw(DrawUtils.createTexture(spriteBatch.GraphicsDevice),
+                    scoreboardHitbox,
                     Color.Black * 0.25f);
             }
         }
@@ -154,8 +191,25 @@ namespace lukewarm_snake
                 stringWidthProgress += defaultFont.MeasureString(STitle[i].ToString()).X;
             }
 
-            //Draw exit button
-            //TODO
+            //Draw score button
+            stringWidthProgress = 0f;
+            fullStringWidth = defaultFont.MeasureString(SScoreboard).X;
+            for (int i = 0; i < SScoreboard.Length; i++)
+            {
+                Vector2 curDrawPos = Vector2.Lerp(ScoreboardStartPos, ScoreboardEndPos, EasingFunctions.OutBack(MathHelper.Clamp(timer, 0, 1)));
+
+                spriteBatch.DrawString(defaultFont,
+                    SScoreboard[i].ToString(),
+                    curDrawPos + new Vector2(stringWidthProgress - fullStringWidth / 2f, 0),
+                    Color.White,
+                    0f,
+                    Vector2.Zero,
+                    Vector2.One,
+                    SpriteEffects.None,
+                    0f);
+
+                stringWidthProgress += defaultFont.MeasureString(SScoreboard[i].ToString()).X;
+            }
         }
     }
 }
