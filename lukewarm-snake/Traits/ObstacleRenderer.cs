@@ -101,6 +101,7 @@ namespace lukewarm_snake
                     0f);
 
             //Draw tail
+            /*
             spriteBatch.Draw(tailRt,
                 (parent.DrawPos) * EntityBatch.PixelateMultiplier,
                 null,
@@ -110,6 +111,7 @@ namespace lukewarm_snake
                 EntityBatch.PixelateMultiplier,
                 SpriteEffects.None,
                 0f);
+            */
 
             //Draw bullet
             spriteBatch.Draw(bulletMask,

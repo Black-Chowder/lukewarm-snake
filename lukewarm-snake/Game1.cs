@@ -226,6 +226,7 @@ namespace lukewarm_snake
             }
 
             //Display average fps in top-left corner
+            /*
             spriteBatch.Begin();
             float FPS = MathF.Round(1f / (float)gt.ElapsedGameTime.TotalSeconds);
             if (fpss.Count >= 100)
@@ -238,6 +239,7 @@ namespace lukewarm_snake
                 Vector2.Zero,
                 Color.White);
             spriteBatch.End();
+            */
 
             base.Draw(gameTime);
         }
