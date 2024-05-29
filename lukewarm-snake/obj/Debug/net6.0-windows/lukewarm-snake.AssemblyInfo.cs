@@ -11,12 +11,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("lukewarm-snake")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("Superhot Snake")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aab7534508fb8cd9955af1b70cf0af5d7e57d63c")]
-[assembly: System.Reflection.AssemblyProductAttribute("lukewarm-snake")]
-[assembly: System.Reflection.AssemblyTitleAttribute("lukewarm-snake")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e780770480f0fa031b5b3b9113388d230cebc61d")]
+[assembly: System.Reflection.AssemblyProductAttribute("Superhot Snake")]
+[assembly: System.Reflection.AssemblyTitleAttribute("Superhot Snake")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 [assembly: System.Runtime.Versioning.TargetPlatformAttribute("Windows7.0")]
 [assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("Windows7.0")]
